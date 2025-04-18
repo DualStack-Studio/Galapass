@@ -1,5 +1,9 @@
 package com.galapass.api.service;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galapass.api.entity.User;
 import com.galapass.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +33,22 @@ public class UserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
-    public User updateUser(User user) {
-        return userRepository.save(user);
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    public User updateUser(User userUpdate) {
+        return userRepository.findById(userUpdate.getId())
+                .map(existingUser -> {
+                    try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+                        mapper.updateValue(existingUser, userUpdate);
+                        return userRepository.save(existingUser);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to update user", e);
+                    }
+                })
+                .orElseThrow(() -> new IllegalArgumentException("User with ID " + userUpdate.getId() + " not found."));
     }
 
     public void deleteUserById(Long id) {

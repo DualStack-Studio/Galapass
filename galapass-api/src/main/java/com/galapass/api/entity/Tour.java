@@ -31,4 +31,8 @@ public class Tour {
             inverseJoinColumns = @JoinColumn(name = "guide_id")
     )
     private Set<User> guides = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private TourCompany company;
 }

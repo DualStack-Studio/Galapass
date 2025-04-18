@@ -13,10 +13,16 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private User tourist;
+    @ManyToMany
+    @JoinTable(
+        name = "booking_tourists",
+        joinColumns = @JoinColumn(name = "booking_id"),
+        inverseJoinColumns = @JoinColumn(name = "tourist_id")
+    )
+    private Set<User> tourists = new HashSet<>();
 
     @ManyToOne
+    @JoinColumn(name = "tour_id")
     private Tour tour;
 
     private Date date;

@@ -16,8 +16,16 @@ public class TourReview {
     private Booking booking;
 
     @ManyToOne
-    private Tour tour;
+    private User reviewer;
 
     private int rating;
     private String comment;
+
+    @PrePersist
+    @PreUpdate
+    private void validateReviewerIsTourist() {
+        if (booking != null && !booking.getTourists().contains(reviewer)) {
+            throw new IllegalStateException("Reviewer must be a tourist in the booking.");
+        }
+    }
 }

@@ -1,4 +1,5 @@
 package com.galapass.api.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
@@ -26,21 +27,17 @@ public class User {
     private String language;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner; // Only if this user is a GUIDE
-
-    @ManyToMany(mappedBy = "guides")
-    private Set<Tour> assignedTours = new HashSet<>();
+    @JoinColumn(name = "company_id")
+    private TourCompany company;
 
     @PrePersist
     @PreUpdate
-    private void validateGuideOwnerAssignment() {
-        if (role == Role.GUIDE && owner == null) {
-            throw new IllegalStateException("A user with role GUIDE must have an assigned owner.");
+    private void validateCompanyAssignment() {
+        if (role == Role.GUIDE && company == null) {
+            throw new IllegalStateException("A user with role GUIDE must belong to a company.");
         }
-        if ((role == Role.OWNER || role == Role.TOURIST) && owner != null) {
-            throw new IllegalStateException("Only GUIDEs can have an assigned owner.");
+        if ((role == Role.OWNER || role == Role.TOURIST) && company != null) {
+            throw new IllegalStateException("Only GUIDEs can be assigned to a company.");
         }
     }
 }
-

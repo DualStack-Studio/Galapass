@@ -18,8 +18,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @PostMapping
@@ -28,18 +28,18 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @GetMapping("/email/{email}")
-    public User getUserByEmail(@PathVariable String email) {
-        return userService.getUserByEmail(email);
+    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+        return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user) {
-        return userService.updateUser(user);
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+        return ResponseEntity.ok(userService.updateUser(user));
     }
 
     @DeleteMapping("/{id}")

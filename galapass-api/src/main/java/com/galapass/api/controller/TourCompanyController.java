@@ -1,5 +1,6 @@
 package com.galapass.api.controller;
 
+import com.galapass.api.DTO.TourCompanyDTO;
 import com.galapass.api.entity.TourCompany;
 import com.galapass.api.service.TourCompanyService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,8 +24,14 @@ public class TourCompanyController {
     }
 
     @PostMapping
-    public ResponseEntity<TourCompany> createTourCompany(@RequestBody TourCompany tourCompany) {
-        return ResponseEntity.ok(tourCompanyService.createTourCompany(tourCompany));
+    public ResponseEntity<?> createTourCompany(@RequestBody TourCompanyDTO tourCompany) {
+        try {
+            tourCompanyService.createTourCompany(tourCompany);
+            return ResponseEntity.ok(tourCompany);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 
     @GetMapping("/{id}")

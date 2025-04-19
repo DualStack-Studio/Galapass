@@ -2,7 +2,11 @@ package com.galapass.api.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.galapass.api.DTO.TourCompanyDTO;
+import com.galapass.api.entity.Role;
 import com.galapass.api.entity.TourCompany;
+import com.galapass.api.entity.User;
+import com.galapass.api.mapper.TourCompanyMapper;
 import com.galapass.api.repository.TourCompanyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +18,7 @@ import java.util.List;
 public class TourCompanyService {
 
     private final TourCompanyRepository tourCompanyRepository;
+    private final UserService userService;
 
     public List<TourCompany> getAllTourCompanies() {
         return tourCompanyRepository.findAll();
@@ -23,7 +28,16 @@ public class TourCompanyService {
         return tourCompanyRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tour Company with ID " + id + " not found."));
     }
 
-    public TourCompany createTourCompany(TourCompany tourCompany) {
+    public TourCompany createTourCompany(TourCompanyDTO dto) {
+        User owner = userService.getUserById(dto.getOwnerId())
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
+
+        if (owner.getRole() != Role.OWNER) {
+            throw new IllegalArgumentException("You must be an owner to create a company.");
+        }
+
+        TourCompany tourCompany = TourCompanyMapper.toEntity(dto, owner);
+
         return tourCompanyRepository.save(tourCompany);
     }
 

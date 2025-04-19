@@ -14,30 +14,23 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false, unique = true)
     private String email;
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
-    private String profilePhoto;
+    private String profilePhoto ;
     private String bio;
-    private String language;
+    private String language = "es";
 
     @ManyToOne
     @JoinColumn(name = "company_id")
     private TourCompany company;
 
-    @PrePersist
-    @PreUpdate
-    private void validateCompanyAssignment() {
-        if (role == Role.GUIDE && company == null) {
-            throw new IllegalStateException("A user with role GUIDE must belong to a company.");
-        }
-        if ((role == Role.OWNER || role == Role.TOURIST) && company != null) {
-            throw new IllegalStateException("Only GUIDEs can be assigned to a company.");
-        }
-    }
 }

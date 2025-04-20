@@ -34,12 +34,12 @@ public class UserController {
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+    public ResponseEntity<Optional<User>> getUserByEmail(@PathVariable String email) {
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
     @PutMapping
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
+    public ResponseEntity<Optional<User>> updateUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.updateUser(user));
     }
 

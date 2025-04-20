@@ -1,24 +1,26 @@
 package com.galapass.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class TourCompany {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
-
+    @Column(unique = true)
     private String name;
 
     @OneToOne
@@ -26,6 +28,7 @@ public class TourCompany {
     private User owner;
 
     @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"company"})
     private Set<User> guides = new HashSet<>();
 
     @OneToMany(mappedBy = "company")

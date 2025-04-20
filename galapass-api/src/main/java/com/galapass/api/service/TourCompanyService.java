@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,41 +20,41 @@ public class TourCompanyService {
 
     private final TourCompanyRepository tourCompanyRepository;
     private final UserService userService;
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     public List<TourCompany> getAllTourCompanies() {
         return tourCompanyRepository.findAll();
     }
 
-    public TourCompany getTourCompanyById(Long id) {
-        return tourCompanyRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tour Company with ID " + id + " not found."));
+    public Optional<TourCompany> getTourCompanyById(Long id) {
+        return tourCompanyRepository.findById(id);
     }
 
-    public TourCompany createTourCompany(TourCompanyDTO dto) {
-        User owner = userService.getUserById(dto.getOwnerId())
-                .orElseThrow(() -> new RuntimeException("Owner not found"));
+    public Optional<TourCompany> createTourCompany(TourCompanyDTO dto) {
+        Optional<User> ownerOpt = userService.getUserById(dto.getOwnerId());
 
-        if (owner.getRole() != Role.OWNER) {
-            throw new IllegalArgumentException("You must be an owner to create a company.");
-        }
+        if (ownerOpt.isEmpty()) return Optional.empty();
+
+        User owner = ownerOpt.get();
+
+        if (owner.getRole() != Role.OWNER) return Optional.empty();
 
         TourCompany tourCompany = TourCompanyMapper.toEntity(dto, owner);
 
-        return tourCompanyRepository.save(tourCompany);
+        return Optional.of(tourCompanyRepository.save(tourCompany));
     }
 
-    public TourCompany updateTourCompany(TourCompany tourCompanyUpdate) {
+    public Optional<TourCompany> updateTourCompany(TourCompany tourCompanyUpdate) {
         return tourCompanyRepository.findById(tourCompanyUpdate.getId())
                 .map(existingCompany -> {
                     try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-                        mapper.updateValue(existingCompany, tourCompanyUpdate);
+                        objectMapper.updateValue(existingCompany, tourCompanyUpdate);
                         return tourCompanyRepository.save(existingCompany);
                     } catch (Exception e) {
-                        throw new RuntimeException("Failed to update tour company", e);
+                        return null;
                     }
-                })
-                .orElseThrow(() -> new IllegalArgumentException("Tour Company with ID " + tourCompanyUpdate.getId() + " not found."));
+                });
     }
 
     public void deleteTourCompanyById(Long id) {

@@ -1,36 +1,39 @@
 package com.galapass.api.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
-    @Column(nullable = false)
+
     private String name;
-    @Column(nullable = false, unique = true)
     private String email;
-    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Role role;
 
-    private String profilePhoto ;
+    private String profilePhoto;
     private String bio;
     private String language = "es";
 
     @ManyToOne
     @JoinColumn(name = "company_id")
+    @JsonIgnoreProperties({"guides", "owner"})
     private TourCompany company;
-
 }
+

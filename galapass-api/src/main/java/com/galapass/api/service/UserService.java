@@ -2,12 +2,11 @@ package com.galapass.api.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galapass.api.entity.User;
+import com.galapass.api.repository.TourCompanyRepository;
 import com.galapass.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,39 +17,52 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final TourCompanyRepository tourCompanyRepository;
+
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
     public User createUser(User user) {
+        if (user.getCompany() != null && user.getCompany().getName() != null) {
+            tourCompanyRepository.findByName(user.getCompany().getName())
+                    .ifPresent(user::setCompany);
+        }
         return userRepository.save(user);
     }
+
 
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).get();
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-    public User updateUser(User userUpdate) {
+    public Optional<User> updateUser(User userUpdate) {
         return userRepository.findById(userUpdate.getId())
                 .map(existingUser -> {
                     try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-                        mapper.updateValue(existingUser, userUpdate);
+                        // Copiar campos individualmente
+                        existingUser.setName(userUpdate.getName());
+                        existingUser.setEmail(userUpdate.getEmail());
+                        existingUser.setPassword(userUpdate.getPassword());
+                        existingUser.setRole(userUpdate.getRole());
+                        existingUser.setBio(userUpdate.getBio());
+                        existingUser.setProfilePhoto(userUpdate.getProfilePhoto());
+                        existingUser.setLanguage(userUpdate.getLanguage());
+                        existingUser.setCompany(userUpdate.getCompany());
+
                         return userRepository.save(existingUser);
                     } catch (Exception e) {
-                        throw new RuntimeException("Failed to update user", e);
+                        return null;
                     }
-                })
-                .orElseThrow(() -> new IllegalArgumentException("User with ID " + userUpdate.getId() + " not found."));
+                });
     }
 
     public void deleteUserById(Long id) {

@@ -31,18 +31,19 @@ public class TourCompanyService {
         return tourCompanyRepository.findById(id);
     }
 
-    public Optional<TourCompany> createTourCompany(TourCompanyDTO dto) {
+    public void createTourCompany(TourCompanyDTO dto) {
         Optional<User> ownerOpt = userService.getUserById(dto.getOwnerId());
 
-        if (ownerOpt.isEmpty()) return Optional.empty();
+//        if (ownerOpt.isEmpty()) return Optional.empty();
 
         User owner = ownerOpt.get();
 
-        if (owner.getRole() != Role.OWNER) return Optional.empty();
+//        if (owner.getRole() != Role.OWNER) return Optional.empty();
 
         TourCompany tourCompany = TourCompanyMapper.toEntity(dto, owner);
-
-        return Optional.of(tourCompanyRepository.save(tourCompany));
+        tourCompanyRepository.save(tourCompany);
+        owner.setCompany(tourCompany);
+        userService.updateUser(owner);
     }
 
     public Optional<TourCompany> updateTourCompany(TourCompany tourCompanyUpdate) {
@@ -60,4 +61,21 @@ public class TourCompanyService {
     public void deleteTourCompanyById(Long id) {
         tourCompanyRepository.deleteById(id);
     }
+
+    public void addGuideToCompany(Long companyId, Long guideId) {
+        TourCompany company = tourCompanyRepository.findById(companyId)
+                .orElseThrow(() -> new RuntimeException("Company with ID " + companyId + " not found"));
+
+        User guide = userService.getUserById(guideId)
+                .orElseThrow(() -> new RuntimeException("Guide with ID " + guideId + " not found"));
+
+        if (guide.getRole() != Role.GUIDE) {
+            throw new RuntimeException("User with ID " + guideId + " is not a guide");
+        }
+
+        company.getGuides().add(guide);
+        guide.setCompany(company);
+        userService.updateUser(guide);
+    }
+
 }

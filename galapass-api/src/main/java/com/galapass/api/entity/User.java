@@ -21,19 +21,20 @@ public class User {
     private Long id;
 
     private String name;
+    @Column(unique = true)
     private String email;
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private String profilePhoto;
+    private String profilePhoto = "/Static/uploads/blank-profile-picture.jpg";
     private String bio;
     private String language = "es";
 
     @ManyToOne
     @JoinColumn(name = "company_id")
-    @JsonIgnoreProperties({"guides", "owner"})
+    @JsonIgnoreProperties({"guides", "owner", "tours"})
     private TourCompany company;
 }
 

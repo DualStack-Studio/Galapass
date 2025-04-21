@@ -48,7 +48,6 @@ public class UserService {
         return userRepository.findById(userUpdate.getId())
                 .map(existingUser -> {
                     try {
-                        // Copiar campos individualmente
                         existingUser.setName(userUpdate.getName());
                         existingUser.setEmail(userUpdate.getEmail());
                         existingUser.setPassword(userUpdate.getPassword());
@@ -56,7 +55,11 @@ public class UserService {
                         existingUser.setBio(userUpdate.getBio());
                         existingUser.setProfilePhoto(userUpdate.getProfilePhoto());
                         existingUser.setLanguage(userUpdate.getLanguage());
-                        existingUser.setCompany(userUpdate.getCompany());
+
+                        if (userUpdate.getCompany() != null && userUpdate.getCompany().getName() != null) {
+                            tourCompanyRepository.findByName(userUpdate.getCompany().getName())
+                                    .ifPresent(existingUser::setCompany);
+                        }
 
                         return userRepository.save(existingUser);
                     } catch (Exception e) {
@@ -64,6 +67,7 @@ public class UserService {
                     }
                 });
     }
+
 
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);

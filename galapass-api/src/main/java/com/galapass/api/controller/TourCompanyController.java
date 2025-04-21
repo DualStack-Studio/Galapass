@@ -57,24 +57,14 @@ public class TourCompanyController {
     }
 
     @PostMapping("/{companyId}/guides/{guideId}")
-    public ResponseEntity<String> addGuideToCompany(@PathVariable Long companyId, @PathVariable Long guideId) {
-        Optional<TourCompany> company = tourCompanyService.getTourCompanyById(companyId);
-        Optional<User> guide = userService.getUserById(guideId);
-
-        if (company.isEmpty()) {
-            return ResponseEntity.badRequest().body("Company with ID " + companyId + " not found");
+    public ResponseEntity<?> addGuideToCompany(@PathVariable Long companyId, @PathVariable Long guideId) {
+        try {
+            tourCompanyService.addGuideToCompany(companyId, guideId);
+            return ResponseEntity.ok("Guide added to company");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        if (guide.isEmpty()) {
-            return ResponseEntity.badRequest().body("Guide with ID " + guideId + " not found");
-        }
-        if (guide.get().getRole() != Role.GUIDE) {
-            return ResponseEntity.badRequest().body("UserID with ID" + guideId + "is not a guide, please enter a guide id");
-        }
-
-        company.get().getGuides().add(guide.get());
-        guide.get().setCompany(company.get());
-        userService.updateUser(guide.get());
-        return ResponseEntity.ok("Guide added to company");
     }
+
 
 }

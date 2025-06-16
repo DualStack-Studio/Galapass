@@ -4,10 +4,15 @@ import com.galapass.api.DTO.TourCompanyDTO;
 import com.galapass.api.entity.Role;
 import com.galapass.api.entity.TourCompany;
 import com.galapass.api.entity.User;
+import com.galapass.api.exception.EntityNotFoundException;
 import com.galapass.api.service.TourCompanyService;
 import com.galapass.api.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.tool.schema.spi.SqlScriptException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,11 +39,18 @@ public class TourCompanyController {
         try {
             tourCompanyService.createTourCompany(tourCompany);
             return ResponseEntity.ok(tourCompany);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
 
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().body("Error: companies already exist with the same name.");
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Something went wrong.");
+        }
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Optional<TourCompany>> getTourCompanyById(@PathVariable Long id) {

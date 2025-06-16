@@ -6,6 +6,7 @@ import com.galapass.api.DTO.TourCompanyDTO;
 import com.galapass.api.entity.Role;
 import com.galapass.api.entity.TourCompany;
 import com.galapass.api.entity.User;
+import com.galapass.api.exception.EntityNotFoundException;
 import com.galapass.api.mapper.TourCompanyMapper;
 import com.galapass.api.repository.TourCompanyRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +33,9 @@ public class TourCompanyService {
     }
 
     public void createTourCompany(TourCompanyDTO dto) {
-        Optional<User> ownerOpt = userService.getUserById(dto.getOwnerId());
 
-//        if (ownerOpt.isEmpty()) return Optional.empty();
-
-        User owner = ownerOpt.get();
-
-//        if (owner.getRole() != Role.OWNER) return Optional.empty();
+        User owner = userService.getUserById(dto.getOwnerId()).
+                orElseThrow(() -> new EntityNotFoundException("User with Id: " + dto.getOwnerId() + " not found"));
 
         TourCompany tourCompany = TourCompanyMapper.toEntity(dto, owner);
         tourCompanyRepository.save(tourCompany);

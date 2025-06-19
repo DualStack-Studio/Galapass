@@ -1,0 +1,51 @@
+package com.galapass.api.service;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.galapass.api.entity.Tour;
+import com.galapass.api.repository.TourRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class TourService {
+    private final TourRepository tourRepository;
+
+    public List<Tour> getAllTours() {
+        return tourRepository.findAll();
+    }
+
+    public Tour getTourById(Long id) {
+        return tourRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tour with ID " + id + " not found."));
+    }
+
+    public Tour createTour(Tour tour) {
+        return tourRepository.save(tour);
+    }
+
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    public Tour updateTour(Tour tourUpdate) {
+        return tourRepository.findById(tourUpdate.getId())
+                .map(existingTour -> {
+                    try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+                        mapper.updateValue(existingTour, tourUpdate);
+                        return tourRepository.save(existingTour);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to update tour", e);
+                    }
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Tour with ID " + tourUpdate.getId() + " not found."));
+    }
+
+    public void deleteTourById(Long id) {
+        tourRepository.deleteById(id);
+    }
+}

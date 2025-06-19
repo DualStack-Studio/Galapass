@@ -18,6 +18,21 @@ public class GuideReview {
     @ManyToOne
     private User guide;
 
+    @ManyToOne
+    private User reviewer;
+
     private int rating;
     private String comment;
+
+    @PrePersist
+    @PreUpdate
+    private void validateGuideReview() {
+        if (!booking.getTour().getGuides().contains(guide)) {
+            throw new IllegalStateException("The guide being reviewed was not assigned to the tour in this booking.");
+        }
+
+        if (!booking.getTourists().contains(reviewer)) {
+            throw new IllegalStateException("The reviewer was not a tourist in this booking.");
+        }
+    }
 }

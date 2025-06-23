@@ -3,6 +3,8 @@ package com.galapass.api.service;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.galapass.api.DTO.UserPatchRequest;
+import com.galapass.api.entity.Role;
 import com.galapass.api.entity.User;
 import com.galapass.api.repository.TourCompanyRepository;
 import com.galapass.api.repository.UserRepository;
@@ -66,6 +68,45 @@ public class UserService {
                         return null;
                     }
                 });
+    }
+
+    public User patchUser(Long userId, UserPatchRequest request) {
+        // 1. Find the existing user
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        // 2. Check each field from the request and update if it's not null
+        if (request.getName() != null) {
+            existingUser.setName(request.getName());
+        }
+        if (request.getEmail() != null) {
+            // You might want to add logic here to check if the new email is already taken
+            existingUser.setEmail(request.getEmail());
+        }
+        if (request.getBio() != null) {
+            existingUser.setBio(request.getBio());
+        }
+        if (request.getLanguage() != null) {
+            existingUser.setLanguage(request.getLanguage());
+        }
+        if (request.getProfilePhoto() != null) {
+            existingUser.setProfilePhoto(request.getProfilePhoto());
+        }
+
+        // !! IMPORTANT !! Handle password separately for security
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            // You MUST encode the new password before saving it
+           // existingUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        // 3. Save the updated user
+        return userRepository.save(existingUser);
+    }
+    public User updateUserRole(Long userId, String newRole) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        existingUser.setRole(Role.valueOf(newRole));
+        return userRepository.save(existingUser);
     }
 
 

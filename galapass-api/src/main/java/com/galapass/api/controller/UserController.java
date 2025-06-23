@@ -1,7 +1,9 @@
 package com.galapass.api.controller;
 
+import com.galapass.api.DTO.UserPatchRequest;
 import com.galapass.api.entity.User;
 import com.galapass.api.service.UserService;
+import com.galapass.api.DTO.UpdateUserRoleRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,18 @@ public class UserController {
     @PutMapping
     public ResponseEntity<Optional<User>> updateUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.updateUser(user));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<User> patchUser(@PathVariable Long id, @RequestBody UserPatchRequest request) {
+        User updatedUser = userService.patchUser(id, request);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @PatchMapping("/{id}/role")
+    public ResponseEntity<User> updateUserRole(@PathVariable Long id, @RequestBody UpdateUserRoleRequest request) {
+            User updatedUser = userService.updateUserRole(id, request.getRole());
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")

@@ -9,5 +9,4 @@ import lombok.*;
 public class TourCompanyDTO {
     private String name;
     private Long ownerId;
-
 }

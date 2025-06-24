@@ -18,16 +18,15 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-    public AuthResponse login(LoginRequest loginRequest) {
+    // The method now returns a simple String
+    public String login(LoginRequest loginRequest) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
         UserDetails user = userService.getUserByEmail(loginRequest.getEmail()).orElseThrow();
-        String token = jwtService.getToken(user);
-        return AuthResponse.builder()
-                .token(token)
-                .build();
+        return jwtService.getToken(user); // Just return the token
     }
 
-    public AuthResponse register(RegisterRequest registerRequest) {
+    // This method also returns a simple String
+    public String register(RegisterRequest registerRequest) {
         User user = User.builder()
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
@@ -37,8 +36,6 @@ public class AuthService {
                 .build();
         userService.createUser(user);
 
-        return AuthResponse.builder()
-                .token(jwtService.getToken(user))
-                .build();
+        return jwtService.getToken(user); // Just return the token
     }
 }

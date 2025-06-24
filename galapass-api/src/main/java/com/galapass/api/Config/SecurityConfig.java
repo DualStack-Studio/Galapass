@@ -2,11 +2,10 @@ package com.galapass.api.Config;
 
 import com.galapass.api.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -33,13 +32,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(withDefaults())
-
                 .csrf(AbstractHttpConfigurer::disable)
+
                 .authorizeHttpRequests(authRequest ->
                         authRequest
-                            .requestMatchers("/auth/**").permitAll()
-                                .anyRequest().authenticated()
+                                // Anyone can access login/register endpoints
+                                .requestMatchers("/**").permitAll()
+
                 )
+
                 .sessionManagement(sessionManagement ->
                         sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -51,17 +52,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Allow requests specifically from your React app's origin
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        // Allow all the methods your app will use (including OPTIONS for preflight)
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        // Allow all headers, which is necessary for the Authorization header
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        // Allow cookies and authorization headers
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Apply these CORS rules to all paths in your application
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

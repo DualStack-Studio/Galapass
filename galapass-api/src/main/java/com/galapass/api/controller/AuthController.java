@@ -5,6 +5,7 @@ import com.galapass.api.entity.LoginRequest;
 import com.galapass.api.entity.RegisterRequest;
 import com.galapass.api.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,18 +53,21 @@ public class AuthController {
             @RequestBody RegisterRequest registerRequest,
             HttpServletResponse servletResponse // Also add it here for consistency
     ) {
-        String jwtToken = authService.register(registerRequest);
+        try {
+            String jwtToken = authService.register(registerRequest);
 
-        ResponseCookie cookie = ResponseCookie.from("jwt-token", jwtToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(60 * 60 * 24)
-                .sameSite("Lax")
-                .build();
+            ResponseCookie cookie = ResponseCookie.from("jwt-token", jwtToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(60 * 60 * 24)
+                    .sameSite("Lax")
+                    .build();
 
-        servletResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
-        return ResponseEntity.ok(AuthResponse.builder().message("Registration successful").build());
+            servletResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            return ResponseEntity.ok(AuthResponse.builder().message("Registration successful").build());
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.ok(AuthResponse.builder().message("Registration failed, email already used").build());
+        }
     }
 }

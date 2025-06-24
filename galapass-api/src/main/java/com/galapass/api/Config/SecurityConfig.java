@@ -37,7 +37,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authRequest ->
                         authRequest
                                 // Anyone can access login/register endpoints
-                                .requestMatchers("/**").permitAll()
+                                .requestMatchers("/auth/**").permitAll()
+                                .anyRequest().authenticated()
 
                 )
 

@@ -6,6 +6,8 @@ import com.galapass.api.service.UserService;
 import com.galapass.api.DTO.UpdateUserRoleRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,9 +48,13 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<User> patchUser(@PathVariable Long id, @RequestBody UserPatchRequest request) {
-        User updatedUser = userService.patchUser(id, request);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<?> patchUser(@PathVariable Long id, @RequestBody UserPatchRequest request) {
+       try {
+           User updatedUser = userService.patchUser(id, request);
+           return ResponseEntity.ok(updatedUser);
+       } catch (DataIntegrityViolationException e) {
+           return ResponseEntity.status(HttpStatus.CONFLICT).body("Update failed, email already used");
+       }
     }
 
     @PatchMapping("/{id}/role")

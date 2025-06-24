@@ -3,54 +3,44 @@ import axios from 'axios';
 
 const HomePage = () => {
     const [tours, setTours] = useState([]);
-    const [error, setError] = useState(''); // State to hold error messages
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchTours = async () => {
             try {
-                // 1. Retrieve the token from wherever you store it (e.g., localStorage)
-                const token = localStorage.getItem('token'); // Use the key you set during login
+                // REMOVED: const token = localStorage.getItem('token');
 
-                if (!token) {
-                    setError("Authentication token not found. Please log in.");
-                    console.error("No token found in localStorage.");
-                    return; // Stop the request if no token is available
-                }
-
-                // 2. Create the headers object for the request
+                // 1. Create a config object
                 const config = {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    // 2. THIS IS THE KEY: It tells axios to send cookies with the request
+                    withCredentials: true
                 };
 
-                // 3. Make the GET request, passing the config object with the headers
+                // 3. Make the request with the new config.
+                // The Authorization header is no longer needed.
                 const response = await axios.get('http://localhost:8080/api/tours', config);
 
                 setTours(response.data);
-                setError(''); // Clear any previous errors on success
+                setError('');
 
             } catch (err) {
                 console.error("Error fetching tours:", err);
                 if (err.response) {
-                    // Handle errors like 401 Unauthorized or 403 Forbidden
-                    setError(`Error: ${err.response.status} ${err.response.statusText}. Please check credentials.`);
+                    setError(`Error: ${err.response.status} ${err.response.statusText}. Please check credentials or permissions.`);
                 } else if (err.request) {
-                    // Handle network errors or CORS issues
                     setError("Network Error: Could not connect to the server. Check CORS and server status.");
                 } else {
-                    // Handle other unexpected errors
                     setError("An unexpected error occurred while fetching data.");
                 }
             }
         };
 
         fetchTours();
-    }, []); // Empty dependency array means this runs once on mount
+    }, []);
 
     return (
+        // --- Your existing JSX for the page ---
         <div className="bg-emerald-50 min-h-screen font-sans">
-            {/* Header */}
             <header className="bg-white shadow-md p-4 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                     <img src="/images/galapassLogo.png" alt="Galapass Logo" className="h-10 w-auto" />
@@ -63,7 +53,6 @@ const HomePage = () => {
                 </nav>
             </header>
 
-            {/* Search Bar (your existing code) */}
             <section className="bg-emerald-100 py-8 px-4">
                 <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-4 justify-center">
                     <input type="text" placeholder="Where to?" className="w-full md:w-1/3 px-4 py-2 rounded-md border border-emerald-300" />
@@ -73,13 +62,9 @@ const HomePage = () => {
                 </div>
             </section>
 
-            {/* Tour Listings */}
             <main className="max-w-6xl mx-auto py-10 px-4">
                 <h2 className="text-2xl font-semibold text-emerald-800 mb-6">Today in Santa Cruz</h2>
-
-                {/* Display Error Message if one exists */}
                 {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">{error}</div>}
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {tours.map((tour) => (
                         <div key={tour.id} className="bg-white rounded-lg shadow-md overflow-hidden">

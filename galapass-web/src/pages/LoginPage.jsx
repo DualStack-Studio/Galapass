@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,8 +17,11 @@ const LoginPage = () => {
 
       if (!response.ok) throw new Error("Credenciales inválidas");
 
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
+      // --- THESE TWO LINES ARE REMOVED ---
+      // const data = await response.json();
+      // localStorage.setItem("token", data.token);
+      // The browser now handles the cookie automatically.
+
       navigate("/home");
     } catch (err) {
       console.error(err);

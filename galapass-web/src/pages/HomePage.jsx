@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
-import SearchBar from '../components/SearchBar';
-import TourCard from '../components/TourCard';
 import Footer from '../components/Footer';
 import LoginModal from '../components/LoginModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useAuth } from '../contexts/AuthContext';
 import RegisterModal from "../components/RegisterModal.jsx";
-import UserDashboard from "../components/UserDashboard.jsx";
-import OwnerDashboard from "../components/OwnerDashboard.jsx";
+import TouristDashboard from "../components/TouristView/TouristDashboard.jsx";
+import OwnerDashboard from "../components/OwnerView/OwnerDashboard.jsx";
 
 const HomePage = () => {
 
@@ -22,17 +20,18 @@ const HomePage = () => {
     const getRoleView = (role) => {
         switch (role) {
             case "GUIDE":
+                return <TouristDashboard />;
             case "OWNER":
                 return <OwnerDashboard user={user} />;
-            case "USER":
-                return <UserDashboard user={user} />;
+            case "TOURIST":
+                return <TouristDashboard user={user} />;
             default:
-                return <UserDashboard />;
+                return <TouristDashboard />;
         }
     };
 
     return (
-        <div className="bg-white min-h-screen font-sans">
+        <div className="bg-gray-50 min-h-screen font-sans">
             <Header
                 isMenuOpen={isMenuOpen}
                 setIsMenuOpen={setIsMenuOpen}
@@ -41,7 +40,7 @@ const HomePage = () => {
             />
 
             <main>
-                {user ? getRoleView(user.role) : <UserDashboard />}
+                {user ? getRoleView(user.role) : <TouristDashboard />}
             </main>
 
             <Footer />

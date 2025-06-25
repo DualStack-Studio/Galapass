@@ -1,17 +1,17 @@
 import React from 'react';
 
-const VisitorSelector = ({ isVisible, onClose, visitors, onVisitorChange }) => {
+const TouristSelector = ({ isVisible, onClose, tourists, onTouristChange }) => {
     if (!isVisible) return null;
 
     const increment = () => {
-        if (visitors < 16) {
-            onVisitorChange(visitors + 1);
+        if (tourists < 16) {
+            onTouristChange(tourists + 1);
         }
     };
 
     const decrement = () => {
-        if (visitors > 1) {
-            onVisitorChange(visitors - 1);
+        if (tourists > 1) {
+            onTouristChange(tourists - 1);
         }
     };
 
@@ -19,15 +19,15 @@ const VisitorSelector = ({ isVisible, onClose, visitors, onVisitorChange }) => {
         <div className="absolute top-full mt-2 right-0 bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 z-50" style={{ width: '300px' }}>
             <div className="flex items-center justify-between">
                 <div>
-                    <h4 className="font-semibold text-gray-900">Visitors</h4>
+                    <h4 className="font-semibold text-gray-900">Tourists</h4>
                     <p className="text-sm text-gray-500">Ages 13 or above</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <button
                         onClick={decrement}
-                        disabled={visitors <= 1}
+                        disabled={tourists <= 1}
                         className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${
-                            visitors <= 1
+                            tourists <= 1
                                 ? 'border-gray-200 text-gray-300 cursor-not-allowed'
                                 : 'border-gray-300 text-gray-600 hover:border-gray-400 hover:scale-105'
                         }`}
@@ -35,13 +35,13 @@ const VisitorSelector = ({ isVisible, onClose, visitors, onVisitorChange }) => {
                         <span className="text-lg font-light">−</span>
                     </button>
                     <span className="text-lg font-semibold text-gray-900 min-w-[2rem] text-center">
-            {visitors}
+            {tourists}
           </span>
                     <button
                         onClick={increment}
-                        disabled={visitors >= 16}
+                        disabled={tourists >= 16}
                         className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${
-                            visitors >= 16
+                            tourists >= 16
                                 ? 'border-gray-200 text-gray-300 cursor-not-allowed'
                                 : 'border-gray-300 text-gray-600 hover:border-gray-400 hover:scale-105'
                         }`}
@@ -63,4 +63,4 @@ const VisitorSelector = ({ isVisible, onClose, visitors, onVisitorChange }) => {
     );
 };
 
-export default VisitorSelector;
+export default TouristSelector;

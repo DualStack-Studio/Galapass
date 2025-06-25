@@ -52,8 +52,16 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center space-x-8">
-                        <a href="#" className="text-gray-700 hover:text-emerald-600 font-medium transition-colors">Become a guide</a>
-                        <a href="#" className="text-gray-700 hover:text-emerald-600 font-medium transition-colors">Become a Tour Operator</a>
+                        {user?.role !== "OWNER" && (
+                            <>
+                                {user?.role !== "GUIDE" && (
+                                    <a href="#" className="text-gray-700 hover:text-emerald-600 font-medium transition-colors">Become a guide</a>
+                                )}
+                                {user?.role !== "OWNER" && (
+                                    <a href="#" className="text-gray-700 hover:text-emerald-600 font-medium transition-colors">Become a Tour Operator</a>
+                                )}
+                            </>
+                        )}
 
                         <div className="flex items-center space-x-3 ml-6">
                             {user ? (
@@ -88,7 +96,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
                                                     OWNER: "Tour Operator",
                                                     ADMIN: "Admin"
                                                 };
-                                                const role = roleMap[user.role] || "User";
+                                                const role = roleMap[user.role] || "Tourist";
 
                                                 return (
                                                     <div className="px-4 py-2 border-b border-gray-100">
@@ -149,11 +157,8 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
             {isMenuOpen && (
                 <div className="md:hidden border-t border-gray-200 bg-white shadow-lg">
                     <div className="px-4 py-2 space-y-1">
-                        <a href="#" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">Tours</a>
-                        <a href="#" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">Experiences</a>
-                        <a href="#" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">Become a guide</a>
-                        <div className="border-t border-gray-200 my-2"></div>
-                        <a href="#" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">Become an owner</a>
+                        <a href="#" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">Become a Guide</a>
+                        <a href="#" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">Become a Tour Operator</a>
 
                         <div className="px-3 py-2">
                             {user ? (

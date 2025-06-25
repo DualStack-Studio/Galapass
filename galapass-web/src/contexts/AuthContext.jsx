@@ -68,8 +68,6 @@ export const AuthProvider = ({ children }) => {
     };
 
     const refreshUser = async () => {
-        // Simply re-run the fetchUser function to get the latest user data
-        // which will now include the companyId.
         setIsLoading(true);
         await fetchUser();
     };

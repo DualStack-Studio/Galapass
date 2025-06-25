@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Calendar, MapPin, Search, Users } from 'lucide-react';
-import CustomCalendar from './CustomCalendar';
-import VisitorSelector from './VisitorSelector';
+import CustomCalendar from './CustomCalendar.jsx';
+import TouristSelector from './TouristSelector.jsx';
 
 const SearchBar = ({
                        searchData,
@@ -9,10 +9,10 @@ const SearchBar = ({
                        formatDate,
                        showCheckInCalendar,
                        showCheckOutCalendar,
-                       showVisitorSelector,
+                       showTouristSelector,
                        setShowCheckInCalendar,
                        setShowCheckOutCalendar,
-                       setShowVisitorSelector,
+                       setShowTouristSelector,
                        checkInRef,
                        checkOutRef,
                        guestRef,
@@ -92,7 +92,7 @@ const SearchBar = ({
                     />
                 </div>
 
-                {/* Visitors */}
+                {/* Tourists */}
                 <div className="flex-1 px-6 py-4 min-w-0 relative" ref={guestRef}>
                     <label className="block text-xs font-semibold text-gray-900 mb-1">Who</label>
                     <div className="flex items-center justify-between h-6">
@@ -100,13 +100,13 @@ const SearchBar = ({
                             <Users size={16} className="text-gray-400 mr-2 flex-shrink-0" />
                             <button
                                 onClick={() => {
-                                    setShowVisitorSelector(!showVisitorSelector);
+                                    setShowTouristSelector(!showTouristSelector);
                                     setShowCheckInCalendar(false);
                                     setShowCheckOutCalendar(false);
                                 }}
                                 className="text-left text-sm text-gray-700 border-none outline-none bg-transparent min-w-0 flex-1"
                             >
-                                {searchData.visitors === 1 ? '1 visitor' : `${searchData.visitors} visitors`}
+                                {searchData.tourists === 1 ? '1 tourist' : `${searchData.tourists} tourists`}
                             </button>
                         </div>
                         <button
@@ -116,11 +116,11 @@ const SearchBar = ({
                             <Search size={16} />
                         </button>
                     </div>
-                    <VisitorSelector
-                        isVisible={showVisitorSelector}
-                        onClose={() => setShowVisitorSelector(false)}
-                        visitors={searchData.visitors}
-                        onVisitorChange={(visitors) => handleInputChange('visitors', visitors)}
+                    <TouristSelector
+                        isVisible={showTouristSelector}
+                        onClose={() => setShowTouristSelector(false)}
+                        tourists={searchData.tourists}
+                        onTouristChange={(tourists) => handleInputChange('tourists', tourists)}
                     />
                 </div>
             </div>

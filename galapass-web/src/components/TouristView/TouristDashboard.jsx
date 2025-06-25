@@ -5,18 +5,18 @@ import SearchBar from "./SearchBar.jsx";
 
 
 
-const UserDashboard = () => {
+const TouristDashboard = () => {
     const [tours, setTours] = useState([]);
     const [error, setError] = useState('');
     const [searchData, setSearchData] = useState({
         destination: '',
         checkIn: '',
         checkOut: '',
-        visitors: 1
+        tourists: 1
     });
     const [showCheckInCalendar, setShowCheckInCalendar] = useState(false);
     const [showCheckOutCalendar, setShowCheckOutCalendar] = useState(false);
-    const [showVisitorSelector, setShowVisitorSelector] = useState(false);
+    const [showTouristSelector, setShowTouristSelector] = useState(false);
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const checkInRef = useRef(null);
     const checkOutRef = useRef(null);
@@ -64,8 +64,8 @@ const UserDashboard = () => {
     }, []);
     return (
         <div>
-            <section className="bg-gradient-to-br from-emerald-50 to-teal-50 py-16 px-4">
-                <div className="max-w-4xl mx-auto">
+            <section className="bg-gradient-to-b from-emerald-100 to-gray-50 py-16 px-4">
+            <div className="max-w-4xl mx-auto">
                     <div className="text-center mb-8">
                         <h2 className="text-4xl font-bold text-gray-900 mb-2">
                             Discover the <span className="text-emerald-600">Galápagos</span>
@@ -78,10 +78,10 @@ const UserDashboard = () => {
                         formatDate={formatDate}
                         showCheckInCalendar={showCheckInCalendar}
                         showCheckOutCalendar={showCheckOutCalendar}
-                        showVisitorSelector={showVisitorSelector}
+                        showTouristSelector={showTouristSelector}
                         setShowCheckInCalendar={setShowCheckInCalendar}
                         setShowCheckOutCalendar={setShowCheckOutCalendar}
-                        setShowVisitorSelector={setShowVisitorSelector}
+                        setShowTouristSelector={setShowTouristSelector}
                         checkInRef={checkInRef}
                         checkOutRef={checkOutRef}
                         guestRef={guestRef}
@@ -95,14 +95,14 @@ const UserDashboard = () => {
             </section>
 
             <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">Popular tours in Santa Cruz</h2>
-            {error && <div className="text-red-500 mb-4">{error}</div>}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {tours.map(tour => <TourCard key={tour.id} tour={tour} />)}
-            </div>
-        </main>
+                <h2 className="text-3xl font-bold text-gray-900 mb-8">Popular tours in Santa Cruz</h2>
+                {error && <div className="text-red-500 mb-4">{error}</div>}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {tours.map(tour => <TourCard key={tour.id} tour={tour} />)}
+                </div>
+            </main>
         </div>
     );
 };
 
-export default UserDashboard;
+export default TouristDashboard;

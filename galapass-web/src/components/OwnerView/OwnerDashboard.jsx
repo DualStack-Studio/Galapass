@@ -1,40 +1,79 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Plus, MapPin, Users, Calendar, DollarSign, Star, Settings, Eye } from 'lucide-react';
-import CompanyCard from "./CompanyCard.jsx";
-import TourCard from "./TourCard.jsx";
-import GuideCard from "./GuideCard.jsx";
-import StatCard from "../StatCard.jsx";
+import { Building2, Plus, MapPin, Users, DollarSign } from 'lucide-react';
+import CompanyCard from './CompanyCard.jsx';
+import TourCard from './TourCard.jsx';
+import GuideCard from './GuideCard.jsx';
+import StatCard from '../StatCard.jsx';
+import { useAuth } from '../../contexts/AuthContext.jsx';
 
 const OwnerDashboard = () => {
+    const { user } = useAuth();
+    const ownerId = user?.id;
+
     const [activeTab, setActiveTab] = useState('companies');
+
     const [companies, setCompanies] = useState([]);
     const [tours, setTours] = useState([]);
     const [guides, setGuides] = useState([]);
-    const [selectedCompany, setSelectedCompany] = useState(null);
 
-    // Mock data - replace with actual API calls
+    const [companiesCount, setCompaniesCount] = useState(0);
+    const [toursCount, setToursCount] = useState(0);
+    const [guidesCount, setGuidesCount] = useState(0);
+    const [revenue, setRevenue] = useState(0);
+
+    const fetchStats = async () => {
+        const res = await fetch(`http://localhost:8080/api/ownerDashboard/stats/${ownerId}`, {
+            credentials: 'include'
+        });
+
+        if (!res.ok) {
+            throw new Error('Failed to fetch dashboard stats');
+        }
+
+        const data = await res.json();
+
+        setCompaniesCount(data.totalCompanies);
+        setToursCount(data.totalTours);
+        setGuidesCount(data.totalGuides);
+        setRevenue(data.totalRevenue);
+    };
+
+    const fetchCompanies = async () => {
+        const res = await fetch(`http://localhost:8080/api/companies/owner/${ownerId}`, {
+            credentials: 'include'
+        });
+
+        if (!res.ok) {
+            throw new Error('Failed to fetch companies');
+        }
+
+        const data = await res.json();
+        setCompanies(data);
+
+        const extractedTours = data.flatMap((company) => company.tours);
+        const extractedGuides = data.flatMap((company) => company.guides);
+
+        setTours(extractedTours);
+        setGuides(extractedGuides);
+    };
+
     useEffect(() => {
-        // Simulate API calls
-        setCompanies([
-            { id: 1, name: 'Galápagos Adventures', location: 'Santa Cruz', toursCount: 12, guidesCount: 8, status: 'active' },
-            { id: 2, name: 'Darwin Expeditions', location: 'San Cristóbal', toursCount: 8, guidesCount: 5, status: 'active' }
-        ]);
+        if (!ownerId) return;
 
-        setTours([
-            { id: 1, title: 'Marine Iguana Photography', price: 120, bookings: 24, rating: 4.8, status: 'active', companyId: 1 },
-            { id: 2, title: 'Giant Tortoise Sanctuary', price: 85, bookings: 18, rating: 4.9, status: 'active', companyId: 1 },
-            { id: 3, title: 'Snorkeling Adventure', price: 95, bookings: 31, rating: 4.7, status: 'active', companyId: 2 }
-        ]);
+        const fetchAll = async () => {
+            try {
+                await fetchStats();
+                await fetchCompanies();
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            }
+        };
 
-        setGuides([
-            { id: 1, name: 'Carlos Mendoza', email: 'carlos@galapagos.com', tours: 8, rating: 4.9, companyId: 1 },
-            { id: 2, name: 'Maria Santos', email: 'maria@galapagos.com', tours: 6, rating: 4.8, companyId: 1 },
-            { id: 3, name: 'Diego Reyes', email: 'diego@darwin.com', tours: 5, rating: 4.6, companyId: 2 }
-        ]);
-    }, []);
+        fetchAll();
+    }, [ownerId]);
 
     return (
-            <div>
+        <div>
             {/* Stats Overview */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex justify-between items-center py-6">
@@ -43,11 +82,12 @@ const OwnerDashboard = () => {
                         <p className="text-gray-600">Manage your Galápagos tour business</p>
                     </div>
                 </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <StatCard icon={Building2} title="Companies" value="2" subtitle="Active businesses" />
-                    <StatCard icon={MapPin} title="Tours" value="20" subtitle="Total offerings" color="blue" />
-                    <StatCard icon={Users} title="Guides" value="13" subtitle="Team members" color="purple" />
-                    <StatCard icon={DollarSign} title="Revenue" value="$12,450" subtitle="This month" color="green" />
+                    <StatCard icon={Building2} title="Companies" value={companiesCount} subtitle="Active businesses" />
+                    <StatCard icon={MapPin} title="Tours" value={toursCount} subtitle="Total offerings" color="blue" />
+                    <StatCard icon={Users} title="Guides" value={guidesCount} subtitle="Team members" color="purple" />
+                    <StatCard icon={DollarSign} title="Revenue" value={`$${revenue}`} subtitle="This month" color="green" />
                 </div>
 
                 {/* Navigation Tabs */}
@@ -56,7 +96,7 @@ const OwnerDashboard = () => {
                         {[
                             { id: 'companies', label: 'Companies', icon: Building2 },
                             { id: 'tours', label: 'Tours', icon: MapPin },
-                            { id: 'guides', label: 'Guides', icon: Users }
+                            { id: 'guides', label: 'Guides', icon: Users },
                         ].map((tab) => (
                             <button
                                 key={tab.id}
@@ -74,7 +114,7 @@ const OwnerDashboard = () => {
                     </nav>
                 </div>
 
-                {/* Content based on active tab */}
+                {/* Companies Tab */}
                 {activeTab === 'companies' && (
                     <div>
                         <div className="flex justify-between items-center mb-6">
@@ -85,13 +125,14 @@ const OwnerDashboard = () => {
                             </button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {companies.map(company => (
+                            {companies.map((company) => (
                                 <CompanyCard key={company.id} company={company} />
                             ))}
                         </div>
                     </div>
                 )}
 
+                {/* Tours Tab */}
                 {activeTab === 'tours' && (
                     <div>
                         <div className="flex justify-between items-center mb-6">
@@ -102,13 +143,14 @@ const OwnerDashboard = () => {
                             </button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {tours.map(tour => (
+                            {tours.map((tour) => (
                                 <TourCard key={tour.id} tour={tour} />
                             ))}
                         </div>
                     </div>
                 )}
 
+                {/* Guides Tab */}
                 {activeTab === 'guides' && (
                     <div>
                         <div className="flex justify-between items-center mb-6">
@@ -119,7 +161,7 @@ const OwnerDashboard = () => {
                             </button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {guides.map(guide => (
+                            {guides.map((guide) => (
                                 <GuideCard key={guide.id} guide={guide} />
                             ))}
                         </div>

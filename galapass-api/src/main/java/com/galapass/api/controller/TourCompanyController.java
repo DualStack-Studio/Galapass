@@ -1,11 +1,15 @@
 package com.galapass.api.controller;
 
 import com.galapass.api.DTO.TourCompanyDTO;
+import com.galapass.api.DTO.TourResponseDTO;
 import com.galapass.api.entity.Role;
+import com.galapass.api.entity.Tour;
 import com.galapass.api.entity.TourCompany;
 import com.galapass.api.entity.User;
 import com.galapass.api.exception.EntityNotFoundException;
+import com.galapass.api.mapper.TourMapper;
 import com.galapass.api.service.TourCompanyService;
+import com.galapass.api.service.TourService;
 import com.galapass.api.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +32,8 @@ public class TourCompanyController {
 
     private final TourCompanyService tourCompanyService;
     private final UserService userService;
+    private final TourService tourService;
+    private final TourMapper tourMapper;
 
     @GetMapping
     public ResponseEntity<List<TourCompany>> getAllTourCompanies() {
@@ -76,6 +82,12 @@ public class TourCompanyController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/{companyId}/tours")
+    public ResponseEntity<List<TourResponseDTO>> getToursByCompany(@PathVariable Long companyId) {
+        List<Tour> tours = tourService.getToursByCompanyId(companyId);
+        return ResponseEntity.ok(tourMapper.toTourResponseDTOList(tours));
     }
 
 

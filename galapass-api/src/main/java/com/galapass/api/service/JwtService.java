@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.function.Function;
@@ -21,6 +22,7 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
+    private static final long EXPIRATION_MS = Duration.ofDays(30).toMillis();
 
     public String getToken(UserDetails user) {
         return getToken(new HashMap<>(), user);
@@ -32,7 +34,7 @@ public class JwtService {
                 .setClaims(kvHashMap)
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*24))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

@@ -36,8 +36,8 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authRequest ->
                         authRequest
-                                // Anyone can access login/register endpoints
                                 .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/tours").permitAll()
                                 .anyRequest().authenticated()
 
                 )

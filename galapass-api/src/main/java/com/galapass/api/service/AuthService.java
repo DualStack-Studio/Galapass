@@ -1,7 +1,7 @@
 package com.galapass.api.service;
 
+import com.galapass.api.DTO.UserResponse;
 import com.galapass.api.entity.*;
-import com.galapass.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,5 +37,31 @@ public class AuthService {
         userService.createUser(user);
 
         return jwtService.getToken(user); // Just return the token
+    }
+
+    public UserResponse getCurrentUser(String token) {
+        if (token == null || token.trim().isEmpty()) {
+            throw new IllegalArgumentException("Token is missing.");
+        }
+
+        // Extract username/email from the token
+        String email = jwtService.getUsernameFromToken(token);
+
+        // Fetch full user details from DB
+        User user = userService.getUserByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Validate the token against the user
+        if (!jwtService.isTokenValid(token, user)) {
+            throw new SecurityException("Token is invalid or expired.");
+        }
+
+        return UserResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .profilePhoto(user.getProfilePhoto())
+                .role(user.getRole())
+                .build();
     }
 }

@@ -23,6 +23,10 @@ public class TourService {
         return tourRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tour with ID " + id + " not found."));
     }
 
+    public List<Tour> getToursByCompanyId(Long companyId) {
+        return tourRepository.findByCompanyId(companyId);
+    }
+
     public Tour createTour(Tour tour) {
         return tourRepository.save(tour);
     }

@@ -30,4 +30,4 @@ public class FileUploadController {
             return ResponseEntity.status(500).body(Map.of("error", "Image upload failed"));
         }
     }
-}
+}   

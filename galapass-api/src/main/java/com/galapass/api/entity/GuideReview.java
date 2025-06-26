@@ -1,4 +1,5 @@
 package com.galapass.api.entity;
+import com.galapass.api.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GuideReview {
+public class    GuideReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +22,8 @@ public class GuideReview {
     @ManyToOne
     private User reviewer;
 
-    private int rating;
+    private double rating;
+
     private String comment;
 
     @PrePersist

@@ -3,8 +3,10 @@ package com.galapass.api.service;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.galapass.api.entity.Tour;
+import com.galapass.api.entity.tour.Tour;
+import com.galapass.api.repository.TourCompanyRepository;
 import com.galapass.api.repository.TourRepository;
+import com.galapass.api.repository.TourReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TourService {
     private final TourRepository tourRepository;
+    private final TourReviewRepository tourReviewRepository;
 
     public List<Tour> getAllTours() {
         return tourRepository.findAll();
@@ -51,5 +54,10 @@ public class TourService {
 
     public void deleteTourById(Long id) {
         tourRepository.deleteById(id);
+    }
+
+    public double calculateAverageTourRating(Long tourId) {
+        Double avg = tourReviewRepository.getAverageRatingByTourId(tourId);
+        return avg != null ? avg : 0.0;
     }
 }

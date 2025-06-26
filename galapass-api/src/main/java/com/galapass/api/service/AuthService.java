@@ -1,7 +1,10 @@
 package com.galapass.api.service;
 
-import com.galapass.api.DTO.UserResponse;
-import com.galapass.api.entity.*;
+import com.galapass.api.DTO.user.LoginRequest;
+import com.galapass.api.DTO.user.RegisterRequest;
+import com.galapass.api.DTO.user.UserResponse;
+import com.galapass.api.entity.user.Role;
+import com.galapass.api.entity.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,7 +35,7 @@ public class AuthService {
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .name(registerRequest.getName())
                 .language(registerRequest.getLanguage())
-                .role(Role.GUIDE)
+                .role(Role.TOURIST)
                 .build();
         userService.createUser(user);
 
@@ -61,7 +64,7 @@ public class AuthService {
                 .name(user.getName())
                 .email(user.getEmail())
                 .profilePhoto(user.getProfilePhoto())
-                .role(user.getRole())
+                .role(String.valueOf(user.getRole()))
                 .build();
     }
 }

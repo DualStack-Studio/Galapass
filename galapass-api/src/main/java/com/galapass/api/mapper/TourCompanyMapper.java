@@ -1,17 +1,29 @@
 package com.galapass.api.mapper;
 
-import com.galapass.api.DTO.TourCompanyDTO;
+import com.galapass.api.DTO.tourCompany.TourCompanyResponse;
 import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.User;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-@NoArgsConstructor
+@RequiredArgsConstructor
+@Component
 public class TourCompanyMapper {
 
-    public static TourCompany toEntity(TourCompanyDTO dto, User owner) {
-        return TourCompany.builder()
-                .name(dto.getName())
-                .owner(owner)
+    private final UserMapper userMapper;
+    private final TourMapper tourMapper;
+
+    public TourCompanyResponse toTourCompanyResponse(TourCompany company) {
+        return TourCompanyResponse.builder()
+                .id(company.getId())
+                .name(company.getName())
+                .status(String.valueOf(company.getStatus()))
+                .owner(userMapper.toOwnerSummaryDTO(company.getOwner()))
+                .guides(company.getGuides().stream()
+                        .map(userMapper::toGuideSummaryDTO)
+                        .toList())
+                .tours(company.getTours().stream()
+                        .map(tourMapper::toTourResponseOwnerViewDTO)
+                        .toList())
                 .build();
     }
 }

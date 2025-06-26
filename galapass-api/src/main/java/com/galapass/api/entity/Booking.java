@@ -1,4 +1,6 @@
 package com.galapass.api.entity;
+import com.galapass.api.entity.tour.Tour;
+import com.galapass.api.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;

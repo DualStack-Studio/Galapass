@@ -1,28 +1,25 @@
 package com.galapass.api.controller;
 
-import com.galapass.api.DTO.TourCompanyDTO;
-import com.galapass.api.DTO.TourResponseDTO;
-import com.galapass.api.entity.Role;
-import com.galapass.api.entity.Tour;
+import com.galapass.api.DTO.tour.TourResponseDTO;
+import com.galapass.api.DTO.tourCompany.TourCompanyCreateRequest;
+import com.galapass.api.DTO.tourCompany.TourCompanyResponse;
+import com.galapass.api.DTO.user.UserResponse;
+import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.User;
 import com.galapass.api.exception.EntityNotFoundException;
 import com.galapass.api.mapper.TourMapper;
 import com.galapass.api.service.TourCompanyService;
 import com.galapass.api.service.TourService;
-import com.galapass.api.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.tool.schema.spi.SqlScriptException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/companies")
@@ -31,23 +28,25 @@ import java.util.Set;
 public class TourCompanyController {
 
     private final TourCompanyService tourCompanyService;
-    private final UserService userService;
     private final TourService tourService;
     private final TourMapper tourMapper;
 
     @GetMapping
-    public ResponseEntity<List<TourCompany>> getAllTourCompanies() {
+    public ResponseEntity<List<TourCompanyResponse>> getAllTourCompanies() {
         return ResponseEntity.ok(tourCompanyService.getAllTourCompanies());
     }
 
+    @PreAuthorize("hasRole('OWNER')")
     @PostMapping
-    public ResponseEntity<?> createTourCompany(@RequestBody TourCompanyDTO tourCompany) {
+    public ResponseEntity<?> createTourCompany(@RequestBody TourCompanyCreateRequest tourCompany) {
         try {
             tourCompanyService.createTourCompany(tourCompany);
             return ResponseEntity.ok(tourCompany);
 
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.badRequest().body("Error: companies already exist with the same name.");
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Database constraint violated. Check server logs for the real cause. Message: " + e.getRootCause().getMessage());
+
 
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -90,5 +89,13 @@ public class TourCompanyController {
         return ResponseEntity.ok(tourMapper.toTourResponseDTOList(tours));
     }
 
+    @GetMapping("/{companyId}/guides")
+    public ResponseEntity<List<UserResponse>> getGuidesByCompany(@PathVariable Long companyId) {
+        return ResponseEntity.ok(tourCompanyService.getGuidesByCompany(companyId));
+    }
 
+    @GetMapping("/owner/{ownerId}")
+    public ResponseEntity<List<TourCompanyResponse>> getCompaniesByOwnerId(@PathVariable Long ownerId) {
+        return ResponseEntity.ok(tourCompanyService.getCompaniesByOwnerId(ownerId));
+    }
 }

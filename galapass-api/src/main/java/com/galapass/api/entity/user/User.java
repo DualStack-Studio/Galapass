@@ -1,7 +1,8 @@
-package com.galapass.api.entity;
+package com.galapass.api.entity.user;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.galapass.api.entity.GuideReview;
+import com.galapass.api.entity.TourCompany;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -41,6 +42,10 @@ public class User implements UserDetails {
     @JsonIgnoreProperties({"guides", "owner", "tours"})
     private TourCompany company;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private GuideStatus status = GuideStatus.OPERABLE;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -70,5 +75,8 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @OneToMany(mappedBy = "guide", cascade = CascadeType.ALL)
+    private List<GuideReview> reviews = new ArrayList<>();
 }
 

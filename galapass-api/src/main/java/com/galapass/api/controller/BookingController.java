@@ -1,5 +1,7 @@
 package com.galapass.api.controller;
 
+import com.galapass.api.DTO.booking.BookingRequestDTO;
+import com.galapass.api.DTO.booking.BookingResponseDTO;
 import com.galapass.api.entity.Booking;
 import com.galapass.api.service.BookingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,8 +25,8 @@ public class BookingController {
     }
 
     @PostMapping
-    public ResponseEntity<Booking> createBooking(@RequestBody Booking booking) {
-        return ResponseEntity.ok(bookingService.createBooking(booking));
+    public ResponseEntity<BookingResponseDTO> createBooking(@RequestBody BookingRequestDTO request) {
+        return ResponseEntity.ok(bookingService.createBooking(request));
     }
 
     @GetMapping("/{id}")

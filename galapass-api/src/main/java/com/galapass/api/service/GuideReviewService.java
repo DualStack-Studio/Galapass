@@ -1,48 +1,64 @@
 package com.galapass.api.service;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.galapass.api.DTO.guideReview.GuideReviewRequestDTO;
+import com.galapass.api.DTO.guideReview.GuideReviewResponseDTO;
+import com.galapass.api.entity.Booking;
 import com.galapass.api.entity.GuideReview;
+import com.galapass.api.entity.user.User;
+import com.galapass.api.mapper.GuideReviewMapper;
+import com.galapass.api.repository.BookingRepository;
 import com.galapass.api.repository.GuideReviewRepository;
+import com.galapass.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class GuideReviewService {
 
     private final GuideReviewRepository guideReviewRepository;
+    private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
+    private final GuideReviewMapper guideReviewMapper;
 
-    public List<GuideReview> getAllReviews() {
-        return guideReviewRepository.findAll();
+    public GuideReviewResponseDTO createReview(GuideReviewRequestDTO request) {
+        Booking booking = bookingRepository.findById(request.getBookingId())
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        User guide = userRepository.findById(request.getGuideId())
+                .orElseThrow(() -> new RuntimeException("Guide not found"));
+
+        User reviewer = userRepository.findById(request.getReviewerId())
+                .orElseThrow(() -> new RuntimeException("Reviewer not found"));
+
+        GuideReview review = GuideReview.builder()
+                .booking(booking)
+                .guide(guide)
+                .reviewer(reviewer)
+                .rating(request.getRating())
+                .comment(request.getComment())
+                .build();
+
+        GuideReview saved = guideReviewRepository.save(review);
+        return guideReviewMapper.toGuideReviewResponseDTO(saved);
     }
 
-    public GuideReview getReviewById(Long id) {
-        return guideReviewRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Review with ID " + id + " not found."));
+    public List<GuideReviewResponseDTO> getAllReviews() {
+        return guideReviewRepository.findAll().stream()
+                .map(guideReviewMapper::toGuideReviewResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    public GuideReview createReview(GuideReview review) {
-        return guideReviewRepository.save(review);
+    public GuideReviewResponseDTO getReviewById(Long id) {
+        GuideReview review = guideReviewRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+        return guideReviewMapper.toGuideReviewResponseDTO(review);
     }
 
-    public GuideReview updateReview(GuideReview reviewUpdate) {
-        return guideReviewRepository.findById(reviewUpdate.getId())
-                .map(existingReview -> {
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-                        mapper.updateValue(existingReview, reviewUpdate);
-                        return guideReviewRepository.save(existingReview);
-                    } catch (Exception e) {
-                        throw new RuntimeException("Failed to update guide review", e);
-                    }
-                })
-                .orElseThrow(() -> new IllegalArgumentException("Review with ID " + reviewUpdate.getId() + " not found."));
-    }
-
-    public void deleteReviewById(Long id) {
+    public void deleteReview(Long id) {
         guideReviewRepository.deleteById(id);
     }
 }

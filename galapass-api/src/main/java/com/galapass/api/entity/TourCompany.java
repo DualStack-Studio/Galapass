@@ -1,13 +1,12 @@
 package com.galapass.api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.galapass.api.entity.tour.Tour;
+import com.galapass.api.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,9 +24,15 @@ public class TourCompany {
     @Column(unique = true)
     private String name;
 
-    @OneToOne
-    @JoinColumn(name = "owner_id", unique = true)
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
     private User owner;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CompanyTourStatus status = CompanyTourStatus.ACTIVE;
+
+    private String location;
 
     @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"company"})

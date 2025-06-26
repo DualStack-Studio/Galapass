@@ -1,9 +1,9 @@
 package com.galapass.api.controller;
 
-import com.galapass.api.DTO.UserPatchRequest;
-import com.galapass.api.entity.User;
+import com.galapass.api.DTO.user.UserPatchRequest;
+import com.galapass.api.DTO.user.UserResponse;
+import com.galapass.api.entity.user.User;
 import com.galapass.api.service.UserService;
-import com.galapass.api.DTO.UpdateUserRoleRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -42,10 +42,6 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
-    @PutMapping
-    public ResponseEntity<Optional<User>> updateUser(@RequestBody User user) {
-        return ResponseEntity.ok(userService.updateUser(user));
-    }
 
     @PatchMapping("/{id}")
     public ResponseEntity<?> patchUser(@PathVariable Long id, @RequestBody UserPatchRequest request) {
@@ -57,14 +53,13 @@ public class UserController {
        }
     }
 
-    @PatchMapping("/{id}/role")
-    public ResponseEntity<User> updateUserRole(@PathVariable Long id, @RequestBody UpdateUserRoleRequest request) {
-            User updatedUser = userService.updateUserRole(id, request.getRole());
-        return ResponseEntity.ok(updatedUser);
-    }
-
     @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
+    }
+
+    @GetMapping("/role/{role}")
+    public ResponseEntity<List<UserResponse>> getUsersByRole(@PathVariable String role) {
+        return ResponseEntity.ok(userService.getUsersByRole(role));
     }
 }

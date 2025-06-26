@@ -1,10 +1,12 @@
 package com.galapass.api.controller;
 
-import com.galapass.api.DTO.CreateTourRequest;
-import com.galapass.api.DTO.TourResponseDTO;
-import com.galapass.api.entity.Tour;
+import com.galapass.api.DTO.tour.CreateTourRequest;
+import com.galapass.api.DTO.tour.TourResponseDTO;
+import com.galapass.api.entity.CompanyTourStatus;
+import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.User;
+import com.galapass.api.entity.tour.TourTag;
+import com.galapass.api.entity.user.User;
 import com.galapass.api.mapper.TourMapper;
 import com.galapass.api.repository.TourCompanyRepository;
 import com.galapass.api.repository.TourRepository;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tours")
@@ -46,6 +49,18 @@ public class TourController {
                 .orElseThrow(() -> new RuntimeException("Company not found with id: " + request.getCompanyId()));
         Set<User> guides = new HashSet<>(userRepository.findAllById(request.getGuideIds()));
 
+        Set<TourTag> tags = request.getTags() != null
+                ? request.getTags().stream()
+                .map(tag -> {
+                    try {
+                        return TourTag.valueOf(tag.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("Invalid tag: " + tag);
+                    }
+                })
+                .collect(Collectors.toSet())
+                : new HashSet<>();
+
         Tour tour = Tour.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -56,12 +71,15 @@ public class TourController {
                 .owner(owner)
                 .company(company)
                 .guides(guides)
+                .tags(tags)
+                .status(CompanyTourStatus.ACTIVE)
                 .build();
 
         Tour savedTour = tourRepository.save(tour);
 
         return ResponseEntity.ok(tourMapper.toTourResponseDTO(savedTour));
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Tour> getTourById(@PathVariable Long id) {

@@ -1,6 +1,5 @@
-package com.galapass.api.DTO;
+package com.galapass.api.DTO.user;
 
-import com.galapass.api.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +14,6 @@ public class UserResponse {
     private String name;
     private String email;
     private String profilePhoto;
-    private Role role;
+    private String role;
 }
 

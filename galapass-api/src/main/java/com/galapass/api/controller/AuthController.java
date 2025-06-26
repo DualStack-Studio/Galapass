@@ -1,9 +1,9 @@
 package com.galapass.api.controller;
 
-import com.galapass.api.entity.AuthResponse;
-import com.galapass.api.entity.LoginRequest;
-import com.galapass.api.entity.RegisterRequest;
-import com.galapass.api.DTO.UserResponse;
+import com.galapass.api.DTO.user.AuthResponse;
+import com.galapass.api.DTO.user.LoginRequest;
+import com.galapass.api.DTO.user.RegisterRequest;
+import com.galapass.api.DTO.user.UserResponse;
 import com.galapass.api.jwt.JwtUtils;
 import com.galapass.api.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,7 +55,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
             @RequestBody RegisterRequest registerRequest,
-            HttpServletResponse servletResponse // Also add it here for consistency
+            HttpServletResponse servletResponse
     ) {
         String jwtToken = authService.register(registerRequest);
 

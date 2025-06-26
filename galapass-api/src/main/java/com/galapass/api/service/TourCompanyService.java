@@ -2,12 +2,16 @@ package com.galapass.api.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.galapass.api.DTO.TourCompanyDTO;
-import com.galapass.api.entity.Role;
+import com.galapass.api.DTO.tourCompany.TourCompanyCreateRequest;
+import com.galapass.api.DTO.tourCompany.TourCompanyResponse;
+import com.galapass.api.DTO.user.UserResponse;
+import com.galapass.api.entity.CompanyTourStatus;
+import com.galapass.api.entity.user.Role;
 import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.User;
+import com.galapass.api.entity.user.User;
 import com.galapass.api.exception.EntityNotFoundException;
 import com.galapass.api.mapper.TourCompanyMapper;
+import com.galapass.api.mapper.UserMapper;
 import com.galapass.api.repository.TourCompanyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,26 +25,43 @@ public class TourCompanyService {
 
     private final TourCompanyRepository tourCompanyRepository;
     private final UserService userService;
+    private final UserMapper userMapper;
+    private final TourCompanyMapper tourCompanyMapper;
+
     private final ObjectMapper objectMapper = new ObjectMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-    public List<TourCompany> getAllTourCompanies() {
-        return tourCompanyRepository.findAll();
+    public List<TourCompanyResponse> getAllTourCompanies() {
+        return tourCompanyRepository.findAll().stream()
+                .map(tourCompanyMapper::toTourCompanyResponse)
+                .toList();
+    }
+
+    public List<TourCompanyResponse> getCompaniesByOwnerId(Long ownerId) {
+        return tourCompanyRepository.findAllByOwner_Id(ownerId).stream()
+                .map(tourCompanyMapper::toTourCompanyResponse)
+                .toList();
     }
 
     public Optional<TourCompany> getTourCompanyById(Long id) {
         return tourCompanyRepository.findById(id);
     }
 
-    public void createTourCompany(TourCompanyDTO dto) {
+    public void createTourCompany(TourCompanyCreateRequest dto) {
+        User owner = userService.getUserById(dto.getOwnerId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        User owner = userService.getUserById(dto.getOwnerId()).
-                orElseThrow(() -> new EntityNotFoundException("User with Id: " + dto.getOwnerId() + " not found"));
+        if (owner.getRole() != Role.OWNER) {
+            throw new RuntimeException("Only owners can create a company.");
+        }
 
-        TourCompany tourCompany = TourCompanyMapper.toEntity(dto, owner);
-        tourCompanyRepository.save(tourCompany);
-        owner.setCompany(tourCompany);
-        userService.updateUser(owner);
+        TourCompany company = TourCompany.builder()
+                .name(dto.getName())
+                .owner(owner)
+                .status(CompanyTourStatus.ACTIVE)
+                .build();
+
+        tourCompanyRepository.save(company);
     }
 
     public Optional<TourCompany> updateTourCompany(TourCompany tourCompanyUpdate) {
@@ -73,6 +94,15 @@ public class TourCompanyService {
         company.getGuides().add(guide);
         guide.setCompany(company);
         userService.updateUser(guide);
+    }
+
+    public List<UserResponse> getGuidesByCompany(Long companyId) {
+        TourCompany company = tourCompanyRepository.findById(companyId)
+                .orElseThrow(() -> new EntityNotFoundException("Company not found with id: " + companyId));
+
+        return company.getGuides().stream()
+                .map(userMapper::toUserResponse)
+                .toList();
     }
 
 }

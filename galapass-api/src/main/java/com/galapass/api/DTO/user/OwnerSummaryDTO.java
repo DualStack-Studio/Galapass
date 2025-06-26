@@ -1,9 +1,9 @@
-package com.galapass.api.DTO;
+package com.galapass.api.DTO.user;
 
 import lombok.Data;
 
 @Data
-public class UserSummaryDTO {
+public class OwnerSummaryDTO {
     private Long id;
     private String email;
     private String name;

@@ -1,4 +1,8 @@
-package com.galapass.api.entity;
+package com.galapass.api.entity.tour;
+import com.galapass.api.entity.CompanyTourStatus;
+import com.galapass.api.entity.TourCompany;
+import com.galapass.api.entity.TourReview;
+import com.galapass.api.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
@@ -19,6 +23,7 @@ public class Tour {
     private String category;
     private String location;
     private String photoUrl;
+    private CompanyTourStatus status;
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
@@ -35,4 +40,13 @@ public class Tour {
     @ManyToOne
     @JoinColumn(name = "company_id")
     private TourCompany company;
+
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
+    private List<TourReview> reviews = new ArrayList<>();
+
+    @ElementCollection(targetClass = TourTag.class)
+    @CollectionTable(name = "tour_tags", joinColumns = @JoinColumn(name = "tour_id"))
+    @Column(name = "tag")
+    @Enumerated(EnumType.STRING)
+    private Set<TourTag> tags = new HashSet<>();
 }

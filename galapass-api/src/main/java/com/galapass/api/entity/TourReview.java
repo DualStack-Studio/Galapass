@@ -1,4 +1,6 @@
 package com.galapass.api.entity;
+import com.galapass.api.entity.tour.Tour;
+import com.galapass.api.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,9 +18,13 @@ public class TourReview {
     private Booking booking;
 
     @ManyToOne
+    @JoinColumn(name = "tour_id")
+    private Tour tour;
+
+    @ManyToOne
     private User reviewer;
 
-    private int rating;
+    private double rating;
     private String comment;
 
     @PrePersist

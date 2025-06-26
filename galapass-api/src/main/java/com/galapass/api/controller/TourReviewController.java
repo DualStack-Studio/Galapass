@@ -1,6 +1,9 @@
 package com.galapass.api.controller;
 
+import com.galapass.api.DTO.tourReview.TourReviewRequest;
+import com.galapass.api.DTO.tourReview.TourReviewResponse;
 import com.galapass.api.entity.TourReview;
+import com.galapass.api.mapper.TourReviewMapper;
 import com.galapass.api.service.TourReviewService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import java.util.List;
 public class TourReviewController {
 
     private final TourReviewService tourReviewService;
+    private final TourReviewMapper tourReviewMapper;
 
     @GetMapping
     public ResponseEntity<List<TourReview>> getAllReviews() {
@@ -23,8 +27,9 @@ public class TourReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<TourReview> createReview(@RequestBody TourReview tourReview) {
-        return ResponseEntity.ok(tourReviewService.createReview(tourReview));
+    public ResponseEntity<TourReviewResponse> createReview(@RequestBody TourReviewRequest request) {
+        TourReview review = tourReviewService.createReview( request);
+        return ResponseEntity.ok(tourReviewMapper.toReviewResponse(review));
     }
 
     @GetMapping("/{id}")

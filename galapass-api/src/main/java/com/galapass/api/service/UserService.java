@@ -3,12 +3,17 @@ package com.galapass.api.service;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.galapass.api.DTO.UserPatchRequest;
-import com.galapass.api.entity.Role;
-import com.galapass.api.entity.User;
+import com.galapass.api.DTO.user.UserPatchRequest;
+import com.galapass.api.DTO.user.UserResponse;
+import com.galapass.api.entity.user.GuideStatus;
+import com.galapass.api.entity.user.Role;
+import com.galapass.api.entity.user.User;
+import com.galapass.api.mapper.UserMapper;
+import com.galapass.api.repository.GuideReviewRepository;
 import com.galapass.api.repository.TourCompanyRepository;
 import com.galapass.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +24,11 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
     private final TourCompanyRepository tourCompanyRepository;
+    private final GuideReviewRepository guideReviewRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -30,6 +39,11 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        if (user.getRole() == Role.GUIDE) {
+            user.setStatus(GuideStatus.OPERABLE);
+        } else {
+            user.setStatus(null);
+        }
         if (user.getCompany() != null && user.getCompany().getName() != null) {
             tourCompanyRepository.findByName(user.getCompany().getName())
                     .ifPresent(user::setCompany);
@@ -75,42 +89,82 @@ public class UserService {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-        // 2. Check each field from the request and update if it's not null
+        // 2. Update name
         if (request.getName() != null) {
             existingUser.setName(request.getName());
         }
+
+        // 3. Update email (add optional validation if needed)
         if (request.getEmail() != null) {
-            // You might want to add logic here to check if the new email is already taken
             existingUser.setEmail(request.getEmail());
         }
+
+        // 4. Update bio
         if (request.getBio() != null) {
             existingUser.setBio(request.getBio());
         }
+
+        // 5. Update language
         if (request.getLanguage() != null) {
             existingUser.setLanguage(request.getLanguage());
         }
+
+        // 6. Update profile photo
         if (request.getProfilePhoto() != null) {
             existingUser.setProfilePhoto(request.getProfilePhoto());
         }
 
-        // !! IMPORTANT !! Handle password separately for security
-        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-            // You MUST encode the new password before saving it
-           // existingUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        // 7. Update role
+        if (request.getRole() != null) {
+            Role newRole = Role.valueOf(request.getRole().toUpperCase());
+
+            existingUser.setRole(newRole);
+
+            // ✅ Handle status based on role
+            if (newRole == Role.GUIDE) {
+                // If switching to GUIDE and no status was provided, set default
+                if (request.getStatus() != null) {
+                    existingUser.setStatus(GuideStatus.valueOf(request.getStatus().toUpperCase()));
+                } else if (existingUser.getStatus() == null) {
+                    existingUser.setStatus(GuideStatus.OPERABLE);
+                }
+            } else {
+                // 🔥 If not a GUIDE, status should be null
+                existingUser.setStatus(null);
+            }
         }
 
-        // 3. Save the updated user
+        // Allow updating guide status if already GUIDE
+        if (request.getStatus() != null && existingUser.getRole() == Role.GUIDE) {
+            existingUser.setStatus(GuideStatus.valueOf(request.getStatus().toUpperCase()));
+        }
+
+        // 8. Handle password separately
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            existingUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        // 9. Save the user
         return userRepository.save(existingUser);
     }
-    public User updateUserRole(Long userId, String newRole) {
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-        existingUser.setRole(Role.valueOf(newRole));
-        return userRepository.save(existingUser);
+
+    public List<UserResponse> getUsersByRole(String role) {
+        Role roleEnum = Role.valueOf(role.toUpperCase());
+
+        return userRepository.findByRole(roleEnum)
+                .stream()
+                .map(userMapper::toUserResponse)
+                .toList();
     }
 
 
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
     }
+
+    public double calculateAverageGuideRating(Long guideId) {
+        Double avg = guideReviewRepository.getAverageRatingByGuideId(guideId);
+        return avg != null ? avg : 0.0;
+    }
+
 }

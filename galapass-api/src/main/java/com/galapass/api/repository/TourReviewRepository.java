@@ -2,8 +2,17 @@ package com.galapass.api.repository;
 
 import com.galapass.api.entity.TourReview;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-public interface TourReviewRepository extends JpaRepository<TourReview, Long> {}
+import java.util.List;
+
+public interface TourReviewRepository extends JpaRepository<TourReview, Long> {
+    List<TourReview> findByTourId(Long tourId);
+
+    @Query("SELECT AVG(r.rating) FROM TourReview r WHERE r.tour.id = :tourId")
+    Double getAverageRatingByTourId(@Param("tourId") Long tourId);
+}
 
 
 

@@ -45,7 +45,7 @@ const TourCard = ({ tour }) => (
                 <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Total bookings</span>
                     <span className="text-sm font-medium text-gray-900">
-                        {tour.bookings != null ? tour.bookings : '0'}
+                        {tour.totalBookings != null ? tour.totalBookings : '0'}
                     </span>
                 </div>
             </div>

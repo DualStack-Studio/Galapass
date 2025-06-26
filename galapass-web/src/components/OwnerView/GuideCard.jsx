@@ -23,7 +23,7 @@ const GuideCard = ({ guide }) => (
             <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">Active tours</span>
                 <span className="text-sm font-medium text-gray-900">
-                    {guide.tours != null ? guide.tours : '0'}
+                    {guide.activeTours != null ? guide.activeTours : '0'}
                 </span>
             </div>
         </div>

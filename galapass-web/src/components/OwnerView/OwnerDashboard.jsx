@@ -22,7 +22,7 @@ const OwnerDashboard = () => {
     const [revenue, setRevenue] = useState(0);
 
     const fetchStats = async () => {
-        const res = await fetch(`http://localhost:8080/api/ownerDashboard/stats/${ownerId}`, {
+        const res = await fetch(`http://localhost:8080/api/owner-dashboard/stats/${ownerId}`, {
             credentials: 'include'
         });
 

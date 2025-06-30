@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, User, Settings, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import {useNavigate} from "react-router-dom";
 
 const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
     const { user, logout } = useAuth();
-
+    const navigate = useNavigate();
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -23,6 +24,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
 
     const handleLogout = async () => {
         await logout();
+        navigate('/');
         setIsDropdownOpen(false);
     };
 

@@ -6,7 +6,7 @@ const TourCard = ({ tour }) => (
         {/* Image Section */}
         <div className="relative h-48 w-full">
             <img
-                src={tour.photoUrl || '/images/galapassLogo.png'}
+                src={(tour.photoUrls && tour.photoUrls[0]) || '/images/galapassLogo.png'}
                 alt={tour.title || 'Tour Image'}
                 className="w-full h-full object-cover"
                 onError={(e) => {
@@ -52,10 +52,10 @@ const TourCard = ({ tour }) => (
 
             <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
                 <div className="flex space-x-2">
-                    <button className="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
+                    <button className="text-emerald-600 hover:text-emerald-700 text-sm font-medium cursor-pointer">
                         Edit
                     </button>
-                    <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                    <button className="text-blue-600 hover:text-blue-700 text-sm font-medium cursor-pointer">
                         Bookings
                     </button>
                 </div>

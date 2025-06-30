@@ -1,11 +1,11 @@
 import React, {useEffect, useRef, useState} from 'react';
-import TourCard from "./TourCard.jsx";
+import TourCard from "../../components/TouristView/TourCard.jsx";
 import axios from "axios";
-import SearchBar from "./SearchBar.jsx";
+import SearchBar from "../../components/TouristView/SearchBar.jsx";
 
 
 
-const TouristDashboard = () => {
+const TouristDashboardPage = () => {
     const [tours, setTours] = useState([]);
     const [error, setError] = useState('');
     const [searchData, setSearchData] = useState({
@@ -64,7 +64,7 @@ const TouristDashboard = () => {
     }, []);
     return (
         <div>
-            <section className="bg-gradient-to-b from-emerald-100 to-gray-50 py-16 px-4">
+            <section className="bg-gradient-to-b from-emerald-100 to-white py-16 px-4">
             <div className="max-w-4xl mx-auto">
                     <div className="text-center mb-8">
                         <h2 className="text-4xl font-bold text-gray-900 mb-2">
@@ -105,4 +105,4 @@ const TouristDashboard = () => {
     );
 };
 
-export default TouristDashboard;
+export default TouristDashboardPage;

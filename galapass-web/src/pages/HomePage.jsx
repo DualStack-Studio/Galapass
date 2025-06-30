@@ -1,66 +1,26 @@
-import React, { useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import LoginModal from '../components/LoginModal';
-import LoadingSpinner from '../components/LoadingSpinner';
+import React, { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import RegisterModal from "../components/RegisterModal.jsx";
-import TouristDashboard from "../components/TouristView/TouristDashboard.jsx";
-import OwnerDashboard from "../components/OwnerView/OwnerDashboard.jsx";
+import { useNavigate } from 'react-router-dom';
+import TouristDashboardPage from './tourist/TouristDashboardPage.jsx';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const HomePage = () => {
+    const { user, isLoading } = useAuth();
+    const navigate = useNavigate();
 
-    const [isLoginOpen, setIsLoginOpen] = useState(false);
-    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const { isLoading, user } = useAuth();
+    useEffect(() => {
+        if (user) {
+            if (user.role === "OWNER") navigate('/owner/dashboard');
+            else if (user.role === "GUIDE") navigate('/guide/dashboard');
+            else if (user.role === "TOURIST") navigate('/tourist/dashboard');
+        }
+    }, [user, navigate]);
 
     if (isLoading) return <LoadingSpinner />;
 
-    const getRoleView = (role) => {
-        switch (role) {
-            case "GUIDE":
-                return <TouristDashboard />;
-            case "OWNER":
-                return <OwnerDashboard user={user} />;
-            case "TOURIST":
-                return <TouristDashboard user={user} />;
-            default:
-                return <TouristDashboard />;
-        }
-    };
-
     return (
-        <div className="bg-gray-50 min-h-screen font-sans">
-            <Header
-                isMenuOpen={isMenuOpen}
-                setIsMenuOpen={setIsMenuOpen}
-                onLoginClick={() => setIsLoginOpen(true)}
-                onRegisterClick={() => setIsRegisterOpen(true)}
-            />
-
-            <main>
-                {user ? getRoleView(user.role) : <TouristDashboard />}
-            </main>
-
-            <Footer />
-
-            <LoginModal
-                isOpen={isLoginOpen}
-                onClose={() => setIsLoginOpen(false)}
-                onSwitchToRegister={() => {
-                    setIsLoginOpen(false);
-                    setIsRegisterOpen(true);
-                }}
-            />
-            <RegisterModal
-                isOpen={isRegisterOpen}
-                onClose={() => setIsRegisterOpen(false)}
-                onSwitchToLogin={() => {
-                    setIsRegisterOpen(false);
-                    setIsLoginOpen(true);
-                }}
-            />
+        <div>
+            <TouristDashboardPage /> {/* Default landing for visitors */}
         </div>
     );
 };

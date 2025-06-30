@@ -6,7 +6,7 @@ const TourCard = ({ tour }) => {
             <div className="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1">
                 <div className="relative overflow-hidden">
                     <img
-                        src={tour.photoUrl}
+                        src={(tour.photoUrls && tour.photoUrls[0]) || '/images/galapassLogo.png'}
                         alt={tour.title}
                         className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -34,16 +34,13 @@ const TourCard = ({ tour }) => {
 
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2">{tour.description}</p>
 
-                    {/* Tags */}
-                    <div className="flex space-x-2 mb-3">
-                        {tour.tags?.slice(0, 2).map((tag) => (
-                            <span
-                                key={tag}
-                                className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full"
-                            >
-                            {tag}
+                    {/* Category */}
+                    <div className="flex mb-3">
+                        {tour.category && (
+                            <span className="text-sm text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">
+                                {tour.category.replace('_', ' ')} {/* Optional: Make it prettier */}
                             </span>
-                        ))}
+                        )}
                     </div>
 
                     <div className="flex justify-between items-center">

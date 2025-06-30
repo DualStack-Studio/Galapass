@@ -2,6 +2,7 @@ package com.galapass.api.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.galapass.api.DTO.tourCompany.TourCompanyBasicDTO;
 import com.galapass.api.DTO.tourCompany.TourCompanyCreateRequest;
 import com.galapass.api.DTO.tourCompany.TourCompanyResponse;
 import com.galapass.api.DTO.user.UserResponse;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +61,11 @@ public class TourCompanyService {
                 .name(dto.getName())
                 .owner(owner)
                 .status(CompanyTourStatus.ACTIVE)
+                .description(dto.getDescription())
+                .phone(dto.getPhone())
+                .email(dto.getEmail())
+                .logo(dto.getLogo())
+                .location(dto.getLocation())
                 .build();
 
         tourCompanyRepository.save(company);
@@ -105,4 +112,9 @@ public class TourCompanyService {
                 .toList();
     }
 
+    public List<TourCompanyBasicDTO> getAllCompaniesBasic(Long ownerId) {
+        return tourCompanyRepository.findAllByOwner_Id(ownerId).stream()
+                .map(tourCompanyMapper::toBasicDTO)
+                .toList();
+    }
 }

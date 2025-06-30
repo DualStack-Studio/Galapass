@@ -12,4 +12,9 @@ import lombok.NoArgsConstructor;
 public class TourCompanyCreateRequest {
     private String name;
     private Long ownerId;
+    private String phone;
+    private String email;
+    private String description;
+    private String logo;
+    private String location;
 }

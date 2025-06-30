@@ -157,6 +157,15 @@ public class UserService {
                 .toList();
     }
 
+    public List<UserResponse> getGuideByName(String name) {
+        Role guideRole = Role.GUIDE;
+
+        return userRepository.getGuideByName(guideRole, name)
+                .stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+    }
+
 
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);

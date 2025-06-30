@@ -34,6 +34,12 @@ public class TourCompany {
 
     private String location;
 
+    @Column(length = 20)
+    private String phone;
+    private String email;
+    private String description;
+    private String logo;
+
     @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"company"})
     private Set<User> guides = new HashSet<>();

@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -18,7 +19,7 @@ public class TourResponseOwnerViewDTO {
     private Long id;
     private String title;
     private Double price;
-    private String photoUrl;
+    private List<String> photoUrls;
 
     private OwnerSummaryDTO owner;
     private double rating;

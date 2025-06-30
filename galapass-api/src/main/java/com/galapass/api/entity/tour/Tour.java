@@ -20,9 +20,17 @@ public class Tour {
     private String title;
     private String description;
     private Double price;
-    private String category;
+
+    @Enumerated(EnumType.STRING)
+    private TourCategory category;
+
     private String location;
-    private String photoUrl;
+
+    @ElementCollection
+    @CollectionTable(name = "tour_photos", joinColumns = @JoinColumn(name = "tour_id"))
+    @Column(name = "photo_url")
+    private List<String> photoUrls = new ArrayList<>();
+
     private CompanyTourStatus status;
 
     @ManyToOne
@@ -49,4 +57,15 @@ public class Tour {
     @Column(name = "tag")
     @Enumerated(EnumType.STRING)
     private Set<TourTag> tags = new HashSet<>();
+
+    @Column
+    private String duration;
+
+    @Column
+    private Integer maxGuests;
+
+    @ElementCollection
+    @CollectionTable(name = "tour_highlights", joinColumns = @JoinColumn(name = "tour_id"))
+    @Column(name = "highlight")
+    private List<String> highlights = new ArrayList<>();
 }

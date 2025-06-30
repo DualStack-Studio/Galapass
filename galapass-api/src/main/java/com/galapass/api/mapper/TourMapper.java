@@ -38,9 +38,9 @@ public class TourMapper {
         dto.setTitle(tour.getTitle());
         dto.setDescription(tour.getDescription());
         dto.setPrice(tour.getPrice());
-        dto.setCategory(tour.getCategory());
+        dto.setCategory(String.valueOf(tour.getCategory()));
         dto.setLocation(tour.getLocation());
-        dto.setPhotoUrl(tour.getPhotoUrl());
+        dto.setPhotoUrls(tour.getPhotoUrls());
         dto.setCompany(companyDTO);
         dto.setOwner(userMapper.toOwnerSummaryDTO(tour.getOwner()));
         dto.setGuides(tour.getGuides().stream()
@@ -52,6 +52,9 @@ public class TourMapper {
                 .collect(Collectors.toSet()));
 
         dto.setRating(averageRating);
+        dto.setDuration(tour.getDuration());
+        dto.setMaxGuests(tour.getMaxGuests());
+        dto.setHighlights(tour.getHighlights());
 
         return dto;
     }
@@ -68,9 +71,9 @@ public class TourMapper {
     public TourResponseOwnerViewDTO toTourResponseOwnerViewDTO(Tour tour) {
         return TourResponseOwnerViewDTO.builder()
                 .id(tour.getId())
-                .title(tour.getTitle())
+                .title(tour.getTitle()) 
                 .price(tour.getPrice())
-                .photoUrl(tour.getPhotoUrl())
+                .photoUrls(tour.getPhotoUrls())
                 .status(String.valueOf(tour.getStatus()))
                 .owner(userMapper.toOwnerSummaryDTO(tour.getOwner()))
                 .rating(tourReviewRepository.getAverageRatingByTourId(tour.getId()) != null
@@ -87,7 +90,7 @@ public class TourMapper {
         dto.setId(tour.getId());
         dto.setTitle(tour.getTitle());
         dto.setPrice(tour.getPrice());
-        dto.setPhotoUrl(tour.getPhotoUrl());
+        dto.setPhotoUrls(tour.getPhotoUrls());
         dto.setOwner(userMapper.toOwnerSummaryDTO(tour.getOwner()));
         dto.setRating(tour.getReviews() != null && !tour.getReviews().isEmpty()
                 ? tour.getReviews().stream().mapToDouble(r -> r.getRating()).average().orElse(0.0)

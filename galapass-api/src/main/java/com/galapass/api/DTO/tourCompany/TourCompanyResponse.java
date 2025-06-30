@@ -20,6 +20,11 @@ public class TourCompanyResponse {
     private String name;
     private String status;
     private OwnerSummaryDTO owner;
+    private String description;
+    private String location;
+    private String logo;
+    private String phone;
+    private String email;
     private List<GuideSummaryDTO> guides;
     private List<TourResponseOwnerViewDTO> tours;
 }

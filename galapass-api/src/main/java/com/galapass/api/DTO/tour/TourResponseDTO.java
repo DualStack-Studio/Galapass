@@ -4,6 +4,8 @@ import com.galapass.api.DTO.tourCompany.TourCompanySummaryDTO;
 import com.galapass.api.DTO.user.GuideSummaryDTO;
 import com.galapass.api.DTO.user.OwnerSummaryDTO;
 import lombok.Data;
+
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -14,7 +16,7 @@ public class TourResponseDTO {
     private Double price;
     private String category;
     private String location;
-    private String photoUrl;
+    private List<String> photoUrls;
 
     private OwnerSummaryDTO owner;
     private TourCompanySummaryDTO company;
@@ -22,4 +24,8 @@ public class TourResponseDTO {
 
     private Set<String> tags;
     private double rating;
+
+    private String duration;
+    private Integer maxGuests;
+    private List<String> highlights;
 }

@@ -1,6 +1,7 @@
 package com.galapass.api.controller;
 
 import com.galapass.api.DTO.tour.TourResponseDTO;
+import com.galapass.api.DTO.tourCompany.TourCompanyBasicDTO;
 import com.galapass.api.DTO.tourCompany.TourCompanyCreateRequest;
 import com.galapass.api.DTO.tourCompany.TourCompanyResponse;
 import com.galapass.api.DTO.user.UserResponse;
@@ -97,5 +98,10 @@ public class TourCompanyController {
     @GetMapping("/owner/{ownerId}")
     public ResponseEntity<List<TourCompanyResponse>> getCompaniesByOwnerId(@PathVariable Long ownerId) {
         return ResponseEntity.ok(tourCompanyService.getCompaniesByOwnerId(ownerId));
+    }
+
+    @GetMapping("/basic-owner/{ownerId}")
+    public List<TourCompanyBasicDTO> getAllBasicCompanies(@PathVariable Long ownerId) {
+        return tourCompanyService.getAllCompaniesBasic(ownerId);
     }
 }

@@ -5,6 +5,7 @@ import com.galapass.api.DTO.tour.TourResponseDTO;
 import com.galapass.api.entity.CompanyTourStatus;
 import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.TourCompany;
+import com.galapass.api.entity.tour.TourCategory;
 import com.galapass.api.entity.tour.TourTag;
 import com.galapass.api.entity.user.User;
 import com.galapass.api.mapper.TourMapper;
@@ -65,14 +66,17 @@ public class TourController {
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .price(request.getPrice())
-                .category(request.getCategory())
+                .category(TourCategory.valueOf(request.getCategory()))
                 .location(request.getLocation())
-                .photoUrl(request.getPhotoUrl())
+                .photoUrls(request.getPhotoUrls())
                 .owner(owner)
                 .company(company)
                 .guides(guides)
                 .tags(tags)
                 .status(CompanyTourStatus.ACTIVE)
+                .maxGuests(request.getMaxGuests())
+                .duration(request.getDuration())
+                .highlights(request.getHighlights())
                 .build();
 
         Tour savedTour = tourRepository.save(tour);

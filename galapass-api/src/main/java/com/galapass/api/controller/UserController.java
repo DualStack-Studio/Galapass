@@ -1,5 +1,6 @@
 package com.galapass.api.controller;
 
+import com.galapass.api.DTO.user.GuideSearchRequest;
 import com.galapass.api.DTO.user.UserPatchRequest;
 import com.galapass.api.DTO.user.UserResponse;
 import com.galapass.api.entity.user.User;
@@ -62,4 +63,10 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> getUsersByRole(@PathVariable String role) {
         return ResponseEntity.ok(userService.getUsersByRole(role));
     }
+
+    @PostMapping("/guides/search")
+    public ResponseEntity<List<UserResponse>> searchGuides(@RequestBody GuideSearchRequest request) {
+        return ResponseEntity.ok(userService.getGuideByName(request.getName()));
+    }
+
 }

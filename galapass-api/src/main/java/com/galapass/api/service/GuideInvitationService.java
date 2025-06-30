@@ -1,0 +1,90 @@
+package com.galapass.api.service;
+
+import com.galapass.api.DTO.guideInvitation.GuideInvitationRequest;
+import com.galapass.api.controller.TourCompanyController;
+import com.galapass.api.entity.InvitationStatus;
+import com.galapass.api.entity.TourCompany;
+import com.galapass.api.entity.user.GuideInvitation;
+import com.galapass.api.entity.user.User;
+import com.galapass.api.mapper.GuideInvitationMapper;
+import com.galapass.api.repository.GuideInvitationRepository;
+import com.galapass.api.repository.TourCompanyRepository;
+import com.galapass.api.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class GuideInvitationService {
+
+    private final GuideInvitationRepository invitationRepository;
+    private final TourCompanyRepository companyRepository;
+    private final UserRepository userRepository;
+    private final TourCompanyController tourCompanyController;
+
+    public GuideInvitation createInvitation(GuideInvitationRequest request) {
+        TourCompany company = companyRepository.findById(request.getCompanyId())
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+        User guide = userRepository.findById(request.getGuideId())
+                .orElseThrow(() -> new RuntimeException("Guide not found"));
+
+        GuideInvitation invitation = GuideInvitation.builder()
+                .company(company)
+                .guide(guide)
+                .message(request.getMessage())
+                .status(InvitationStatus.PENDING)
+                .sentAt(LocalDateTime.now())
+                .build();
+
+        return invitationRepository.save(invitation);
+    }
+
+    public List<GuideInvitation> getInvitationsByCompany(Long companyId) {
+        return invitationRepository.findByCompanyId(companyId);
+    }
+
+    public void cancelInvitation(Long id) {
+        invitationRepository.deleteById(id);
+    }
+
+    public GuideInvitation resendInvitation(Long id) {
+        GuideInvitation invitation = invitationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Invitation not found"));
+
+        invitation.setStatus(InvitationStatus.PENDING);
+        invitation.setSentAt(LocalDateTime.now());
+
+        return invitationRepository.save(invitation);
+    }
+
+    public void acceptInvitation(Long invitationId) {
+        GuideInvitation invitation = invitationRepository.findById(invitationId)
+                .orElseThrow(() -> new RuntimeException("Invitation not found"));
+
+        if (invitation.getStatus() != InvitationStatus.PENDING) {
+            throw new RuntimeException("Invitation is not pending");
+        }
+
+        // Add guide to company
+        tourCompanyController.addGuideToCompany(invitation.getCompany().getId(), invitation.getGuide().getId());
+
+        // Update invitation status
+        invitation.setStatus(InvitationStatus.ACCEPTED);
+        invitationRepository.save(invitation);
+    }
+
+    public void declineInvitation(Long invitationId) {
+        GuideInvitation invitation = invitationRepository.findById(invitationId)
+                .orElseThrow(() -> new RuntimeException("Invitation not found"));
+
+        if (invitation.getStatus() != InvitationStatus.PENDING) {
+            throw new RuntimeException("Invitation is not pending");
+        }
+
+        invitation.setStatus(InvitationStatus.DECLINED);
+        invitationRepository.save(invitation);
+    }
+}

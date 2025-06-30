@@ -1,19 +1,23 @@
 package com.galapass.api.entity.tour;
 
 public enum TourTag {
-    TERRESTRIAL,
-    SNORKELING,
-    DIVING,
-    CRUISE,
-    KAYAKING,
-    HIKING,
-    BIRD_WATCHING,
-    WILDLIFE,
-    PHOTO_SAFARI,
-    CULTURAL,
     FAMILY_FRIENDLY,
-    ADVENTURE,
     LUXURY,
+    BUDGET,
+    FULL_DAY,
+    HALF_DAY,
+    MULTI_DAY,
+    PRIVATE,
+    GROUP,
+    ACCESSIBLE,
     ECO_FRIENDLY,
-    ISLAND_HOPPING
+    ISLAND_HOPPING,
+    BEACH,
+    SUNSET,
+    WILDLIFE_FOCUS,
+    MARINE_FOCUS,
+    LAND_FOCUS,
+    BEGINNER_FRIENDLY,
+    ADVANCED,
+    PHOTOGRAPHY_OPPORTUNITY
 }

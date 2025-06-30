@@ -12,10 +12,13 @@ public class CreateTourRequest {
     private Double price;
     private String category;
     private String location;
-    private String photoUrl;
+    private List<String> photoUrls;
     private Long ownerId;
     private Long companyId;
     private List<Long> guideIds;
     private Set<String> tags;
+    private String duration;
+    private Integer maxGuests;
+    private List<String> highlights;
 }
 

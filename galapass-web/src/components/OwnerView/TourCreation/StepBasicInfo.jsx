@@ -5,7 +5,8 @@ const StepBasicInfo = ({
                            setFormData,
                            handleInputChange,
                            categories,
-                           locations
+                           locations,
+                           isEdit = false
                        }) => {
     return (
         <div className="space-y-8">
@@ -68,6 +69,23 @@ const StepBasicInfo = ({
                         </select>
                     </div>
                 </div>
+                {isEdit && (
+                    <div>
+                        <label className="block text-lg font-medium text-gray-900 mb-3">
+                            Tour Status
+                        </label>
+                        <select
+                            name="status"
+                            value={formData.status || ''}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-4 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black"
+                        >
+                            <option value="">Select status</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="INACTIVE">Inactive</option>
+                        </select>
+                    </div>
+                )}
             </div>
         </div>
     );

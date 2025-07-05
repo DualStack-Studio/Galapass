@@ -1,7 +1,7 @@
 import { Star, User } from "lucide-react";
 import React from "react";
 
-const GuideCard = ({ guide }) => (
+const GuideCard = ({ guide, onRemove }) => (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
         <div className="flex items-start justify-between mb-4">
             <div className="flex items-center space-x-4">
@@ -48,7 +48,10 @@ const GuideCard = ({ guide }) => (
         </div>
 
         <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end space-x-2">
-            <button className="text-red-500 hover:text-red-600 text-sm font-medium cursor-pointer">
+            <button
+                onClick={() => onRemove(guide.id)}
+                className="text-red-500 hover:text-red-600 text-sm font-medium cursor-pointer"
+            >
                 Remove
             </button>
             <button className="text-emerald-600 hover:text-emerald-700 text-sm font-medium cursor-pointer">

@@ -1,15 +1,15 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const CustomCalendar = ({
-                            isVisible,
-                            onSelectDate,
-                            onClose,
-                            selectedDate,
-                            position = 'left',
-                            currentMonth,
-                            setCurrentMonth
-                        }) => {
+const CompactCalendar = ({
+                             isVisible,
+                             onSelectDate,
+                             onClose,
+                             selectedDate,
+                             position = 'left',
+                             currentMonth,
+                             setCurrentMonth
+                         }) => {
     if (!isVisible) return null;
 
     const today = new Date();
@@ -38,8 +38,7 @@ const CustomCalendar = ({
 
     const handleDateClick = (day) => {
         if (day) {
-            const selectedDate = new Date(year, month, day);
-            const dateString = selectedDate.toISOString().split('T')[0];
+            const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             onSelectDate(dateString);
             onClose();
         }
@@ -61,37 +60,46 @@ const CustomCalendar = ({
 
     const isSelected = (day) => {
         if (!selectedDate || !day) return false;
-        const selected = new Date(selectedDate);
+        const selected = new Date(selectedDate.replace(/-/g, '/'));
         return selected.getDate() === day &&
             selected.getMonth() === month &&
             selected.getFullYear() === year;
     };
 
     return (
-        <div className={`absolute top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 z-50 ${position === 'right' ? 'right-0' : 'left-0'}`} style={{ width: '320px' }}>
+        <div
+            className={`absolute top-full mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 p-4 z-50 ${
+                position === 'right'
+                    ? 'right-0'
+                    : position === 'center' || position === 'down'
+                        ? 'left-1/2 -translate-x-1/2'
+                        : 'left-0'
+            }`}
+            style={{ width: '280px' }}
+        >
             {/* Calendar Header */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3">
                 <button
                     onClick={() => navigateMonth(-1)}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    className="p-1.5 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
                 >
-                    <ChevronLeft size={20} className="text-gray-600" />
+                    <ChevronLeft size={18} className="text-gray-600" />
                 </button>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-base font-semibold text-gray-800">
                     {monthNames[month]} {year}
                 </h3>
                 <button
                     onClick={() => navigateMonth(1)}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    className="p-1.5 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
                 >
-                    <ChevronRight size={20} className="text-gray-600" />
+                    <ChevronRight size={18} className="text-gray-600" />
                 </button>
             </div>
 
             {/* Day Names */}
-            <div className="grid grid-cols-7 gap-1 mb-2">
+            <div className="grid grid-cols-7 gap-1 mb-1">
                 {dayNames.map(day => (
-                    <div key={day} className="text-center text-xs font-medium text-gray-500 py-2">
+                    <div key={day} className="text-center text-xs font-medium text-gray-500 py-1">
                         {day}
                     </div>
                 ))}
@@ -105,40 +113,19 @@ const CustomCalendar = ({
                         onClick={() => handleDateClick(day)}
                         disabled={!day}
                         className={`
-              h-10 w-10 rounded-full text-sm transition-all duration-200
-              ${!day ? 'invisible' : ''}
-              ${isToday(day) ? 'bg-gray-100 font-semibold' : ''}
-              ${isSelected(day) ? 'bg-emerald-600 text-white font-semibold transform scale-105' : 'hover:bg-gray-100 text-gray-700'}
-              ${day && !isSelected(day) ? 'hover:bg-emerald-50 hover:text-emerald-600' : ''}
-            `}
+                            h-8 w-8 rounded-full text-xs transition-all duration-200 cursor-pointer
+                            ${!day ? 'invisible' : ''}
+                            ${isToday(day) ? 'bg-gray-100 font-semibold' : ''}
+                            ${isSelected(day) ? 'bg-emerald-600 text-white font-semibold transform scale-105' : 'hover:bg-gray-100 text-gray-700'}
+                            ${day && !isSelected(day) ? 'hover:bg-emerald-50 hover:text-emerald-600' : ''}
+                        `}
                     >
                         {day}
                     </button>
                 ))}
             </div>
-
-            {/* Footer */}
-            <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-100">
-                <button
-                    onClick={onClose}
-                    className="text-sm text-gray-500 hover:text-gray-700 underline"
-                >
-                    Clear
-                </button>
-                <button
-                    onClick={() => {
-                        const today = new Date();
-                        const todayString = today.toISOString().split('T')[0];
-                        onSelectDate(todayString);
-                        onClose();
-                    }}
-                    className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 underline"
-                >
-                    Today
-                </button>
-            </div>
         </div>
     );
 };
 
-export default CustomCalendar;
+export default CompactCalendar;

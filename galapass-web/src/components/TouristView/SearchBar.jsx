@@ -1,6 +1,6 @@
 import React from 'react';
 import { Calendar, MapPin, Search, Users } from 'lucide-react';
-import CustomCalendar from './CustomCalendar.jsx';
+import CustomCalendar from '../CustomCalendar.jsx';
 import TouristSelector from './TouristSelector.jsx';
 
 const SearchBar = ({

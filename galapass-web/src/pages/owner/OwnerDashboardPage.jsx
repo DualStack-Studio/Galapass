@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Building2, Plus, MapPin, Users, DollarSign, Mail, RefreshCw, X } from 'lucide-react';
+import {Building2, Plus, MapPin, Users, DollarSign, Mail, RefreshCw, X, ArrowLeft, Download} from 'lucide-react';
 import CompanyCard from '../../components/OwnerView/Dashboard/CompanyCard.jsx';
 import TourCard from '../../components/OwnerView/Dashboard/TourCard.jsx';
 import GuideCard from '../../components/OwnerView/Dashboard/GuideCard.jsx';
@@ -10,6 +10,7 @@ import { useOwnerDashboard } from '../../hooks/useOwnerDashboard.js';
 import LoadingSpinner from "../../components/LoadingSpinner.jsx";
 import {cancelInvitation, resendInvitation, useInvitations} from '../../hooks/useInvitations';
 import { toast } from 'react-hot-toast';
+import ConfirmModal from "../../components/OwnerView/ConfirmModal.jsx";
 
 const OwnerDashboardPage = () => {
     const { user } = useAuth();
@@ -19,19 +20,8 @@ const OwnerDashboardPage = () => {
     const navigate = useNavigate();
     const [activeSubTab, setActiveSubTab] = useState('guides-list');
 
-    const getStatusBadge = (status) => {
-        const base = "px-2 py-0.5 rounded-full text-xs font-medium";
-        switch (status) {
-            case 'PENDING':
-                return <span className={`${base} bg-yellow-100 text-yellow-800`}>Pending</span>;
-            case 'ACCEPTED':
-                return <span className={`${base} bg-emerald-100 text-emerald-800`}>Accepted</span>;
-            case 'DECLINED':
-                return <span className={`${base} bg-red-100 text-red-800`}>Declined</span>;
-            default:
-                return <span className={`${base} bg-gray-100 text-gray-500`}>Unknown</span>;
-        }
-    };
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [guideToRemove, setGuideToRemove] = useState(null);
 
     async function handleCancel(id) {
         try {
@@ -52,7 +42,6 @@ const OwnerDashboardPage = () => {
             console.error(e);
         }
     }
-
 
     const {
         companies,
@@ -83,16 +72,53 @@ const OwnerDashboardPage = () => {
         return <div className="p-8 text-red-600">Error loading dashboard: {error}</div>;
     }
 
+    const confirmRemoveGuide = (guideId) => {
+        setGuideToRemove(guideId);
+        setShowConfirmModal(true);
+    };
+
+    async function handleRemoveGuide() {
+        try {
+            const res = await fetch(`http://localhost:8080/api/companies/${companyId}/guides/${guideToRemove}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Failed to remove guide');
+            }
+
+            toast.success('Guide removed');
+            refetch();
+        } catch (err) {
+            toast.error("Failed to remove guide: " + err.message);
+            console.error(err);
+        } finally {
+            setShowConfirmModal(false);
+            setGuideToRemove(null);
+        }
+    }
+
+
     return (
         <div className="bg-white">
-            {/* Stats Overview */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="flex justify-between items-center py-6">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Tour Operator Dashboard</h1>
-                        <p className="text-gray-600">Manage your Galápagos tour business</p>
+            {/* Header */}
+            <div className="bg-white shadow-sm border-b border-gray-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between py-6">
+                        <div className="flex items-center space-x-4">
+                            <div>
+                                <h1 className="text-2xl font-bold text-gray-900">Tour Operator Dashboard</h1>
+                                <p className="text-gray-600">Manage your Galápagos tour business</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <StatCard icon={Building2} title="Companies" value={stats.companiesCount} subtitle="Active businesses" />
@@ -130,18 +156,38 @@ const OwnerDashboardPage = () => {
                     <div>
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900">Your Companies</h2>
-                            <button
-                                onClick={() => navigate('/owner/add-company')}
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"
-                            >
-                                <Plus className="h-4 w-4" />
-                                <span>Add Company</span>
-                            </button>
+
+                            <div className="flex space-x-3">
+                                <button
+                                    onClick={() => navigate('/owner/add-company')}
+                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                    <span>Add Company</span>
+                                </button>
+                            </div>
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {companies.map((company) => (
-                                <CompanyCard key={company.id} company={company} />
-                            ))}
+                            {companies.length > 0 ? (
+                                companies.map((company) => (
+                                    <CompanyCard key={company.id} company={company} />
+                                ))
+                            ) : (
+                                <div className="text-center col-span-full py-16">
+                                    <div className="mx-auto mb-4 w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <Building2 className="w-8 h-8 text-gray-400" />
+                                    </div>
+                                    <p className="text-gray-600 mb-4">You haven’t created any companies yet.</p>
+                                    <button
+                                        onClick={() => navigate('/owner/add-company')}
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                        <span>Add Your First Company</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
@@ -151,18 +197,44 @@ const OwnerDashboardPage = () => {
                     <div>
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900">Your Tours</h2>
-                            <button
-                                onClick={() => navigate('/owner/add-tour')}
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"
-                            >
-                                <Plus className="h-4 w-4" />
-                                <span>Add Tour</span>
-                            </button>
+                            <div className="flex space-x-3">
+                                <button
+                                    onClick={() => navigate('/owner/manage-bookings')}
+                                    className="border border-emerald-600 text-emerald-600 hover:bg-emerald-50 px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"
+                                >
+                                    <MapPin className="h-4 w-4" />
+                                    <span>View Bookings</span>
+                                </button>
+                                <button
+                                    onClick={() => navigate('/owner/add-tour')}
+                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                    <span>Add Tour</span>
+                                </button>
+                            </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {tours.map((tour) => (
-                                <TourCard key={tour.id} tour={tour} />
-                            ))}
+                            {tours.length > 0 ? (
+                                tours.map((tour) => (
+                                    <TourCard key={tour.id} tour={tour} />
+                                ))
+                            ) : (
+                                <div className="text-center col-span-full py-16">
+                                    <div className="mx-auto mb-4 w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <MapPin className="w-8 h-8 text-gray-400" />
+                                    </div>
+                                    <p className="text-gray-600 mb-4">You haven’t added any tours yet.</p>
+                                    <button
+                                        onClick={() => navigate('/owner/add-tour')}
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                        <span>Add Your First Tour</span>
+                                    </button>
+                                </div>
+                            )}
+
                         </div>
                     </div>
                 )}
@@ -205,9 +277,25 @@ const OwnerDashboardPage = () => {
 
                         {activeSubTab === 'guides-list' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {guides.map((guide) => (
-                                    <GuideCard key={guide.id} guide={guide} />
-                                ))}
+                                {guides.length > 0 ? (
+                                    [...new Map(guides.map(guide => [guide.name, guide])).values()].map((guide) => (
+                                        <GuideCard key={guide.id} guide={guide} onRemove={confirmRemoveGuide} />
+                                    ))
+                                ) : (
+                                    <div className="text-center col-span-full py-16">
+                                        <div className="mx-auto mb-4 w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                                            <Users className="w-8 h-8 text-gray-400" />
+                                        </div>
+                                        <p className="text-gray-600 mb-4">You don’t have any guides added to your company yet.</p>
+                                        <button
+                                            onClick={() => navigate('/owner/add-guide')}
+                                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto"
+                                        >
+                                            <Plus className="w-4 h-4" />
+                                            <span>Invite Your First Guide</span>
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -225,20 +313,21 @@ const OwnerDashboardPage = () => {
                                                                 <Mail className="w-5 h-5 text-gray-500" />
                                                             </div>
                                                             <div>
-                                                                <h3 className="text-lg font-medium text-gray-900">{invite.email}</h3>
+                                                                <h3 className="text-lg font-medium text-gray-900">{invite.name}</h3>
+                                                                <p className="text-sm text-gray-500">{invite.company}</p>
                                                                 <div className="flex items-center space-x-4 mt-1">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                invite.status === 'pending'
-                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                    : invite.status === 'declined'
-                                                        ? 'bg-red-100 text-red-800'
-                                                        : 'bg-gray-100 text-gray-800'
-                                            }`}>
-                                                {invite.status.charAt(0).toUpperCase() + invite.status.slice(1)}
-                                            </span>
+                                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                                    invite.status === 'pending'
+                                                                        ? 'bg-yellow-100 text-yellow-800'
+                                                                        : invite.status === 'declined'
+                                                                            ? 'bg-red-100 text-red-800'
+                                                                            : 'bg-gray-100 text-gray-800'
+                                                                }`}>
+                                                                    {invite.status.charAt(0).toUpperCase() + invite.status.slice(1)}
+                                                                </span>
                                                                     <span className="text-sm text-gray-500">
-                                                Sent {new Date(invite.sentAt).toLocaleDateString()}
-                                            </span>
+                                                                        Sent {new Date(invite.sentAt).toLocaleDateString()}
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -248,7 +337,7 @@ const OwnerDashboardPage = () => {
                                                         {invite.status === 'PENDING' && (
                                                             <button
                                                                 onClick={() => handleResend(invite.id)}
-                                                                className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center space-x-1"
+                                                                className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center space-x-1 cursor-pointer"
                                                             >
                                                                 <RefreshCw className="w-4 h-4" />
                                                                 <span>Resend</span>
@@ -283,7 +372,7 @@ const OwnerDashboardPage = () => {
                                             className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto cursor-pointer transition-colors"
                                         >
                                             <Plus className="w-4 h-4" />
-                                            <span>Send Your First Invitation</span>
+                                            <span>Send an Invitation First</span>
                                         </button>
                                     </div>
                                 )}
@@ -292,6 +381,12 @@ const OwnerDashboardPage = () => {
                     </div>
                 )}
             </div>
+            <ConfirmModal
+                isOpen={showConfirmModal}
+                onClose={() => setShowConfirmModal(false)}
+                onConfirm={handleRemoveGuide}
+                message="Are you sure you want to remove this guide from the company?"
+            />
         </div>
     );
 };

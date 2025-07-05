@@ -1,34 +1,38 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { ArrowLeft, Save } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useCompanyForm } from '../../hooks/useCompanyForm';
 import StepBasicInfo from '../../components/OwnerView/CompanyCreation/StepBasicInfo';
 import StepBranding from '../../components/OwnerView/CompanyCreation/StepBranding';
 import StepDetails from '../../components/OwnerView/CompanyCreation/StepDetails';
 import useTourEnums from "../../hooks/useTourEnums.js";
 import { useImageUpload } from "../../hooks/useImageUpload.js";
-import {useNavigate} from "react-router-dom";
-import {useAuth} from "../../contexts/AuthContext.jsx";
-import StepPricing from "../../components/OwnerView/TourCreation/StepPricing.jsx";
 import StepSummary from "../../components/OwnerView/CompanyCreation/StepSummary.jsx";
 
-const CompanyCreationPage = ({ onSuccess }) => {
+const CompanyEditingPage = ({ onSuccess }) => {
     const navigate = useNavigate();
-    const { user } = useAuth();
-    const ownerId = user?.id;
-    const { formData, handleInputChange, handleSpecialtyToggle } = useCompanyForm();
+    const { companyId } = useParams();
+    const { formData, handleInputChange, handleSpecialtyToggle, setFormData } = useCompanyForm();
     const [currentStep, setCurrentStep] = useState(1);
+    const [originalCompanyData, setOriginalCompanyData] = useState(null);
     const {
         uploadedImages,
         isUploading,
         handleImageUpload,
-        removeImage
+        removeImage,
+        setUploadedImages
     } = useImageUpload();
 
+    const initialDataRef = useRef({ formData: null, uploadedImages: null });
     const uploadedLogo = uploadedImages[0] || null;
+
 
     const { locations } = useTourEnums();
     const [loading, setLoading] = useState(false);
+    const [fetchLoading, setFetchLoading] = useState(true);
     const [error, setError] = useState('');
+    const [unsavedChanges, setUnsavedChanges] = useState(false);
+
 
     const steps = [
         { id: 1, title: 'Basic Info', description: 'Company essentials' },
@@ -36,16 +40,74 @@ const CompanyCreationPage = ({ onSuccess }) => {
         { id: 3, title: 'Details', description: 'Complete your profile' }
     ];
 
-    const isStep1Valid = formData.name && formData.location;
-    const isStep3Valid =
-        formData.description &&
-        formData.phone &&
-        formData.email;
 
-    const isPublishDisabled =
-        loading ||
-        !isStep1Valid ||
-        !isStep3Valid;
+    // Fetch existing company data
+    useEffect(() => {
+        const fetchCompanyData = async () => {
+            try {
+                setFetchLoading(true);
+                const response = await fetch(`http://localhost:8080/api/companies/${companyId}`, {
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch company data');
+                }
+
+                const companyArray = await response.json();
+                const company = companyArray[0];
+
+
+                setOriginalCompanyData(company);
+
+                // Populate form with existing data
+                setFormData({
+                    name: company.name || '',
+                    location: company.location || '',
+                    status: company.status || 'ACTIVE',
+                    description: company.description || '',
+                    phone: company.phone || '',
+                    email: company.email || ''
+                });
+
+                // Set existing logo if available
+                if (company.logo) {
+                    setUploadedImages([{
+                        id: 'existing-logo',
+                        url: company.logo,
+                        file: null
+                    }]);
+                }
+
+                initialDataRef.current = {
+                    formData: {
+                        name: company.name || '',
+                        location: company.location || '',
+                        status: company.status || 'ACTIVE',
+                        description: company.description || '',
+                        phone: company.phone || '',
+                        email: company.email || ''
+                    },
+                    uploadedImages: company.logo
+                        ? [{ id: 'existing-logo', url: company.logo, file: null }]
+                        : []
+                };
+            } catch (error) {
+                console.error('Error fetching company:', error);
+                setError('Failed to load company data');
+            } finally {
+                setFetchLoading(false);
+            }
+        };
+        if (companyId) {
+            fetchCompanyData();
+        }
+    }, [companyId, setFormData, setUploadedImages]);
+
+    const isStep1Valid = formData.name && formData.location;
+    const isStep3Valid = formData.description && formData.phone && formData.email;
+
+    const isUpdateDisabled = loading || !isStep1Valid || !isStep3Valid;
 
     const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3));
     const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
@@ -53,9 +115,9 @@ const CompanyCreationPage = ({ onSuccess }) => {
     const handleSubmit = async () => {
         setLoading(true);
 
+        // Build payload with common fields
         const payload = {
             name: formData.name,
-            ownerId: ownerId,
             phone: formData.phone,
             email: formData.email,
             description: formData.description,
@@ -63,9 +125,14 @@ const CompanyCreationPage = ({ onSuccess }) => {
             logo: uploadedLogo?.url || ''
         };
 
+        // ✅ Include status if present (editing mode only)
+        if (formData.status) {
+            payload.status = formData.status;
+        }
+
         try {
-            const response = await fetch('http://localhost:8080/api/companies', {
-                method: 'POST',
+            const response = await fetch(`http://localhost:8080/api/companies/${companyId}`, {
+                method: 'PATCH', // ✅ Use PATCH instead of PUT
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -79,22 +146,21 @@ const CompanyCreationPage = ({ onSuccess }) => {
                 const errorMessage = contentType?.includes('application/json')
                     ? JSON.parse(errorText).message
                     : errorText;
-                throw new Error(errorMessage || 'Failed to create company');
+                throw new Error(errorMessage || 'Failed to update company');
             }
 
-            const createdCompany = await response.json();
-            console.log('Company created:', createdCompany);
+            const updatedCompany = await response.json();
 
-            onSuccess?.(createdCompany);
+            onSuccess?.(updatedCompany);
+
             setCurrentStep(4)
         } catch (error) {
-            console.error('Error creating company:', error);
+            console.error('Error updating company:', error);
             setError(error.message);
         } finally {
             setLoading(false);
         }
     };
-
 
     const handleFileSelect = (e) => {
         const file = e.target.files[0];
@@ -103,9 +169,28 @@ const CompanyCreationPage = ({ onSuccess }) => {
         }
     };
 
+    const handleReset = () => {
+        if (!initialDataRef.current.formData) return;
+
+        setFormData(initialDataRef.current.formData);
+        setUploadedImages(initialDataRef.current.uploadedImages);
+        setError('');
+    };
+
+    useEffect(() => {
+        if (!initialDataRef.current.formData) return;
+
+        const isEqual =
+            JSON.stringify(formData) === JSON.stringify(initialDataRef.current.formData) &&
+            JSON.stringify(uploadedImages.map(img => img.url)) ===
+            JSON.stringify(initialDataRef.current.uploadedImages.map(img => img.url));
+
+        setUnsavedChanges(!isEqual);
+    }, [formData, uploadedImages]);
+
     const renderStep = () => {
         if (currentStep === 1)
-            return <StepBasicInfo {...{ formData, handleInputChange, handleSpecialtyToggle, locations, isEdit: false }} />;
+            return <StepBasicInfo {...{ formData, handleInputChange, handleSpecialtyToggle, locations, isEdit: true }} />;
         if (currentStep === 2)
             return (
                 <StepBranding
@@ -117,9 +202,40 @@ const CompanyCreationPage = ({ onSuccess }) => {
             );
         if (currentStep === 3)
             return <StepDetails {...{ formData, handleInputChange }} />;
+
         if (currentStep === 4)
-            return <StepSummary {...{ company: formData, handleInputChange }} />;
+            return <StepSummary {...{ company: formData, handleInputChange, isEdit: true}} />;
     };
+
+    if (fetchLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading company data...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error && !originalCompanyData) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg mb-4">
+                        {error}
+                    </div>
+                    <button
+                        onClick={() => navigate('/owner/dashboard')}
+                        className="flex items-center text-gray-600 hover:text-gray-900 cursor-pointer"
+                    >
+                        <ArrowLeft className="h-5 w-5 mr-2" />
+                        Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen">
@@ -132,9 +248,8 @@ const CompanyCreationPage = ({ onSuccess }) => {
                             className="flex items-center text-gray-600 hover:text-gray-900 cursor-pointer"
                         >
                             <ArrowLeft className="h-5 w-5 mr-2" />
-                            Exit
+                            Cancel
                         </button>
-
 
                         <div className="flex items-center space-x-8">
                             {steps.map((step, index) => (
@@ -157,13 +272,20 @@ const CompanyCreationPage = ({ onSuccess }) => {
                             ))}
                         </div>
 
-                        <div className="w-16" />
+                        <div className="text-sm text-gray-600">
+                            Edit Company
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Content */}
             <div className="max-w-4xl mx-auto px-4 py-8">
+                {unsavedChanges && currentStep < 4 && (
+                    <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                        <p className="text-amber-800 text-sm">You have unsaved changes</p>
+                    </div>
+                )}
                 {renderStep()}
                 {error && (
                     <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
@@ -173,10 +295,9 @@ const CompanyCreationPage = ({ onSuccess }) => {
             </div>
 
             {/* Footer */}
-            <div className="fixed bottom-0 left-0 w-full bg-white">
+            <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200">
                 <div className="max-w-4xl mx-auto flex justify-between px-4 py-4">
-
-                    {currentStep > 1 && currentStep < 4 ? (
+                    {currentStep > 1 && currentStep < 3 ? (
                         <button
                             onClick={prevStep}
                             className="text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-lg"
@@ -184,6 +305,15 @@ const CompanyCreationPage = ({ onSuccess }) => {
                             Back
                         </button>
                     ) : <div />}
+
+                    {unsavedChanges && currentStep < 4 && (
+                        <button
+                            onClick={handleReset}
+                            className="px-6 py-3 text-gray-600 hover:text-black hover:underline transition-colors cursor-pointer"
+                        >
+                            Reset Changes
+                        </button>
+                    )}
 
                     {currentStep < 3 ? (
                         <button
@@ -196,20 +326,20 @@ const CompanyCreationPage = ({ onSuccess }) => {
                     ) : currentStep === 3 ? (
                         <button
                             onClick={handleSubmit}
-                            disabled={isPublishDisabled}
+                            disabled={isUpdateDisabled}
                             className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
                         >
                             {loading ? (
-                                <span>Creating...</span>
+                                <span>Updating...</span>
                             ) : (
                                 <span className="flex items-center">
-                        <Save className="h-4 w-4 mr-2" />
-                        Create Company
-                    </span>
+                                    <Save className="h-4 w-4 mr-2" />
+                                    Update Company
+                                </span>
                             )}
                         </button>
                     ) : (
-                        <div />  // On step 4 (Summary) no buttons show
+                        <div/>
                     )}
                 </div>
             </div>
@@ -217,4 +347,4 @@ const CompanyCreationPage = ({ onSuccess }) => {
     );
 };
 
-export default CompanyCreationPage;
+export default CompanyEditingPage;

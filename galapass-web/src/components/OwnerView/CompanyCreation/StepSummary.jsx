@@ -1,7 +1,7 @@
-import { Users, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Building2, CheckCircle, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const StepSummary = ({ guide, company }) => {
+const StepSummary = ({ company, isEdit = false }) => {
     const navigate = useNavigate();
 
     const handleBackToDashboard = () => {
@@ -13,18 +13,23 @@ const StepSummary = ({ guide, company }) => {
             <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
                 <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <h2 className="text-3xl font-bold mb-4">Guide Invited!</h2>
+
+            <h2 className="text-3xl font-bold mb-4">
+                {isEdit ? 'Company Edited!' : 'Company Created!'}
+            </h2>
             <p className="text-lg text-gray-600 mb-8">
-                {guide.name} has been successfully invited to <strong>{company.name}</strong>.
+                <strong>{company.name}</strong> has been successfully {isEdit ? 'updated' : 'created'} and {isEdit ? 'saved' : 'added'} to your business.
             </p>
 
             <div className="bg-blue-50 rounded-xl p-6 max-w-md mx-auto mb-8">
                 <div className="flex items-center justify-center mb-4">
-                    <Users className="h-5 w-5 text-blue-600 mr-2" />
-                    <span className="text-blue-800 font-medium">Team Updated</span>
+                    <Building2 className="h-5 w-5 text-blue-600 mr-2" />
+                    <span className="text-blue-800 font-medium">Company Profile Ready</span>
                 </div>
                 <div className="text-sm text-blue-700">
-                    <p><strong>+</strong> {guide.name}</p>
+                    <p><strong>Location:</strong> {company.location}</p>
+                    <p><strong>Email:</strong> {company.email}</p>
+                    <p><strong>Phone:</strong> {company.phone}</p>
                 </div>
             </div>
 

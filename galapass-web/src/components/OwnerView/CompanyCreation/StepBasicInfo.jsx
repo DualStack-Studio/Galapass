@@ -1,6 +1,6 @@
 import { Building2, MapPin } from 'lucide-react';
 
-const StepBasicInfo = ({ formData, handleInputChange, locations }) => (
+const StepBasicInfo = ({ formData, handleInputChange, locations, isEdit = false }) => (
     <div className="space-y-8">
         <div className="text-center py-8">
             <h2 className="text-3xl font-bold">Tell us about your company</h2>
@@ -46,6 +46,24 @@ const StepBasicInfo = ({ formData, handleInputChange, locations }) => (
                     </select>
                 </div>
             </div>
+
+            {isEdit && (
+                <div>
+                    <label className="block text-lg font-medium text-gray-900 mb-3">
+                        Company Status
+                    </label>
+                    <select
+                        name="status"
+                        value={formData.status || ''}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-4 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black"
+                    >
+                        <option value="">Select status</option>
+                        <option value="ACTIVE">Active</option>
+                        <option value="INACTIVE">Inactive</option>
+                    </select>
+                </div>
+            )}
         </div>
     </div>
 );

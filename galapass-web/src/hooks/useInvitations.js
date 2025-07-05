@@ -2,7 +2,7 @@ const API_URL = 'http://localhost:8080/api/invitations';
 import { useEffect, useState } from 'react';
 
 export const fetchInvitations = async (ownerId) => {
-    const response = await fetch(`${API_URL}/company/${ownerId}`, {
+    const response = await fetch(`${API_URL}/owner/${ownerId}`, {
         credentials: 'include'
     });
     if (!response.ok) throw new Error('Failed to fetch invitations');

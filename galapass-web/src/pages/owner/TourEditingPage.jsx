@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { ArrowLeft, MapPin, Save, DollarSign, Tag, Camera, FileText, Building2, Upload, X, Plus, Star, Users, Clock, Globe } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { ArrowLeft, Save, X, Plus, Edit3, Eye, Trash2, AlertCircle, Check, MapPin, DollarSign, Clock, Users, Building2, Upload, Camera } from 'lucide-react';
 import StepBasicInfo from "../../components/OwnerView/TourCreation/StepBasicInfo.jsx";
 import StepPhotos from "../../components/OwnerView/TourCreation/StepPhotos.jsx";
 import StepDetails from "../../components/OwnerView/TourCreation/StepDetails.jsx";
@@ -9,30 +9,38 @@ import useTourEnums from "../../hooks/useTourEnums.js";
 import {useImageUpload} from "../../hooks/useImageUpload.js";
 import {useAuth} from "../../contexts/AuthContext.jsx";
 import { useTourCreation } from '../../hooks/UseTourCreation';
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import StepSummary from "../../components/OwnerView/TourCreation/StepSummary.jsx";
+import {fetchTour} from "../../api/tourApi.js";
 
-const TourCreationPage = ({ onSuccess }) => {
+const TourEditPage = ({ onSuccess }) => {
     const navigate = useNavigate();
+    const { tourId } = useParams(); // Get tourId from URL params
     const { user } = useAuth();
     const ownerId = user?.id;
 
     const { companies, loading: companiesLoading, error: companiesError } = useTourCreation(ownerId);
 
-
     const [currentStep, setCurrentStep] = useState(1);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [unsavedChanges, setUnsavedChanges] = useState(false);
     const fileInputRef = useRef(null);
+    const initialDataRef = useRef({ formData: null, uploadedImages: null });
+
     const {
         formData,
         setFormData,
         handleInputChange,
         handleHighlightChange
     } = useTourForm();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const { categories, tags: availableTags, locations ,enumLoading, enumError } = useTourEnums();
+
+    const { categories, tags: availableTags, locations, enumLoading, enumError } = useTourEnums();
     const {
         uploadedImages,
+        setUploadedImages,
         isUploading,
         handleImageUpload,
         removeImage
@@ -40,19 +48,118 @@ const TourCreationPage = ({ onSuccess }) => {
 
     const guides = companies.flatMap(company => company.guides || []);
 
-    const isStep1Valid = formData.title && formData.location && formData.category;
-    const isStep2Valid = uploadedImages.length > 0;
-    const isStep3Valid = formData.description && formData.companyId && formData.duration && formData.maxGuests && formData.selectedGuides.length > 0 && formData.highlights.some(h => h.trim() !== '') && formData.tags.length > 0;
-    const isStep4Valid = formData.price;
+    const steps = [
+        { id: 1, title: 'Basic Info', description: 'Title, category & location' },
+        { id: 2, title: 'Photos', description: 'Visual content' },
+        { id: 3, title: 'Details', description: 'Description & specifics' },
+        { id: 4, title: 'Pricing', description: 'Set your price' }
+    ];
 
-    const isPublishDisabled =
-        loading ||
-        !isStep1Valid ||
-        !isStep2Valid ||
-        !isStep3Valid ||
-        !isStep4Valid;
+    // Fetch tour data on component mount
+    useEffect(() => {
+        const fetchTourData = async () => {
+            if (!tourId) {
+                setError('Tour ID is required');
+                setLoading(false);
+                return;
+            }
 
-    if (companiesLoading || enumLoading) {
+            try {
+                const tourArray = await fetchTour(tourId);
+                const tour = tourArray[0];
+
+                // Populate form data with existing tour data
+                setFormData({
+                    title: tour.title || '',
+                    description: tour.description || '',
+                    price: tour.price || '',
+                    category: tour.category || '',
+                    status: tour.status || 'ACTIVE',
+                    location: tour.location || '',
+                    duration: tour.duration || '',
+                    maxGuests: tour.maxGuests || '',
+                    companyId: String(tour.company?.id || ''),
+                    selectedGuides: tour.guides?.map(guide => String(guide.id)) || [],
+                    tags: tour.tags || [],
+                    highlights: tour.highlights || ['']
+                });
+
+                initialDataRef.current = {
+                    formData: {
+                        title: tour.title || '',
+                        description: tour.description || '',
+                        price: tour.price || '',
+                        category: tour.category || '',
+                        status: tour.status || 'ACTIVE',
+                        location: tour.location || '',
+                        duration: tour.duration || '',
+                        maxGuests: tour.maxGuests || '',
+                        companyId: String(tour.company?.id || ''),
+                        selectedGuides: tour.guides?.map(guide => String(guide.id)) || [],
+                        tags: tour.tags || [],
+                        highlights: tour.highlights || ['']
+                    },
+                    uploadedImages: tour.photoUrls?.map((url, index) => ({
+                        url,
+                        file: null,
+                        id: `existing-${index}`
+                    })) || []
+                };
+
+                // Set uploaded images
+                if (tour.photoUrls && tour.photoUrls.length > 0) {
+                    const imageObjects = tour.photoUrls.map((url, index) => ({
+                        url,
+                        file: null,
+                        id: `existing-${index}`
+                    }));
+                    setUploadedImages(imageObjects);
+                }
+
+            } catch (err) {
+                console.error('Error fetching tour:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTourData();
+    }, [tourId, setFormData, setUploadedImages]);
+
+    useEffect(() => {
+        if (!initialDataRef.current.formData) return;
+
+        const isEqual = (
+            JSON.stringify(formData) === JSON.stringify(initialDataRef.current.formData) &&
+            JSON.stringify(uploadedImages.map(img => img.url)) === JSON.stringify(initialDataRef.current.uploadedImages.map(img => img.url))
+        );
+
+        setUnsavedChanges(!isEqual);
+    }, [formData, uploadedImages]);
+
+    // Track changes to form data
+    useEffect(() => {
+        const handleFormChange = () => {
+            setError('');
+            setSuccessMessage('');
+        };
+
+        // You can add more sophisticated change detection here
+        handleFormChange();
+    }, [formData, uploadedImages]);
+
+    const handleReset = () => {
+        if (!initialDataRef.current.formData) return;
+
+        setFormData(initialDataRef.current.formData);
+        setUploadedImages(initialDataRef.current.uploadedImages);
+        setUnsavedChanges(false);
+        setError('');
+        setSuccessMessage('');
+    };
+
+    if (loading || companiesLoading || enumLoading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
@@ -63,18 +170,27 @@ const TourCreationPage = ({ onSuccess }) => {
     if (companiesError || enumError) {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <p className="text-red-600 text-lg">{enumError}</p>
+                <p className="text-red-600 text-lg">{companiesError || enumError}</p>
             </div>
         );
     }
 
-
-    const steps = [
-        { id: 1, title: 'Basic Info', description: 'Tell us about your tour' },
-        { id: 2, title: 'Photos', description: 'Show off your experience' },
-        { id: 3, title: 'Details', description: 'Add the specifics' },
-        { id: 4, title: 'Pricing', description: 'Set your price' }
-    ];
+    if (error && !formData.title) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="text-center">
+                    <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                    <p className="text-lg text-gray-600">{error}</p>
+                    <button
+                        onClick={() => navigate('/owner/dashboard')}
+                        className="mt-4 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+                    >
+                        Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     const handleGuideToggle = (guideId) => {
         setFormData(prev => ({
@@ -109,10 +225,25 @@ const TourCreationPage = ({ onSuccess }) => {
         if (currentStep > 1) setCurrentStep(currentStep - 1);
     };
 
-    const handleSubmit = async (e) => {
+    // Step validation (same as creation page)
+    const isStep1Valid = formData.title && formData.location && formData.category;
+    const isStep2Valid = uploadedImages.length > 0;
+    const isStep3Valid = formData.description && formData.companyId && formData.duration && formData.maxGuests && formData.selectedGuides.length > 0 && formData.highlights.some(h => h.trim() !== '') && formData.tags.length > 0;
+    const isStep4Valid = formData.price;
+
+    const isSaveDisabled =
+        saving ||
+        !isStep1Valid ||
+        !isStep2Valid ||
+        !isStep3Valid ||
+        !isStep4Valid ||
+        !unsavedChanges;
+
+    const handleSave = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        setSaving(true);
         setError('');
+        setSuccessMessage('');
 
         const tourData = {
             title: formData.title,
@@ -120,8 +251,8 @@ const TourCreationPage = ({ onSuccess }) => {
             price: parseFloat(formData.price),
             category: formData.category,
             location: formData.location,
+            status: formData.status?.toUpperCase(),
             photoUrls: uploadedImages.map(img => img.url),
-            ownerId: ownerId,
             companyId: parseInt(formData.companyId),
             guideIds: formData.selectedGuides.map(id => parseInt(id)),
             tags: formData.tags,
@@ -131,8 +262,8 @@ const TourCreationPage = ({ onSuccess }) => {
         };
 
         try {
-            const response = await fetch('http://localhost:8080/api/tours', {
-                method: 'POST',
+            const response = await fetch(`http://localhost:8080/api/tours/${tourId}`, {
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -142,21 +273,24 @@ const TourCreationPage = ({ onSuccess }) => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to create tour');
+                throw new Error(errorData.message || 'Failed to update tour');
             }
 
-            const createdTour = await response.json();
+            const updatedTour = await response.json();
 
-            onSuccess?.(createdTour);
             setCurrentStep(5);
+
+            if (onSuccess) {
+                onSuccess(updatedTour);
+            }
+
         } catch (err) {
-            console.error('Error creating tour:', err);
+            console.error('Error updating tour:', err);
             setError(err.message);
         } finally {
-            setLoading(false);
+            setSaving(false);
         }
     };
-
 
     const renderStepContent = () => {
         switch (currentStep) {
@@ -168,6 +302,7 @@ const TourCreationPage = ({ onSuccess }) => {
                         handleInputChange={handleInputChange}
                         categories={categories}
                         locations={locations}
+                        isEdit={true}
                     />
                 );
 
@@ -180,6 +315,7 @@ const TourCreationPage = ({ onSuccess }) => {
                         isUploading={isUploading}
                         fileInputRef={fileInputRef}
                         handleFileSelect={handleFileSelect}
+                        isEdit={true}
                     />
                 );
 
@@ -195,6 +331,7 @@ const TourCreationPage = ({ onSuccess }) => {
                         companies={companies}
                         guides={guides}
                         availableTags={availableTags}
+                        isEdit={true}
                     />
                 );
 
@@ -203,11 +340,12 @@ const TourCreationPage = ({ onSuccess }) => {
                     <StepPricing
                         formData={formData}
                         handleInputChange={handleInputChange}
+                        isEdit={true}
                     />
                 );
 
             case 5:
-                return <StepSummary {...{ tour: formData, handleInputChange }} />;
+                return <StepSummary tour={formData} handleInputChange={handleInputChange} isEdit={true} />;
 
             default:
                 return null;
@@ -228,6 +366,7 @@ const TourCreationPage = ({ onSuccess }) => {
                             Exit
                         </button>
 
+                        {/* Step Progress */}
                         <div className="flex items-center space-x-8">
                             {steps.map((step, index) => (
                                 <React.Fragment key={step.id}>
@@ -249,7 +388,14 @@ const TourCreationPage = ({ onSuccess }) => {
                             ))}
                         </div>
 
-                        <div className="w-16" />
+                        <div className="flex items-center space-x-3">
+                            {successMessage && (
+                                <div className="flex items-center text-green-600">
+                                    <Check className="h-4 w-4 mr-1" />
+                                    <span className="text-sm">{successMessage}</span>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -258,17 +404,24 @@ const TourCreationPage = ({ onSuccess }) => {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {error && (
                     <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-                        <p className="text-red-800">{error}</p>
+                        <div className="flex items-center">
+                            <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+                            <p className="text-red-800">{error}</p>
+                        </div>
                     </div>
                 )}
-
+                {unsavedChanges && currentStep < 4 && (
+                    <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                        <p className="text-amber-800 text-sm">You have unsaved changes</p>
+                    </div>
+                )}
                 <div>
                     {renderStepContent()}
                 </div>
             </div>
 
             {/* Footer */}
-            <div className="fixed bottom-0 left-0 w-full bg-white">
+            <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                     {currentStep > 1 && currentStep < 4 ? (
                         <button
@@ -278,6 +431,15 @@ const TourCreationPage = ({ onSuccess }) => {
                             Back
                         </button>
                     ) : <div />}
+
+                    {unsavedChanges && currentStep < 4 && (
+                        <button
+                            onClick={handleReset}
+                            className="px-6 py-3 text-gray-600 hover:text-black hover:underline transition-colors cursor-pointer"
+                        >
+                            Reset Changes
+                        </button>
+                    )}
 
                     {currentStep < 4 ? (
                         <button
@@ -293,25 +455,24 @@ const TourCreationPage = ({ onSuccess }) => {
                         </button>
                     ) : currentStep === 4 ? (
                         <button
-                            type="submit"
-                            onClick={handleSubmit}
-                            disabled={isPublishDisabled}
+                            onClick={handleSave}
+                            disabled={isSaveDisabled}
                             className="px-8 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
                         >
-                            {loading ? (
+                            {saving ? (
                                 <>
                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                    <span>Creating...</span>
+                                    <span>Saving...</span>
                                 </>
                             ) : (
                                 <>
                                     <Save className="h-4 w-4" />
-                                    <span>Publish Tour</span>
+                                    <span>Save Changes</span>
                                 </>
                             )}
                         </button>
                     ) : (
-                        <div/>
+                     <div/>
                     )}
                 </div>
             </div>
@@ -319,4 +480,4 @@ const TourCreationPage = ({ onSuccess }) => {
     );
 };
 
-export default TourCreationPage;
+export default TourEditPage;

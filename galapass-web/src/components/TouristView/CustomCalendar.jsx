@@ -1,3 +1,5 @@
+// src/components/TouristView/CustomCalendar.jsx
+
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -38,8 +40,9 @@ const CustomCalendar = ({
 
     const handleDateClick = (day) => {
         if (day) {
-            const selectedDate = new Date(year, month, day);
-            const dateString = selectedDate.toISOString().split('T')[0];
+            const month_str = (month + 1).toString().padStart(2, '0');
+            const day_str = day.toString().padStart(2, '0');
+            const dateString = `${year}-${month_str}-${day_str}`;
             onSelectDate(dateString);
             onClose();
         }
@@ -61,19 +64,29 @@ const CustomCalendar = ({
 
     const isSelected = (day) => {
         if (!selectedDate || !day) return false;
-        const selected = new Date(selectedDate);
+        // This is the corrected line
+        const selected = new Date(selectedDate.replace(/-/g, '/'));
         return selected.getDate() === day &&
             selected.getMonth() === month &&
             selected.getFullYear() === year;
     };
 
     return (
-        <div className={`absolute top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 z-50 ${position === 'right' ? 'right-0' : 'left-0'}`} style={{ width: '320px' }}>
+        <div
+            className={`absolute top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 z-50 ${
+                position === 'right'
+                    ? 'right-0'
+                    : position === 'center' || position === 'down'
+                        ? 'left-1/2 -translate-x-1/2'
+                        : 'left-0'
+            }`}
+            style={{ width: '320px' }}
+        >
             {/* Calendar Header */}
             <div className="flex items-center justify-between mb-4">
                 <button
                     onClick={() => navigateMonth(-1)}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
                 >
                     <ChevronLeft size={20} className="text-gray-600" />
                 </button>
@@ -82,7 +95,7 @@ const CustomCalendar = ({
                 </h3>
                 <button
                     onClick={() => navigateMonth(1)}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
                 >
                     <ChevronRight size={20} className="text-gray-600" />
                 </button>
@@ -105,7 +118,7 @@ const CustomCalendar = ({
                         onClick={() => handleDateClick(day)}
                         disabled={!day}
                         className={`
-              h-10 w-10 rounded-full text-sm transition-all duration-200
+              h-10 w-10 rounded-full text-sm transition-all duration-200 cursor-pointer
               ${!day ? 'invisible' : ''}
               ${isToday(day) ? 'bg-gray-100 font-semibold' : ''}
               ${isSelected(day) ? 'bg-emerald-600 text-white font-semibold transform scale-105' : 'hover:bg-gray-100 text-gray-700'}
@@ -121,7 +134,7 @@ const CustomCalendar = ({
             <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-100">
                 <button
                     onClick={onClose}
-                    className="text-sm text-gray-500 hover:text-gray-700 underline"
+                    className="text-sm text-gray-500 hover:text-gray-700 underline cursor-pointer"
                 >
                     Clear
                 </button>
@@ -132,7 +145,7 @@ const CustomCalendar = ({
                         onSelectDate(todayString);
                         onClose();
                     }}
-                    className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 underline"
+                    className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 underline cursor-pointer"
                 >
                     Today
                 </button>

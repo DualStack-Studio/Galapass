@@ -129,8 +129,8 @@ const StepDetails = ({
                                 >
                                     <input
                                         type="checkbox"
-                                        checked={formData.selectedGuides.includes(guide.id)}
-                                        onChange={() => handleGuideToggle(guide.id)}
+                                        checked={formData.selectedGuides.includes(String(guide.id))}
+                                        onChange={() => handleGuideToggle(String(guide.id))}
                                         className="rounded border-gray-300 text-black focus:ring-black h-5 w-5"
                                     />
                                     <span className="text-gray-900">{guide.name}</span>

@@ -5,6 +5,8 @@ import com.galapass.api.entity.tour.Tour;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +22,9 @@ public class TourDate {
     private Long id;
 
     @Temporal(TemporalType.DATE)
-    private Date date;
+    private LocalDate date;
 
-    private Double price;
+    private BigDecimal price;
 
     private boolean available;
 

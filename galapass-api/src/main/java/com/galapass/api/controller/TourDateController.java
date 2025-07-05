@@ -36,4 +36,10 @@ public class TourDateController {
         service.deleteTourDate(id, user.getId());
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<TourDateResponseDTO> cancelTourDate(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        TourDateResponseDTO updatedTourDate = service.cancelTourDate(id, user.getId());
+        return ResponseEntity.ok(updatedTourDate);
+    }
 }

@@ -8,10 +8,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    @Query("SELECT COUNT(b) FROM Booking b WHERE b.tour.id = :tourId")
+
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.tourDate.tour.id = :tourId")
     Long countBookingsByTourId(@Param("tourId") Long tourId);
 
-    List<Booking> findByTourIdIn(List<Long> tourIds);
+    List<Booking> findByTourDate_Tour_IdIn(List<Long> tourIds);
 
-    List<Booking> findByTour_Company_Owner_Id(Long ownerId);
+    List<Booking> findByTourDate_Tour_Owner_Id(Long ownerId);
 }

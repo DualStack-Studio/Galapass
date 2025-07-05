@@ -10,6 +10,7 @@ import com.galapass.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -33,7 +34,7 @@ public class OwnerDashboardService {
                 .distinct()
                 .count();
 
-        double revenue = calculateRevenue(ownerId);
+        BigDecimal revenue = calculateRevenue(ownerId);
 
         return OwnerDashboardStatsResponse.builder()
                 .totalCompanies(totalCompanies)
@@ -43,7 +44,7 @@ public class OwnerDashboardService {
                 .build();
     }
 
-    public double calculateRevenue(Long ownerId) {
+    public BigDecimal calculateRevenue(Long ownerId) {
         List<TourCompany> companies = tourCompanyRepository.findAllByOwner_Id(ownerId);
 
         // Get all tours from these companies
@@ -53,9 +54,12 @@ public class OwnerDashboardService {
                 .toList();
 
         // Get all bookings related to these tours
-        double totalRevenue = bookingRepository.findByTourIdIn(tourIds).stream()
-                .mapToDouble(booking -> booking.getTotalPaid() != null ? booking.getTotalPaid() : 0.0)
-                .sum();
+        // Use BigDecimal for the variable to maintain precision
+        BigDecimal totalRevenue = bookingRepository.findByTourDate_Tour_IdIn(tourIds).stream()
+                // 1. Use .map() to keep the stream as BigDecimal objects
+                .map(booking -> booking.getTotalPaid() != null ? booking.getTotalPaid() : BigDecimal.ZERO)
+                // 2. Use .reduce() to safely sum up all the BigDecimal values
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return totalRevenue;
     }

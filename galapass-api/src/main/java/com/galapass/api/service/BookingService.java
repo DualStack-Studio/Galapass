@@ -11,6 +11,7 @@ import com.galapass.api.entity.booking.Booking;
 import com.galapass.api.entity.booking.BookingStatus;
 import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.user.User;
+import com.galapass.api.exception.TourNotFoundException; // Assuming you have this
 import com.galapass.api.mapper.BookingMapper;
 import com.galapass.api.repository.BookingRepository;
 import com.galapass.api.repository.TourDateRepository;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,15 +36,21 @@ public class BookingService {
     private final BookingMapper bookingMapper;
     private final TourDateRepository tourDateRepository;
 
+    // It's better to define the ObjectMapper as a bean, but for now, this is fine.
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
 
     public BookingResponseDTO createBooking(BookingRequestDTO request) {
-        Tour tour = tourRepository.findById(request.getTourId())
-                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + request.getTourId()));
         TourDate tourDate = tourDateRepository.findById(request.getTourDateId())
-                .orElseThrow(() -> new RuntimeException("TourDate not found with id: " + request.getTourDateId()));
+                .orElseThrow(() -> new TourNotFoundException("TourDate not found with id: " + request.getTourDateId()));
+
+        Tour tour = tourDate.getTour();
 
         if (request.getNumberOfPeople() > tour.getMaxGuests()) {
             throw new IllegalArgumentException("Requested number of people exceeds the tour's max guest capacity.");
@@ -54,7 +60,6 @@ public class BookingService {
         Set<User> tourists = new HashSet<>(userRepository.findAllById(request.getTouristIds()));
 
         Booking booking = Booking.builder()
-                .tour(tour)
                 .guides(guides)
                 .tourists(tourists)
                 .date(request.getDate())
@@ -72,16 +77,11 @@ public class BookingService {
         return bookingRepository.findById(id).orElse(null);
     }
 
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
     public Booking updateBooking(Booking bookingUpdate) {
         return bookingRepository.findById(bookingUpdate.getId())
                 .map(existingBooking -> {
                     try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-                        mapper.updateValue(existingBooking, bookingUpdate);
+                        objectMapper.updateValue(existingBooking, bookingUpdate);
                         return bookingRepository.save(existingBooking);
                     } catch (JsonMappingException e) {
                         throw new RuntimeException("Failed to update booking", e);
@@ -99,40 +99,42 @@ public class BookingService {
     }
 
     public List<BookingResponseDTO> getBookingsByOwner(Long ownerId) {
-        List<Booking> bookings = bookingRepository.findByTour_Company_Owner_Id(ownerId);
+        List<Booking> bookings = bookingRepository.findByTourDate_Tour_Owner_Id(ownerId);
         return bookings.stream()
                 .map(bookingMapper::toBookingResponseDTO)
                 .collect(Collectors.toList());
     }
 
     public List<BookingResponseDTO> searchBookingsByOwner(Long ownerId, String status, String date, String search) {
-        List<Booking> bookings = bookingRepository.findByTour_Company_Owner_Id(ownerId);
+        List<Booking> bookings = bookingRepository.findByTourDate_Tour_Owner_Id(ownerId);
         Stream<Booking> stream = bookings.stream();
 
-        // Filter by status (BookingStatus enum or "completed" boolean)
-        if (status != null) {
+
+        // Filter by status
+        if (status != null && !status.isBlank()) {
             try {
                 BookingStatus statusEnum = BookingStatus.valueOf(status.toUpperCase());
                 stream = stream.filter(b -> b.getStatus() == statusEnum);
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Invalid booking status: " + status);
+                // It's better to silently ignore invalid statuses or log a warning
+                System.err.println("Invalid booking status provided: " + status);
             }
         }
 
-        // Filter by date (assumes yyyy-MM-dd format)
-        if (date != null) {
+        // Filter by date
+        if (date != null && !date.isBlank()) {
             stream = stream.filter(b -> {
                 String bookingDate = new java.text.SimpleDateFormat("yyyy-MM-dd").format(b.getDate());
                 return bookingDate.equals(date);
             });
         }
 
-        // Filter by search term in title, location, or tourist name
+        // Filter by search term
         if (search != null && !search.trim().isEmpty()) {
             String lowerSearch = search.toLowerCase();
             stream = stream.filter(b ->
-                    b.getTour().getTitle().toLowerCase().contains(lowerSearch) ||
-                            b.getTour().getLocation().toLowerCase().contains(lowerSearch) ||
+                    b.getTourDate().getTour().getTitle().toLowerCase().contains(lowerSearch) ||
+                            b.getTourDate().getTour().getLocation().toLowerCase().contains(lowerSearch) ||
                             b.getTourists().stream().anyMatch(t -> t.getName().toLowerCase().contains(lowerSearch))
             );
         }

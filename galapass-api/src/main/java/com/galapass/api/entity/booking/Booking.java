@@ -4,6 +4,9 @@ import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity
@@ -24,10 +27,6 @@ public class Booking {
     )
     private Set<User> tourists = new HashSet<>();
 
-    @ManyToOne
-    @JoinColumn(name = "tour_id")
-    private Tour tour;
-
     @ManyToMany
     @JoinTable(
             name = "booking_guides",
@@ -40,9 +39,9 @@ public class Booking {
     @JoinColumn(name = "tour_date_id", nullable = false)
     private TourDate tourDate;
 
-    private Date date;
+    private LocalDate date;
     private int numberOfPeople;
-    private Double totalPaid;
+    private BigDecimal totalPaid;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

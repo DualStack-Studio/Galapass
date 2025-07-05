@@ -5,6 +5,8 @@ import com.galapass.api.DTO.tourDate.TourDateSummaryDTO;
 import com.galapass.api.DTO.user.OwnerSummaryDTO;
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 
@@ -14,9 +16,8 @@ public class BookingResponseDTO {
     private TourDateSummaryDTO tourDate;
     private Set<OwnerSummaryDTO> guides;
     private Set<OwnerSummaryDTO> tourists;
-    private TourResponseOwnerViewDTO tour;
-    private Date date;
+    private LocalDate date;
     private int numberOfPeople;
-    private Double totalPaid;
+    private BigDecimal totalPaid;
     private String status;
 }

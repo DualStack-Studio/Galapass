@@ -30,7 +30,7 @@ export const cancelInvitation = async (invitationId) => {
 };
 
 export const resendInvitation = async (invitationId) => {
-    const response = await fetch(`${API_URL}/${invitationId}/resend`, {
+    const response = await fetch(`${API_URL}/resend/${invitationId}`, {
         method: 'POST',
         credentials: 'include'
     });

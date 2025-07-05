@@ -245,7 +245,7 @@ const OwnerDashboardPage = () => {
                                                     </div>
 
                                                     <div className="flex items-center space-x-2">
-                                                        {invite.status === 'pending' && (
+                                                        {invite.status === 'PENDING' && (
                                                             <button
                                                                 onClick={() => handleResend(invite.id)}
                                                                 className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center space-x-1"

@@ -8,18 +8,9 @@ const useTourDates = (tourId) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    /**
-     * Parses a date string (like 'YYYY-MM-DD') into a local Date object
-     * to prevent timezone-related "one day off" errors.
-     * @param {string} dateString - The date string to parse.
-     * @returns {Date} A Date object in the user's local timezone.
-     */
     const parseLocalDate = (dateString) => {
         if (!dateString) return null;
-        // Split the date string to get year, month, and day parts.
         const parts = dateString.split(/[-T]/);
-        // Create a new Date using the parts. The month is 0-indexed.
-        // This constructor creates the date in the user's local timezone.
         return new Date(parts[0], parts[1] - 1, parts[2]);
     };
 
@@ -29,14 +20,11 @@ const useTourDates = (tourId) => {
             const res = await axios.get(`${BASE_URL}/api/tour-dates/tour/${tourId}`,
                 { withCredentials: true }
             );
-
-            // ✅ FIX: Use the robust local date parsing function
             const formatted = res.data.map(td => ({
                 ...td,
                 date: parseLocalDate(td.date),
                 bookedGuests: td.maxGuests
             }));
-
             setTourDates(formatted);
         } catch (err) {
             setError('Failed to fetch tour dates');
@@ -53,8 +41,6 @@ const useTourDates = (tourId) => {
                 { ...data, tourId },
                 { withCredentials: true }
             );
-
-            // ✅ FIX: Also apply the fix to newly created dates for consistency
             const newDate = {
                 ...res.data,
                 date: parseLocalDate(res.data.date),
@@ -73,8 +59,23 @@ const useTourDates = (tourId) => {
             setTourDates(prev => prev.filter(td => td.id !== id));
             toast.success('Tour date deleted');
         } catch (err) {
-            console.log('Failed to delete tour date');
-            toast.error('Failed to delete tour date');
+            const errorMessage = err.response?.data?.message || 'An unknown error occurred.';
+            console.log(errorMessage);
+            throw new Error(errorMessage);
+        }
+    };
+
+    const cancelTourDate = async (id) => {
+        try {
+            await axios.put(`${BASE_URL}/api/tour-dates/${id}/cancel`, {}, { withCredentials: true });
+
+            setTourDates(prev => prev.map(td =>
+                td.id === id ? { ...td, status: 'CANCELLED', available: false } : td
+            ));
+            toast.success('Tour date has been cancelled.');
+        } catch (err) {
+            const errorMessage = err.response?.data?.message || 'Failed to cancel the tour date.';
+            throw new Error(errorMessage);
         }
     };
 
@@ -96,6 +97,7 @@ const useTourDates = (tourId) => {
         createTourDate,
         deleteTourDate,
         updateTourDateLocal,
+        cancelTourDate,
         refetchTourDates: fetchTourDates
     };
 };

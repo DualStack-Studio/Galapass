@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Search } from "lucide-react";
-import CustomCalendar from "../../TouristView/CustomCalendar.jsx";
+import CustomCalendar from "../../CustomCalendar.jsx";
 
 const BookingFilters = ({
                           filterButtons,

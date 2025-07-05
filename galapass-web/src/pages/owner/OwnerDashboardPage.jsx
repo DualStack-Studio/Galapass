@@ -109,8 +109,8 @@ const OwnerDashboardPage = () => {
                     <div className="flex items-center justify-between py-6">
                         <div className="flex items-center space-x-4">
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-900">Manage Tour Bookings</h1>
-                                <p className="text-gray-600">View and manage all your tour bookings</p>
+                                <h1 className="text-2xl font-bold text-gray-900">Tour Operator Dashboard</h1>
+                                <p className="text-gray-600">Manage your Galápagos tour business</p>
                             </div>
                         </div>
                     </div>

@@ -3,11 +3,12 @@ import { Calendar, ArrowLeft, Plus, Edit3, Trash2, Save, X, DollarSign, Users, M
 import { toast } from 'react-hot-toast';
 import TourDatesCalendar from "../../components/OwnerView/TourDates/TourDatesCalendar.jsx";
 import TourInfo from "../../components/OwnerView/TourDates/TourInfo.jsx";
-import TourDateForm from "../../components/OwnerView/TourDates/TourDateForm.jsx";
+import TourDateFormModal from "../../components/OwnerView/TourDates/TourDateFormModal.jsx";
 import UpcomingTourDates from "../../components/OwnerView/TourDates/UpcomingTourDates.jsx";
 import useTourDates from "../../hooks/UseTourDates.js";
 import {useParams} from "react-router-dom";
 import {fetchTour} from "../../api/tourApi.js";
+import ErrorModal from "../../components/ErrorModal.jsx";
 
 const TourDatesManager = () => {
     const { tourId } = useParams()
@@ -18,6 +19,8 @@ const TourDatesManager = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
+    const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
+
     const [newTourDate, setNewTourDate] = useState({
         date: null,
         price: '',
@@ -32,13 +35,15 @@ const TourDatesManager = () => {
         createTourDate,
         deleteTourDate,
         updateTourDateLocal,
+        cancelTourDate,
         refetchTourDates
     } = useTourDates(tourId);
+
+
     const totalPeopleBooked = (editingDate?.bookings ?? []).reduce(
         (sum, booking) => sum + (booking.numberOfPeople || 0),
         0
     );
-
 
     const handleSaveTourDate = async () => {
         if (!newTourDate.date || !newTourDate.price || !newTourDate.maxGuests) {
@@ -68,7 +73,6 @@ const TourDatesManager = () => {
         handleCancelEdit();
     };
 
-
     const handleCancelEdit = () => {
         setIsCreating(false);
         setEditingDate(null);
@@ -81,18 +85,23 @@ const TourDatesManager = () => {
     };
 
     const handleDeleteTourDate = async (tourDateId) => {
-        const tourDateToDelete = tourDates.find(td => td.id === tourDateId)
-        const totalPeopleBooked = tourDateToDelete?.bookings.reduce(
-            (sum, currentBooking) => sum + currentBooking.numberOfPeople,
-            0
-        ) || 0;
-        if (tourDateToDelete && totalPeopleBooked > 0) {
-            console.log('Cannot delete tour date with existing bookings');
-            return;
+        try {
+            await deleteTourDate(tourDateId);
+            handleCancelEdit();
+        } catch (error) {
+            handleCancelEdit();
+            setErrorModal({ isOpen: true, message: error.message });
         }
+    };
 
-        await deleteTourDate(tourDateId);
-        handleCancelEdit();
+    const handleCancelTourDate = async (tourDateId) => {
+        try {
+            await cancelTourDate(tourDateId);
+            handleCancelEdit();
+        } catch (error) {
+            handleCancelEdit();
+            setErrorModal({ isOpen: true, message: error.message });
+        }
     };
 
     useEffect(() => {
@@ -111,17 +120,35 @@ const TourDatesManager = () => {
         if (tourId) {
             fetchData();
         }
-
     }, [tourId]);
-
-
 
     if (loading) return <div className="p-4 text-gray-600">Loading tour...</div>;
     if (error) return <div className="p-4 text-red-600">{error}</div>;
     if (!tour) return <div className="p-4 text-gray-600">Tour not found</div>;
 
     return (
+        // The main container for the page
         <div className="min-h-screen bg-white">
+            {/* ✅ The Modal is now rendered here, at the top level */}
+            <ErrorModal
+                isOpen={errorModal.isOpen}
+                onClose={() => setErrorModal({ isOpen: false, message: '' })}
+                message={errorModal.message}
+            />
+
+            {isCreating && (
+                <TourDateFormModal
+                    editingDate={editingDate}
+                    newTourDate={newTourDate}
+                    setNewTourDate={setNewTourDate}
+                    handleSaveTourDate={handleSaveTourDate}
+                    handleCancelEdit={handleCancelEdit}
+                    handleDeleteTourDate={handleDeleteTourDate}
+                    handleCancelTourDate={handleCancelTourDate}
+                    totalPeopleBooked={totalPeopleBooked}
+                />
+            )}
+
             {/* Header */}
             <div className="bg-white shadow-sm border-b border-gray-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -143,6 +170,8 @@ const TourDatesManager = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Main Content Grid */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Calendar Section */}
@@ -166,26 +195,12 @@ const TourDatesManager = () => {
                         {/* Tour Info */}
                         <TourInfo {...tour} />
 
-                        {/* Create/Edit Form */}
-                        {isCreating && (
-                            <TourDateForm
-                                editingDate={editingDate}
-                                newTourDate={newTourDate}
-                                setNewTourDate={setNewTourDate}
-                                handleSaveTourDate={handleSaveTourDate}
-                                handleCancelEdit={handleCancelEdit}
-                                handleDeleteTourDate={handleDeleteTourDate}
-                                totalPeopleBooked={totalPeopleBooked}
-                            />
-                        )}
-
                         {/* Upcoming Tour Dates */}
                         <UpcomingTourDates
                             tourDates={tourDates}
                             setEditingDate={setEditingDate}
                             setNewTourDate={setNewTourDate}
                             setIsCreating={setIsCreating}
-                            totalPeopleBooked={totalPeopleBooked}
                         />
                     </div>
                 </div>

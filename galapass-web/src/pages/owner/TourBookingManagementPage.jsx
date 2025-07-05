@@ -27,7 +27,6 @@ const TourBookingManagementPage = () => {
     const { user } = useAuth();
     const ownerId = user?.id;
 
-    // ✅ Define states first
     const [activeFilter, setActiveFilter] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [dateFilter, setDateFilter] = useState('');
@@ -37,7 +36,6 @@ const TourBookingManagementPage = () => {
     const [searchData, setSearchData] = useState({ checkIn: '' });
     const [currentMonth, setCurrentMonth] = useState(new Date());
 
-    // ✅ Now use filters properly
     const { bookings, loading, error, refetch } = useBookings({
         ownerId: ownerId,
         status: activeFilter !== 'all' ? activeFilter.toUpperCase() : null,

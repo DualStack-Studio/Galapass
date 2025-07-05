@@ -6,18 +6,22 @@ import com.galapass.api.DTO.user.RegisterRequest;
 import com.galapass.api.DTO.user.UserResponse;
 import com.galapass.api.jwt.JwtUtils;
 import com.galapass.api.service.AuthService;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.util.Value;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-// --- Add these imports ---
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.time.Duration;
+import java.util.Collections;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -27,6 +31,9 @@ public class AuthController {
     private final AuthService authService;
 
     private static final long JWT_COOKIE_MAX_AGE = Duration.ofDays(30).getSeconds();
+
+    @Value("${google.clientId}")
+    private String googleClientId;
 
     @PostMapping(value = "login")
     public ResponseEntity<AuthResponse> login(
@@ -50,6 +57,31 @@ public class AuthController {
 
         // 5. Return a response body without the token
         return ResponseEntity.ok(AuthResponse.builder().message("Login successful").build());
+    }
+
+    @PostMapping("/google")
+    public ResponseEntity<AuthResponse> googleLogin(
+            @RequestBody Map<String, String> body,
+            HttpServletResponse servletResponse
+    ) {
+        String idToken = body.get("idToken");
+        if (idToken == null || idToken.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String jwtToken = authService.loginWithGoogle(idToken);
+
+        ResponseCookie cookie = ResponseCookie.from("jwt-token", jwtToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(Duration.ofDays(30))
+                .sameSite("Lax")
+                .build();
+
+        servletResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok(AuthResponse.builder().message("Google login successful").build());
     }
 
     @PostMapping("/register")
@@ -91,7 +123,6 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
-        // Clear the JWT cookie
         ResponseCookie cookie = ResponseCookie.from("jwt-token", "")
                 .httpOnly(true)
                 .secure(true)

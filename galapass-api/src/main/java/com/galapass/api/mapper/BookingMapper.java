@@ -1,9 +1,7 @@
 package com.galapass.api.mapper;
 
 import com.galapass.api.DTO.booking.BookingResponseDTO;
-import com.galapass.api.DTO.tour.TourResponseOwnerViewDTO;
-import com.galapass.api.DTO.user.OwnerSummaryDTO;
-import com.galapass.api.entity.Booking;
+import com.galapass.api.entity.booking.Booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +24,7 @@ public class BookingMapper {
         dto.setDate(booking.getDate());
         dto.setNumberOfPeople(booking.getNumberOfPeople());
         dto.setTotalPaid(booking.getTotalPaid());
-        dto.setCompleted(booking.isCompleted());
+        dto.setStatus(booking.getStatus());
         return dto;
     }
 }

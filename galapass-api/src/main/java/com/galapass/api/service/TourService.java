@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.repository.TourCompanyRepository;
+import com.galapass.api.entity.tour.TourStatus;
 import com.galapass.api.repository.TourRepository;
 import com.galapass.api.repository.TourReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -23,7 +24,8 @@ public class TourService {
     }
 
     public Tour getTourById(Long id) {
-        return tourRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tour with ID " + id + " not found."));
+        return tourRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tour with ID " + id + " not found."));
     }
 
     public List<Tour> getToursByCompanyId(Long companyId) {
@@ -60,4 +62,30 @@ public class TourService {
         Double avg = tourReviewRepository.getAverageRatingByTourId(tourId);
         return avg != null ? avg : 0.0;
     }
+
+    public List<Tour> getActiveToursByGuideId(Long guideId) {
+        return tourRepository.findToursByGuideIdAndStatus(guideId, TourStatus.ACTIVE);
+    }
+
+    public List<Tour> getInactiveToursByGuideId(Long guideId) {
+        return tourRepository.findToursByGuideIdAndStatus(guideId, TourStatus.INACTIVE);
+    }
+
+    public List<Tour> getTourHistoryByGuideId(Long guideId) {
+        return tourRepository.findTourHistoryByGuideId(guideId);
+    }
+
+    public BigDecimal sumEarningsByGuideIdAndStatus(Long guideId, TourStatus status) {
+        return tourRepository.sumEarningsByGuideId(guideId, status);
+    }
+
+    public Long countToursByGuideIdAndStatus(Long guideId, TourStatus status) {
+        return tourRepository.countToursByGuideIdAndStatus(guideId, status);
+    }
+
+    public Long countToursByGuideIdAndCompanyIdAndStatus(Long guideId, Long companyId, TourStatus status) {
+        return tourRepository.countToursByGuideIdAndCompanyId(guideId, companyId, status);
+    }
+
+
 }

@@ -1,6 +1,6 @@
 package com.galapass.api.repository;
 
-import com.galapass.api.entity.Booking;
+import com.galapass.api.entity.booking.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,4 +12,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Long countBookingsByTourId(@Param("tourId") Long tourId);
 
     List<Booking> findByTourIdIn(List<Long> tourIds);
+
+    List<Booking> findByTour_Company_Owner_Id(Long ownerId);
 }

@@ -14,6 +14,8 @@ public class GuideInvitationMapper {
                 .message(invitation.getMessage())
                 .status(invitation.getStatus())
                 .sentAt(invitation.getSentAt())
+                .name(invitation.getGuide().getName())
+                .company(invitation.getCompany().getName())
                 .build();
     }
 }

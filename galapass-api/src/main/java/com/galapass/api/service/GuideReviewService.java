@@ -2,7 +2,7 @@ package com.galapass.api.service;
 
 import com.galapass.api.DTO.guideReview.GuideReviewRequestDTO;
 import com.galapass.api.DTO.guideReview.GuideReviewResponseDTO;
-import com.galapass.api.entity.Booking;
+import com.galapass.api.entity.booking.Booking;
 import com.galapass.api.entity.GuideReview;
 import com.galapass.api.entity.user.User;
 import com.galapass.api.mapper.GuideReviewMapper;

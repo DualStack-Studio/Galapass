@@ -3,7 +3,7 @@ package com.galapass.api.service;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galapass.api.DTO.tourReview.TourReviewRequest;
-import com.galapass.api.entity.Booking;
+import com.galapass.api.entity.booking.Booking;
 import com.galapass.api.entity.TourReview;
 import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.user.User;

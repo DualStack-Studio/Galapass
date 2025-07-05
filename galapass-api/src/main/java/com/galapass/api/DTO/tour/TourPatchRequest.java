@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-public class TourResponseDTO {
-    private Long id;
+public class TourPatchRequest {
     private String title;
     private String description;
     private Double price;

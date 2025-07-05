@@ -1,6 +1,7 @@
 package com.galapass.api.mapper;
 
 import com.galapass.api.DTO.tourCompany.TourCompanyBasicDTO;
+import com.galapass.api.DTO.tourCompany.TourCompanyEditing;
 import com.galapass.api.DTO.tourCompany.TourCompanyResponse;
 import com.galapass.api.entity.TourCompany;
 import lombok.RequiredArgsConstructor;
@@ -42,4 +43,19 @@ public class TourCompanyMapper {
                         .toList())
                 .build();
     }
+
+    public TourCompanyEditing toEditingDTO(TourCompany company) {
+        return TourCompanyEditing.builder()
+                .id(company.getId())
+                .name(company.getName())
+                .status(String.valueOf(company.getStatus()))
+                .description(company.getDescription())
+                .email(company.getEmail())
+                .phone(company.getPhone())
+                .logo(company.getLogo())
+                .location(company.getLocation())
+                .build();
+    }
+
+
 }

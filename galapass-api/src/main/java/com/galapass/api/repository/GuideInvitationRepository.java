@@ -7,4 +7,7 @@ import java.util.List;
 
 public interface GuideInvitationRepository extends JpaRepository<GuideInvitation, Long> {
     List<GuideInvitation> findByCompanyId(Long companyId);
+
+    List<GuideInvitation> findByCompany_Owner_Id(Long ownerId);
+
 }

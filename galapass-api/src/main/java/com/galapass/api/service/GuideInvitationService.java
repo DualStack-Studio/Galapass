@@ -46,6 +46,10 @@ public class GuideInvitationService {
         return invitationRepository.findByCompanyId(companyId);
     }
 
+    public List<GuideInvitation> getInvitationsByOwner(Long ownerId) {
+        return invitationRepository.findByCompany_Owner_Id(ownerId);
+    }
+
     public void cancelInvitation(Long id) {
         invitationRepository.deleteById(id);
     }

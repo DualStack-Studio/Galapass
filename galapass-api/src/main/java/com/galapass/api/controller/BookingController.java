@@ -2,7 +2,7 @@ package com.galapass.api.controller;
 
 import com.galapass.api.DTO.booking.BookingRequestDTO;
 import com.galapass.api.DTO.booking.BookingResponseDTO;
-import com.galapass.api.entity.Booking;
+import com.galapass.api.entity.booking.Booking;
 import com.galapass.api.service.BookingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +42,21 @@ public class BookingController {
     @DeleteMapping("/{id}")
     public void deleteBookingById(@PathVariable Long id) {
         bookingService.deleteBookingById(id);
+    }
+
+    @GetMapping("/owner/{ownerId}")
+    public ResponseEntity<List<BookingResponseDTO>> getBookingsByOwner(@PathVariable Long ownerId) {
+        return ResponseEntity.ok(bookingService.getBookingsByOwner(ownerId));
+    }
+
+    @GetMapping("/owner/{ownerId}/search")
+    public ResponseEntity<List<BookingResponseDTO>> searchBookingsByOwner(
+            @PathVariable Long ownerId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String search
+    ) {
+        return ResponseEntity.ok(bookingService.searchBookingsByOwner(ownerId, status, date, search));
     }
 }
 

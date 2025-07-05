@@ -12,5 +12,4 @@ public class UserPatchRequest {
     private String language;
     private String profilePhoto;
     private String status;
-
 }

@@ -1,9 +1,7 @@
 package com.galapass.api.controller;
 
 import com.galapass.api.DTO.tour.TourResponseDTO;
-import com.galapass.api.DTO.tourCompany.TourCompanyBasicDTO;
-import com.galapass.api.DTO.tourCompany.TourCompanyCreateRequest;
-import com.galapass.api.DTO.tourCompany.TourCompanyResponse;
+import com.galapass.api.DTO.tourCompany.*;
 import com.galapass.api.DTO.user.UserResponse;
 import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.TourCompany;
@@ -57,11 +55,9 @@ public class TourCompanyController {
         }
     }
 
-
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<TourCompany>> getTourCompanyById(@PathVariable Long id) {
-        System.out.println(tourCompanyService.getTourCompanyById(id).get().getGuides());
-        return ResponseEntity.ok(tourCompanyService.getTourCompanyById(id));
+    public ResponseEntity<List<TourCompanyEditing>> getTourCompaniesById(@PathVariable Long id) {
+        return ResponseEntity.ok(tourCompanyService.getTourCompaniesById(id));
     }
 
     @PutMapping
@@ -79,6 +75,16 @@ public class TourCompanyController {
         try {
             tourCompanyService.addGuideToCompany(companyId, guideId);
             return ResponseEntity.ok("Guide added to company");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{companyId}/guides/{guideId}")
+    public ResponseEntity<?> removeGuideFromCompany(@PathVariable Long companyId, @PathVariable Long guideId) {
+        try {
+            tourCompanyService.removeGuideFromCompany(companyId, guideId);
+            return ResponseEntity.ok("Guide removed from company");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -103,5 +109,15 @@ public class TourCompanyController {
     @GetMapping("/basic-owner/{ownerId}")
     public List<TourCompanyBasicDTO> getAllBasicCompanies(@PathVariable Long ownerId) {
         return tourCompanyService.getAllCompaniesBasic(ownerId);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> patchCompany(@PathVariable Long id, @RequestBody TourCompanyPatchRequest request) {
+        try {
+            TourCompanyResponse updatedCompany = tourCompanyService.patchCompany(id, request);
+            return ResponseEntity.ok(updatedCompany);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

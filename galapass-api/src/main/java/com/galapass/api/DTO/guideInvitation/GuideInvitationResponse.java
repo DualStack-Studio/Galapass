@@ -1,5 +1,6 @@
 package com.galapass.api.DTO.guideInvitation;
 
+import com.galapass.api.DTO.user.GuideSummaryDTO;
 import com.galapass.api.entity.InvitationStatus;
 import lombok.Builder;
 import lombok.Data;
@@ -14,4 +15,6 @@ public class GuideInvitationResponse {
     private String message;
     private InvitationStatus status;
     private LocalDateTime sentAt;
+    private String name;
+    private String company;
 }

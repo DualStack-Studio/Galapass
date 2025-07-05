@@ -18,6 +18,7 @@ import java.util.Set;
 public class TourResponseOwnerViewDTO {
     private Long id;
     private String title;
+    private String location;
     private Double price;
     private List<String> photoUrls;
 

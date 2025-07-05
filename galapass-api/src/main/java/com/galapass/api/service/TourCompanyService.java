@@ -2,9 +2,7 @@ package com.galapass.api.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.galapass.api.DTO.tourCompany.TourCompanyBasicDTO;
-import com.galapass.api.DTO.tourCompany.TourCompanyCreateRequest;
-import com.galapass.api.DTO.tourCompany.TourCompanyResponse;
+import com.galapass.api.DTO.tourCompany.*;
 import com.galapass.api.DTO.user.UserResponse;
 import com.galapass.api.entity.CompanyTourStatus;
 import com.galapass.api.entity.user.Role;
@@ -45,8 +43,10 @@ public class TourCompanyService {
                 .toList();
     }
 
-    public Optional<TourCompany> getTourCompanyById(Long id) {
-        return tourCompanyRepository.findById(id);
+    public List<TourCompanyEditing> getTourCompaniesById(Long id) {
+        return tourCompanyRepository.findById(id).stream()
+                .map(tourCompanyMapper::toEditingDTO)
+                .toList();
     }
 
     public void createTourCompany(TourCompanyCreateRequest dto) {
@@ -98,8 +98,32 @@ public class TourCompanyService {
             throw new RuntimeException("User with ID " + guideId + " is not a guide");
         }
 
+        // ✅ Add guide to company and company to guide
         company.getGuides().add(guide);
-        guide.setCompany(company);
+        guide.getCompanies().add(company);
+
+        // ✅ Save both sides if needed
+        tourCompanyRepository.save(company);
+        userService.updateUser(guide);
+    }
+
+    public void removeGuideFromCompany(Long companyId, Long guideId) {
+        TourCompany company = tourCompanyRepository.findById(companyId)
+                .orElseThrow(() -> new RuntimeException("Company with ID " + companyId + " not found"));
+
+        User guide = userService.getUserById(guideId)
+                .orElseThrow(() -> new RuntimeException("Guide with ID " + guideId + " not found"));
+
+        if (!company.getGuides().contains(guide)) {
+            throw new RuntimeException("Guide with ID " + guideId + " is not assigned to company with ID " + companyId);
+        }
+
+        // ✅ Remove both sides of the relationship
+        company.getGuides().remove(guide);
+        guide.getCompanies().remove(company);
+
+        // ✅ Save changes
+        tourCompanyRepository.save(company);
         userService.updateUser(guide);
     }
 
@@ -116,5 +140,41 @@ public class TourCompanyService {
         return tourCompanyRepository.findAllByOwner_Id(ownerId).stream()
                 .map(tourCompanyMapper::toBasicDTO)
                 .toList();
+    }
+
+    public TourCompanyResponse patchCompany(Long companyId, TourCompanyPatchRequest request) {
+        TourCompany company = tourCompanyRepository.findById(companyId)
+                .orElseThrow(() -> new RuntimeException("Company not found with id: " + companyId));
+
+        if (request.getName() != null) {
+            company.setName(request.getName());
+        }
+
+        if (request.getLocation() != null) {
+            company.setLocation(request.getLocation());
+        }
+
+        if (request.getDescription() != null) {
+            company.setDescription(request.getDescription());
+        }
+
+        if (request.getPhone() != null) {
+            company.setPhone(request.getPhone());
+        }
+
+        if (request.getEmail() != null) {
+            company.setEmail(request.getEmail());
+        }
+
+        if (request.getLogo() != null) {
+            company.setLogo(request.getLogo());
+        }
+
+        if (request.getStatus() != null) {
+            company.setStatus(CompanyTourStatus.valueOf(request.getStatus().toUpperCase()));
+        }
+
+        TourCompany tourCompany = tourCompanyRepository.save(company);
+        return tourCompanyMapper.toTourCompanyResponse(tourCompany);
     }
 }

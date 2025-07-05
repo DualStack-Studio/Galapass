@@ -3,27 +3,43 @@ package com.galapass.api.service;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.galapass.api.DTO.tour.TourPatchRequest;
+import com.galapass.api.DTO.tour.TourResponseDTO;
+import com.galapass.api.entity.CompanyTourStatus;
+import com.galapass.api.entity.TourCompany;
 import com.galapass.api.entity.tour.Tour;
+import com.galapass.api.entity.tour.TourCategory;
+import com.galapass.api.entity.tour.TourTag;
+import com.galapass.api.entity.user.User;
+import com.galapass.api.mapper.TourMapper;
 import com.galapass.api.repository.TourCompanyRepository;
 import com.galapass.api.repository.TourRepository;
 import com.galapass.api.repository.TourReviewRepository;
+import com.galapass.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TourService {
     private final TourRepository tourRepository;
     private final TourReviewRepository tourReviewRepository;
+    private final TourMapper tourMapper;
+    private final TourCompanyRepository tourCompanyRepository;
+    private final UserRepository userRepository;
 
     public List<Tour> getAllTours() {
         return tourRepository.findAll();
     }
 
-    public Tour getTourById(Long id) {
-        return tourRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tour with ID " + id + " not found."));
+    public List<TourResponseDTO> getToursById(Long id) {
+        return tourRepository.findById(id).stream()
+                .map(tourMapper::toTourResponseDTO)
+                .toList();
     }
 
     public List<Tour> getToursByCompanyId(Long companyId) {
@@ -60,4 +76,107 @@ public class TourService {
         Double avg = tourReviewRepository.getAverageRatingByTourId(tourId);
         return avg != null ? avg : 0.0;
     }
+
+    public TourResponseDTO patchTour(Long tourId, TourPatchRequest request) {
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + tourId));
+
+        if (request.getTitle() != null) {
+            tour.setTitle(request.getTitle());
+        }
+
+        if (request.getDescription() != null) {
+            tour.setDescription(request.getDescription());
+        }
+
+        if (request.getPrice() != null) {
+            tour.setPrice(request.getPrice());
+        }
+
+        if (request.getCategory() != null) {
+            try {
+                TourCategory categoryEnum = TourCategory.valueOf(request.getCategory().toUpperCase());
+                tour.setCategory(categoryEnum);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid category: " + request.getCategory());
+            }
+        }
+
+        if (request.getLocation() != null) {
+            try {
+                tour.setLocation(request.getLocation().toUpperCase()); // If you stored `Location` enum before, convert to Location.valueOf(...)
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid location: " + request.getLocation());
+            }
+        }
+
+        if (request.getPhotoUrls() != null) {
+            tour.setPhotoUrls(request.getPhotoUrls());
+        }
+
+        if (request.getStatus() != null) {
+            try {
+                CompanyTourStatus status = CompanyTourStatus.valueOf(request.getStatus().toUpperCase());
+                tour.setStatus(status);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid status value: " + request.getStatus());
+            }
+        }
+
+        if (request.getDuration() != null) {
+            tour.setDuration(request.getDuration());
+        }
+
+        if (request.getMaxGuests() != null) {
+            tour.setMaxGuests(request.getMaxGuests());
+        }
+
+        if (request.getHighlights() != null) {
+            tour.setHighlights(request.getHighlights());
+        }
+
+        if (request.getTags() != null) {
+            Set<TourTag> tags = request.getTags().stream()
+                    .map(tag -> {
+                        try {
+                            return TourTag.valueOf(tag.toUpperCase());
+                        } catch (IllegalArgumentException e) {
+                            throw new RuntimeException("Invalid tag: " + tag);
+                        }
+                    })
+                    .collect(Collectors.toSet());
+            tour.setTags(tags);
+        }
+
+        // Update company
+        if (request.getCompany() != null && request.getCompany().getId() != null) {
+            TourCompany company = tourCompanyRepository.findById(request.getCompany().getId())
+                    .orElseThrow(() -> new RuntimeException("Company not found with id: " + request.getCompany().getId()));
+            tour.setCompany(company);
+        }
+
+        // Update guides
+        if (request.getGuides() != null && !request.getGuides().isEmpty()) {
+            Set<User> guideUsers = request.getGuides().stream()
+                    .map(guideDto -> {
+                        if (guideDto.getId() == null)
+                            throw new RuntimeException("Guide ID missing");
+                        return userRepository.findById(guideDto.getId())
+                                .orElseThrow(() -> new RuntimeException("Guide not found: " + guideDto.getId()));
+                    })
+                    .collect(Collectors.toSet());
+            tour.setGuides(guideUsers);
+        }
+
+        // Optional: update owner
+        if (request.getOwner() != null && request.getOwner().getId() != null) {
+            User owner = userRepository.findById(request.getOwner().getId())
+                    .orElseThrow(() -> new RuntimeException("Owner not found with id: " + request.getOwner().getId()));
+            tour.setOwner(owner);
+        }
+
+        Tour updated = tourRepository.save(tour);
+        return tourMapper.toTourResponseDTO(updated);
+    }
+
 }

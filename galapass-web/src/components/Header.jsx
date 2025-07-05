@@ -5,9 +5,11 @@ import {useNavigate} from "react-router-dom";
 
 const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isRoleChanging, setIsRoleChanging] = useState(false);
     const dropdownRef = useRef(null);
-    const { user, logout } = useAuth();
+    const { user, logout, refreshUser } = useAuth();
     const navigate = useNavigate();
+
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -26,6 +28,54 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
         await logout();
         navigate('/');
         setIsDropdownOpen(false);
+    };
+
+    const handleRoleChange = async (newRole, dashboardPath) => {
+        if (!user?.id || isRoleChanging) return;
+
+        setIsRoleChanging(true);
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/users/${user.id}`, {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    role: newRole
+                })
+            });
+
+
+            if (response.ok) {
+                // You might want to update the user context here
+                await refreshUser(); // if you have a method to refresh user data
+
+                // Navigate to the appropriate dashboard
+                navigate(dashboardPath);
+
+                // Close mobile menu if open
+                setIsMenuOpen(false);
+            } else {
+                console.error('Failed to change role:', response.statusText);
+                // You might want to show an error message to the user
+                alert('Failed to change role. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error changing role:', error);
+            alert('An error occurred while changing role. Please try again.');
+        } finally {
+            setIsRoleChanging(false);
+        }
+    };
+
+    const handleBecomeGuide = () => {
+        handleRoleChange('GUIDE', '/guide/dashboard');
+    };
+
+    const handleBecomeTourOperator = () => {
+        handleRoleChange('OWNER', '/owner/dashboard');
     };
 
     const getUserInitials = (name) => {
@@ -57,10 +107,22 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
                         {user?.role !== "OWNER" && (
                             <>
                                 {user?.role !== "GUIDE" && (
-                                    <a href="#" className="text-gray-700 hover:text-emerald-600 font-medium transition-colors">Become a guide</a>
+                                    <button
+                                        onClick={handleBecomeGuide}
+                                        disabled={isRoleChanging}
+                                        className="text-gray-700 hover:text-emerald-600 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isRoleChanging ? 'Processing...' : 'Become a guide'}
+                                    </button>
                                 )}
                                 {user?.role !== "OWNER" && (
-                                    <a href="#" className="text-gray-700 hover:text-emerald-600 font-medium transition-colors">Become a Tour Operator</a>
+                                    <button
+                                        onClick={handleBecomeTourOperator}
+                                        disabled={isRoleChanging}
+                                        className="text-gray-700 hover:text-emerald-600 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isRoleChanging ? 'Processing...' : 'Become a Tour Operator'}
+                                    </button>
                                 )}
                             </>
                         )}
@@ -96,6 +158,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
                                                 const roleMap = {
                                                     GUIDE: "Guide",
                                                     OWNER: "Tour Operator",
+                                                    TOURIST: "Tourist",
                                                     ADMIN: "Admin"
                                                 };
                                                 const role = roleMap[user.role] || "Tourist";
@@ -159,8 +222,28 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
             {isMenuOpen && (
                 <div className="md:hidden border-t border-gray-200 bg-white shadow-lg">
                     <div className="px-4 py-2 space-y-1">
-                        <a href="#" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">Become a Guide</a>
-                        <a href="#" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium">Become a Tour Operator</a>
+                        {user?.role !== "OWNER" && (
+                            <>
+                                {user?.role !== "GUIDE" && (
+                                    <button
+                                        onClick={handleBecomeGuide}
+                                        disabled={isRoleChanging}
+                                        className="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isRoleChanging ? 'Processing...' : 'Become a Guide'}
+                                    </button>
+                                )}
+                                {user?.role !== "OWNER" && (
+                                    <button
+                                        onClick={handleBecomeTourOperator}
+                                        disabled={isRoleChanging}
+                                        className="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isRoleChanging ? 'Processing...' : 'Become a Tour Operator'}
+                                    </button>
+                                )}
+                            </>
+                        )}
 
                         <div className="px-3 py-2">
                             {user ? (

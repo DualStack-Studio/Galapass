@@ -3,6 +3,7 @@ package com.galapass.api.mapper;
 import com.galapass.api.DTO.user.GuideSummaryDTO;
 import com.galapass.api.DTO.user.UserResponse;
 import com.galapass.api.DTO.user.OwnerSummaryDTO;
+import com.galapass.api.entity.tour.TourStatus;
 import com.galapass.api.entity.user.User;
 import com.galapass.api.repository.GuideReviewRepository;
 import com.galapass.api.repository.TourRepository;
@@ -52,8 +53,8 @@ public class UserMapper {
                 ? guideReviewRepository.getAverageRatingByGuideId(user.getId())
                 : 0.0);
         dto.setActiveTours(
-                tourRepository.countActiveToursByGuideId(user.getId()) != null ?
-                        tourRepository.countActiveToursByGuideId(user.getId()) : 0
+                tourRepository.countToursByGuideIdAndStatus(user.getId(), TourStatus.ACTIVE) != null ?
+                        tourRepository.countToursByGuideIdAndStatus(user.getId(), TourStatus.ACTIVE) : 0
         );
         return dto;
     }

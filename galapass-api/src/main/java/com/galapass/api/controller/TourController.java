@@ -2,11 +2,11 @@ package com.galapass.api.controller;
 
 import com.galapass.api.DTO.tour.CreateTourRequest;
 import com.galapass.api.DTO.tour.TourResponseDTO;
-import com.galapass.api.entity.CompanyTourStatus;
 import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.entity.TourCompany;
 import com.galapass.api.entity.tour.TourCategory;
+import com.galapass.api.entity.tour.TourStatus;
 import com.galapass.api.entity.tour.TourTag;
+import com.galapass.api.entity.TourCompany;
 import com.galapass.api.entity.user.User;
 import com.galapass.api.mapper.TourMapper;
 import com.galapass.api.repository.TourCompanyRepository;
@@ -18,9 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,7 +33,6 @@ public class TourController {
     private final TourCompanyRepository tourCompanyRepository;
     private final TourRepository tourRepository;
     private final TourMapper tourMapper;
-
 
     @GetMapping
     public ResponseEntity<List<TourResponseDTO>> getAllTours() {
@@ -50,8 +48,7 @@ public class TourController {
                 .orElseThrow(() -> new RuntimeException("Company not found with id: " + request.getCompanyId()));
         Set<User> guides = new HashSet<>(userRepository.findAllById(request.getGuideIds()));
 
-        Set<TourTag> tags = request.getTags() != null
-                ? request.getTags().stream()
+        Set<TourTag> tags = Optional.ofNullable(request.getTags()).orElse(Set.of()).stream()
                 .map(tag -> {
                     try {
                         return TourTag.valueOf(tag.toUpperCase());
@@ -59,8 +56,7 @@ public class TourController {
                         throw new RuntimeException("Invalid tag: " + tag);
                     }
                 })
-                .collect(Collectors.toSet())
-                : new HashSet<>();
+                .collect(Collectors.toSet());
 
         Tour tour = Tour.builder()
                 .title(request.getTitle())
@@ -73,7 +69,7 @@ public class TourController {
                 .company(company)
                 .guides(guides)
                 .tags(tags)
-                .status(CompanyTourStatus.ACTIVE)
+                .status(TourStatus.ACTIVE)
                 .maxGuests(request.getMaxGuests())
                 .duration(request.getDuration())
                 .highlights(request.getHighlights())
@@ -83,7 +79,6 @@ public class TourController {
 
         return ResponseEntity.ok(tourMapper.toTourResponseDTO(savedTour));
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<Tour> getTourById(@PathVariable Long id) {
@@ -98,5 +93,64 @@ public class TourController {
     @DeleteMapping("/{id}")
     public void deleteTourById(@PathVariable Long id) {
         tourService.deleteTourById(id);
+    }
+
+    @GetMapping("/guide/{guideId}/active")
+    public ResponseEntity<List<TourResponseDTO>> getActiveToursByGuide(@PathVariable Long guideId) {
+        return ResponseEntity.ok(
+                tourMapper.toTourResponseDTOList(tourService.getActiveToursByGuideId(guideId))
+        );
+    }
+
+    @GetMapping("/guide/{guideId}/inactive")
+    public ResponseEntity<List<TourResponseDTO>> getInactiveToursByGuide(@PathVariable Long guideId) {
+        return ResponseEntity.ok(
+                tourMapper.toTourResponseDTOList(tourService.getInactiveToursByGuideId(guideId))
+        );
+    }
+
+    @GetMapping("/guide/{guideId}/history")
+    public ResponseEntity<List<TourResponseDTO>> getTourHistory(@PathVariable Long guideId) {
+        return ResponseEntity.ok(
+                tourMapper.toTourResponseDTOList(tourService.getTourHistoryByGuideId(guideId))
+        );
+    }
+
+    @GetMapping("/guide/{guideId}/earnings/active")
+    public ResponseEntity<BigDecimal> getActiveEarnings(@PathVariable Long guideId) {
+        return ResponseEntity.ok(tourService.sumEarningsByGuideIdAndStatus(guideId, TourStatus.ACTIVE));
+    }
+
+    @GetMapping("/guide/{guideId}/earnings/inactive")
+    public ResponseEntity<BigDecimal> getInactiveEarnings(@PathVariable Long guideId) {
+        return ResponseEntity.ok(tourService.sumEarningsByGuideIdAndStatus(guideId, TourStatus.INACTIVE));
+    }
+
+    @GetMapping("/guide/{guideId}/count/active")
+    public ResponseEntity<Long> countActiveTours(@PathVariable Long guideId) {
+        return ResponseEntity.ok(tourService.countToursByGuideIdAndStatus(guideId, TourStatus.ACTIVE));
+    }
+
+    @GetMapping("/guide/{guideId}/count/inactive")
+    public ResponseEntity<Long> countInactiveTours(@PathVariable Long guideId) {
+        return ResponseEntity.ok(tourService.countToursByGuideIdAndStatus(guideId, TourStatus.INACTIVE));
+    }
+
+    @GetMapping("/guide/{guideId}/company/{companyId}/count/active")
+    public ResponseEntity<Long> countActiveToursByGuideCompany(
+            @PathVariable Long guideId,
+            @PathVariable Long companyId) {
+        return ResponseEntity.ok(
+                tourService.countToursByGuideIdAndCompanyIdAndStatus(guideId, companyId, TourStatus.ACTIVE)
+        );
+    }
+
+    @GetMapping("/guide/{guideId}/company/{companyId}/count/inactive")
+    public ResponseEntity<Long> countInactiveToursByGuideCompany(
+            @PathVariable Long guideId,
+            @PathVariable Long companyId) {
+        return ResponseEntity.ok(
+                tourService.countToursByGuideIdAndCompanyIdAndStatus(guideId, companyId, TourStatus.INACTIVE)
+        );
     }
 }

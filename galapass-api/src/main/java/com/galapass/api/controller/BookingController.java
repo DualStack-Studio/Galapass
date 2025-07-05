@@ -2,7 +2,8 @@ package com.galapass.api.controller;
 
 import com.galapass.api.DTO.booking.BookingRequestDTO;
 import com.galapass.api.DTO.booking.BookingResponseDTO;
-import com.galapass.api.entity.Booking;
+import com.galapass.api.entity.booking.Booking;
+import com.galapass.api.entity.booking.BookingStatus;
 import com.galapass.api.service.BookingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -43,5 +44,13 @@ public class BookingController {
     public void deleteBookingById(@PathVariable Long id) {
         bookingService.deleteBookingById(id);
     }
-}
 
+    @PostMapping("/{id}/status/{status}")
+    public ResponseEntity<Booking> updateStatus(
+            @PathVariable Long id,
+            @PathVariable BookingStatus status
+    ) {
+        return ResponseEntity.ok(bookingService.updateBookingStatus(id, status));
+    }
+
+}

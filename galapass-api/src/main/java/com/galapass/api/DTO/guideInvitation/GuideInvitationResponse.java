@@ -14,4 +14,15 @@ public class GuideInvitationResponse {
     private String message;
     private InvitationStatus status;
     private LocalDateTime sentAt;
+
+    private CompanyInfo company;
+
+    @Data
+    @Builder
+    public static class CompanyInfo {
+        private Long id;
+        private String name;
+        private String email;
+        private String logo;
+    }
 }

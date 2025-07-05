@@ -117,4 +117,25 @@ public class TourCompanyService {
                 .map(tourCompanyMapper::toBasicDTO)
                 .toList();
     }
+
+    public void removeGuideFromCompany(Long companyId, Long guideId) {
+        TourCompany company = tourCompanyRepository.findById(companyId)
+                .orElseThrow(() -> new RuntimeException("Company with ID " + companyId + " not found"));
+
+        User guide = userService.getUserById(guideId)
+                .orElseThrow(() -> new RuntimeException("Guide with ID " + guideId + " not found"));
+
+        if (guide.getRole() != Role.GUIDE) {
+            throw new RuntimeException("User with ID " + guideId + " is not a guide");
+        }
+
+        if (!company.getGuides().contains(guide)) {
+            throw new RuntimeException("Guide with ID " + guideId + " is not part of the company with ID " + companyId);
+        }
+
+        company.getGuides().remove(guide);
+        guide.setCompany(null);
+        userService.updateUser(guide);
+    }
+
 }

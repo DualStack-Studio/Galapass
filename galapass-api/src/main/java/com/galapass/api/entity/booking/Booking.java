@@ -1,8 +1,10 @@
-package com.galapass.api.entity;
+package com.galapass.api.entity.booking;
+
 import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.*;
 
 @Entity
@@ -11,24 +13,31 @@ import java.util.*;
 @AllArgsConstructor
 @Builder
 public class Booking {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToMany
     @JoinTable(
-        name = "booking_tourists",
-        joinColumns = @JoinColumn(name = "booking_id"),
-        inverseJoinColumns = @JoinColumn(name = "tourist_id")
+            name = "booking_tourists",
+            joinColumns = @JoinColumn(name = "booking_id"),
+            inverseJoinColumns = @JoinColumn(name = "tourist_id")
     )
     private Set<User> tourists = new HashSet<>();
 
     @ManyToOne
-    @JoinColumn(name = "tour_id")
+    @JoinColumn(name = "tour_id", nullable = false)
     private Tour tour;
 
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
+
     private int numberOfPeople;
+
     private Double totalPaid;
-    private boolean completed;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BookingStatus status;
 }

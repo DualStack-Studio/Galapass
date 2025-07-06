@@ -18,8 +18,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByTourDate_Tour_Owner_Id(Long ownerId);
 
-    List<Booking> findByTourIdIn(List<Long> tourIds);
-
     @Query("SELECT b FROM Booking b JOIN b.tourDate.tour.guides g WHERE g.id = :guideId AND b.status = :status")
     List<Booking> findBookingsByGuideIdAndStatus(@Param("guideId") Long guideId, @Param("status") BookingStatus status);
 

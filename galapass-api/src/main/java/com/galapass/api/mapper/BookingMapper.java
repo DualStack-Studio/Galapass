@@ -47,7 +47,6 @@ public class BookingMapper {
         }
         dto.setNumberOfPeople(booking.getNumberOfPeople());
         dto.setTotalPaid(booking.getTotalPaid());
-        dto.setStatus(String.valueOf(booking.getStatus()));
         dto.setStatus(booking.getStatus());
         return dto;
     }

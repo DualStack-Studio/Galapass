@@ -7,7 +7,7 @@ import com.galapass.api.DTO.guideDashboard.GuideDashboardStatsDTO;
 import com.galapass.api.DTO.user.UserPatchRequest;
 import com.galapass.api.DTO.user.UserResponse;
 import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.tour.TourStatus;
+import com.galapass.api.entity.CompanyTourStatus;
 
 import com.galapass.api.entity.user.GuideStatus;
 import com.galapass.api.entity.user.Role;
@@ -199,21 +199,21 @@ public class UserService {
         return avg != null ? avg : 0.0;
     }
 
-    public GuideDashboardStatsDTO getGuideDashboardStats(Long guideId) {
-        long activeTours = tourRepository.countToursByGuideIdAndStatus(guideId, TourStatus.ACTIVE);
-        double averageRating = calculateAverageGuideRating(guideId);
-        BigDecimal totalEarnings = tourRepository.sumEarningsByGuideId(guideId, TourStatus.ACTIVE);
-        if (totalEarnings == null) {
-            totalEarnings = BigDecimal.ZERO;
-        }
-
-        // Upcoming/completed counts should now be handled by BookingService/Repository
-        return new GuideDashboardStatsDTO(
-                activeTours,
-                0L, // placeholder for upcoming bookings
-                0L, // placeholder for completed bookings
-                averageRating,
-                totalEarnings
-        );
-    }
+//    public GuideDashboardStatsDTO getGuideDashboardStats(Long guideId) {
+//        long activeTours = tourRepository.countToursByGuideIdAndStatus(guideId, CompanyTourStatus.ACTIVE);
+//        double averageRating = calculateAverageGuideRating(guideId);
+//        BigDecimal totalEarnings = tourRepository.sumEarningsByGuideId(guideId, CompanyTourStatus.ACTIVE);
+//        if (totalEarnings == null) {
+//            totalEarnings = BigDecimal.ZERO;
+//        }
+//
+//        // Upcoming/completed counts should now be handled by BookingService/Repository
+//        return new GuideDashboardStatsDTO(
+//                activeTours,
+//                0L, // placeholder for upcoming bookings
+//                0L, // placeholder for completed bookings
+//                averageRating,
+//                totalEarnings
+//        );
+//    }
 }

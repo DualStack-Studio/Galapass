@@ -1,7 +1,7 @@
 package com.galapass.api.repository;
 
 import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.entity.tour.TourStatus;
+import com.galapass.api.entity.CompanyTourStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,23 +16,16 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
 
     // Tours by guide and status (ACTIVE / INACTIVE)
     @Query("SELECT t FROM Tour t JOIN t.guides g WHERE g.id = :guideId AND t.status = :status")
-    List<Tour> findToursByGuideIdAndStatus(@Param("guideId") Long guideId, @Param("status") TourStatus status);
+    List<Tour> findToursByGuideIdAndStatus(@Param("guideId") Long guideId, @Param("status") CompanyTourStatus status);
 
     // Count of tours by guide and status
     @Query("SELECT COUNT(t) FROM Tour t JOIN t.guides g WHERE g.id = :guideId AND t.status = :status")
-    Long countToursByGuideIdAndStatus(@Param("guideId") Long guideId, @Param("status") TourStatus status);
+    Long countToursByGuideIdAndStatus(@Param("guideId") Long guideId, @Param("status") CompanyTourStatus status);
 
-    // Full tour history by guide (used for display, not filtered by status)
-    @Query("SELECT t FROM Tour t JOIN t.guides g WHERE g.id = :guideId ORDER BY t.startDate DESC")
-    List<Tour> findTourHistoryByGuideId(@Param("guideId") Long guideId);
 
     // Count active tours by guide and company
     @Query("SELECT COUNT(t) FROM Tour t JOIN t.guides g WHERE g.id = :guideId AND t.company.id = :companyId AND t.status = :status")
     long countToursByGuideIdAndCompanyId(@Param("guideId") Long guideId,
                                          @Param("companyId") Long companyId,
-                                         @Param("status") TourStatus status);
-
-    // Sum earnings by guide and tour status (typically only for ACTIVE tours)
-    @Query("SELECT COALESCE(SUM(t.earnings), 0) FROM Tour t JOIN t.guides g WHERE g.id = :guideId AND t.status = :status")
-    BigDecimal sumEarningsByGuideId(@Param("guideId") Long guideId, @Param("status") TourStatus status);
+                                         @Param("status") CompanyTourStatus status);
 }

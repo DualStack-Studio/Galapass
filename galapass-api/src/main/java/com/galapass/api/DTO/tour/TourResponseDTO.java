@@ -3,6 +3,7 @@ package com.galapass.api.DTO.tour;
 import com.galapass.api.DTO.tourCompany.TourCompanySummaryDTO;
 import com.galapass.api.DTO.user.GuideSummaryDTO;
 import com.galapass.api.DTO.user.OwnerSummaryDTO;
+import com.galapass.api.entity.CompanyTourStatus;
 import lombok.Data;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class TourResponseDTO {
     private String category;
     private String location;
     private List<String> photoUrls;
-    private String status;
+    private CompanyTourStatus status;
 
     private OwnerSummaryDTO owner;
     private TourCompanySummaryDTO company;

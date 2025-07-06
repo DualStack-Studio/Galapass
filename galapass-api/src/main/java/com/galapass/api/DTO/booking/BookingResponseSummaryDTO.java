@@ -2,6 +2,7 @@ package com.galapass.api.DTO.booking;
 
 import com.galapass.api.DTO.tour.TourResponseOwnerViewDTO;
 import com.galapass.api.DTO.user.OwnerSummaryDTO;
+import com.galapass.api.entity.booking.BookingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +21,5 @@ public class BookingResponseSummaryDTO {
     private LocalDate date;
     private int numberOfPeople;
     private BigDecimal totalPaid;
-    private String status;
+    private BookingStatus status;
 }

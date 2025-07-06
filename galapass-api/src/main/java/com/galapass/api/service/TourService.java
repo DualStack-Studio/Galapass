@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galapass.api.DTO.tour.TourPatchRequest;
 import com.galapass.api.DTO.tour.TourResponseDTO;
-import com.galapass.api.entity.CompanyTourStatus;
 import com.galapass.api.entity.TourCompany;
 import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.tour.TourCategory;
@@ -13,7 +12,7 @@ import com.galapass.api.entity.tour.TourTag;
 import com.galapass.api.entity.user.User;
 import com.galapass.api.mapper.TourMapper;
 import com.galapass.api.repository.TourCompanyRepository;
-import com.galapass.api.entity.tour.TourStatus;
+import com.galapass.api.entity.CompanyTourStatus;
 
 import com.galapass.api.repository.TourRepository;
 import com.galapass.api.repository.TourReviewRepository;
@@ -126,7 +125,7 @@ public class TourService {
 
         if (request.getStatus() != null) {
             try {
-                CompanyTourStatus status = CompanyTourStatus.valueOf(request.getStatus().toUpperCase());
+                com.galapass.api.entity.CompanyTourStatus status = com.galapass.api.entity.CompanyTourStatus.valueOf(request.getStatus().toUpperCase());
                 tour.setStatus(status);
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("Invalid status value: " + request.getStatus());
@@ -191,26 +190,18 @@ public class TourService {
 
 
     public List<Tour> getActiveToursByGuideId(Long guideId) {
-        return tourRepository.findToursByGuideIdAndStatus(guideId, TourStatus.ACTIVE);
+        return tourRepository.findToursByGuideIdAndStatus(guideId, CompanyTourStatus.ACTIVE);
     }
 
     public List<Tour> getInactiveToursByGuideId(Long guideId) {
-        return tourRepository.findToursByGuideIdAndStatus(guideId, TourStatus.INACTIVE);
+        return tourRepository.findToursByGuideIdAndStatus(guideId, CompanyTourStatus.INACTIVE);
     }
 
-    public List<Tour> getTourHistoryByGuideId(Long guideId) {
-        return tourRepository.findTourHistoryByGuideId(guideId);
-    }
-
-    public BigDecimal sumEarningsByGuideIdAndStatus(Long guideId, TourStatus status) {
-        return tourRepository.sumEarningsByGuideId(guideId, status);
-    }
-
-    public Long countToursByGuideIdAndStatus(Long guideId, TourStatus status) {
+    public Long countToursByGuideIdAndStatus(Long guideId, CompanyTourStatus status) {
         return tourRepository.countToursByGuideIdAndStatus(guideId, status);
     }
 
-    public Long countToursByGuideIdAndCompanyIdAndStatus(Long guideId, Long companyId, TourStatus status) {
+    public Long countToursByGuideIdAndCompanyIdAndStatus(Long guideId, Long companyId, CompanyTourStatus status) {
         return tourRepository.countToursByGuideIdAndCompanyId(guideId, companyId, status);
     }
 }

@@ -1,5 +1,6 @@
 package com.galapass.api.DTO.tourDate;
 
+import com.galapass.api.DTO.tour.TourResponseOwnerViewDTO;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,5 +17,5 @@ public class TourDateSummaryDTO {
     private BigDecimal price;
     private boolean available;
     private Integer maxGuests;
-    private Long tourId;
+    private TourResponseOwnerViewDTO tour;
 }

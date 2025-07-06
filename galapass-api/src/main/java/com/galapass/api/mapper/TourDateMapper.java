@@ -1,6 +1,7 @@
 package com.galapass.api.mapper;
 
 import com.galapass.api.DTO.booking.BookingResponseSummaryDTO;
+import com.galapass.api.DTO.tour.TourResponseOwnerViewDTO;
 import com.galapass.api.DTO.tourDate.TourDateRequestDTO;
 import com.galapass.api.DTO.tourDate.TourDateResponseDTO;
 import com.galapass.api.DTO.tourDate.TourDateSummaryDTO;
@@ -24,6 +25,7 @@ public class TourDateMapper {
     // Injecting BookingMapper to handle booking-related mapping.
     // This promotes separation of concerns and uses the application's main BookingMapper.
     private final BookingMapper bookingMapper;
+    private final TourMapper tourMapper;
 
     /**
      * Converts a TourDateRequestDTO to a TourDate entity.
@@ -71,14 +73,19 @@ public class TourDateMapper {
     }
 
     public TourDateSummaryDTO toTourDateSummaryDTO(TourDate tourDate) {
-        // Using a builder for the DTO as well for consistency and immutability.
+        // 1. Get the raw Tour entity from the TourDate object
+        Tour tourEntity = tourDate.getTour();
+
+        // 2. **THE MISSING STEP**: Convert the Tour entity into the correct DTO
+        TourResponseOwnerViewDTO tourDTO = tourMapper.toTourResponseOwnerViewDTO(tourEntity);
+
         return TourDateSummaryDTO.builder()
                 .id(tourDate.getId())
                 .date(tourDate.getDate())
                 .price(tourDate.getPrice())
                 .available(tourDate.isAvailable())
                 .maxGuests(tourDate.getMaxGuests())
-                .tourId(tourDate.getTour() != null ? tourDate.getTour().getId() : null)
+                .tour(tourDTO)
                 .build();
     }
 }

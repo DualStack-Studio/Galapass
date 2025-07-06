@@ -42,7 +42,7 @@ public class TourMapper {
         dto.setCategory(String.valueOf(tour.getCategory()));
         dto.setLocation(tour.getLocation());
         dto.setPhotoUrls(tour.getPhotoUrls());
-        dto.setStatus(tour.getStatus().toString());
+        dto.setStatus(tour.getStatus());
         dto.setCompany(companyDTO);
         dto.setOwner(userMapper.toOwnerSummaryDTO(tour.getOwner()));
         dto.setGuides(tour.getGuides().stream()

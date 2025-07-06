@@ -93,7 +93,7 @@ public class TourDateService {
         if (tourDate.getBookings() != null && !tourDate.getBookings().isEmpty()) {
             for (Booking booking : tourDate.getBookings()) {
                 // 1. Update booking status
-                booking.setStatus(BookingStatus.valueOf("CANCELED"));
+                booking.setStatus(BookingStatus.CANCELED);
 
                 // 2. TODO: Trigger email notification to the tourist
                 // emailService.sendCancellationNotice(booking.getTourist());

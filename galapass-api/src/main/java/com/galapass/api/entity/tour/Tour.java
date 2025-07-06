@@ -35,7 +35,7 @@ public class Tour {
     private List<String> photoUrls = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private TourStatus status;
+    private CompanyTourStatus status;
 
 
     @ManyToOne
@@ -73,10 +73,4 @@ public class Tour {
     @CollectionTable(name = "tour_highlights", joinColumns = @JoinColumn(name = "tour_id"))
     @Column(name = "highlight")
     private List<String> highlights = new ArrayList<>();
-
-    @Column(nullable = false)
-    private BigDecimal earnings = BigDecimal.ZERO;
-    @Column(nullable = false)
-    private LocalDate startDate;
-
 }

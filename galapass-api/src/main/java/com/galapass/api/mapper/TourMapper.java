@@ -3,6 +3,7 @@ package com.galapass.api.mapper;
 import com.galapass.api.DTO.tour.TourResponseOwnerViewDTO;
 import com.galapass.api.DTO.tourCompany.TourCompanySummaryDTO;
 import com.galapass.api.DTO.tour.TourResponseDTO;
+import com.galapass.api.entity.TourReview;
 import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.repository.BookingRepository;
 import com.galapass.api.repository.TourReviewRepository;
@@ -41,6 +42,7 @@ public class TourMapper {
         dto.setCategory(String.valueOf(tour.getCategory()));
         dto.setLocation(tour.getLocation());
         dto.setPhotoUrls(tour.getPhotoUrls());
+        dto.setStatus(tour.getStatus().toString());
         dto.setCompany(companyDTO);
         dto.setOwner(userMapper.toOwnerSummaryDTO(tour.getOwner()));
         dto.setGuides(tour.getGuides().stream()
@@ -89,13 +91,16 @@ public class TourMapper {
         TourResponseOwnerViewDTO dto = new TourResponseOwnerViewDTO();
         dto.setId(tour.getId());
         dto.setTitle(tour.getTitle());
+        dto.setLocation(tour.getLocation());
         dto.setPrice(tour.getPrice());
         dto.setPhotoUrls(tour.getPhotoUrls());
         dto.setOwner(userMapper.toOwnerSummaryDTO(tour.getOwner()));
         dto.setRating(tour.getReviews() != null && !tour.getReviews().isEmpty()
-                ? tour.getReviews().stream().mapToDouble(r -> r.getRating()).average().orElse(0.0)
+                ? tour.getReviews().stream().mapToDouble(TourReview::getRating).average().orElse(0.0)
                 : 0.0);
+        dto.setStatus(tour.getStatus().toString());
         return dto;
     }
+
 
 }

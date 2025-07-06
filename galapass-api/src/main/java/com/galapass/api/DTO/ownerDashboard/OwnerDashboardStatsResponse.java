@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -13,5 +15,5 @@ public class OwnerDashboardStatsResponse {
     private long totalCompanies;
     private long totalTours;
     private long totalGuides;
-    private double totalRevenue;
+    private BigDecimal totalRevenue;
 }

@@ -47,7 +47,7 @@ public class UserController {
     @PatchMapping("/{id}")
     public ResponseEntity<?> patchUser(@PathVariable Long id, @RequestBody UserPatchRequest request) {
        try {
-           User updatedUser = userService.patchUser(id, request);
+           UserResponse updatedUser = userService.patchUser(id, request);
            return ResponseEntity.ok(updatedUser);
        } catch (DataIntegrityViolationException e) {
            return ResponseEntity.status(HttpStatus.CONFLICT).body("Update failed, email already used");

@@ -5,20 +5,27 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galapass.api.DTO.booking.BookingRequestDTO;
 import com.galapass.api.DTO.booking.BookingResponseDTO;
+import com.galapass.api.entity.TourDate;
+
 import com.galapass.api.entity.booking.Booking;
 import com.galapass.api.entity.booking.BookingStatus;
 import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.user.User;
+import com.galapass.api.exception.TourNotFoundException; 
 import com.galapass.api.mapper.BookingMapper;
 import com.galapass.api.repository.BookingRepository;
+import com.galapass.api.repository.TourDateRepository;
 import com.galapass.api.repository.TourRepository;
 import com.galapass.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+
 import java.util.Set;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +35,7 @@ public class BookingService {
     private final UserRepository userRepository;
     private final TourRepository tourRepository;
     private final BookingMapper bookingMapper;
+    private final TourDateRepository tourDateRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -38,17 +46,24 @@ public class BookingService {
     }
 
     public BookingResponseDTO createBooking(BookingRequestDTO request) {
-        Tour tour = tourRepository.findById(request.getTourId())
-                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + request.getTourId()));
+        TourDate tourDate = tourDateRepository.findById(request.getTourDateId())
+                .orElseThrow(() -> new TourNotFoundException("TourDate not found with id: " + request.getTourDateId()));
 
-        Set<User> tourists = userRepository.findAllById(request.getTouristIds())
-                .stream().collect(Collectors.toSet());
+        Tour tour = tourDate.getTour();
+
+        if (request.getNumberOfPeople() > tour.getMaxGuests()) {
+            throw new IllegalArgumentException("Requested number of people exceeds the tour's max guest capacity.");
+        }
+
+        Set<User> guides = new HashSet<>(userRepository.findAllById(request.getGuideIds()));
+        Set<User> tourists = new HashSet<>(userRepository.findAllById(request.getTouristIds()));
 
         Booking booking = Booking.builder()
-                .tour(tour)
+                .guides(guides)
                 .tourists(tourists)
                 .date(request.getDate())
                 .numberOfPeople(request.getNumberOfPeople())
+                .tourDate(tourDate)
                 .totalPaid(request.getTotalPaid())
                 .status(BookingStatus.PENDING)
                 .build();
@@ -84,7 +99,52 @@ public class BookingService {
         return bookingRepository.countBookingsByTourId(tourId);
     }
 
-    // NEW: Status transitions
+
+    public List<BookingResponseDTO> getBookingsByOwner(Long ownerId) {
+        List<Booking> bookings = bookingRepository.findByTourDate_Tour_Owner_Id(ownerId);
+        return bookings.stream()
+                .map(bookingMapper::toBookingResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<BookingResponseDTO> searchBookingsByOwner(Long ownerId, String status, String date, String search) {
+        List<Booking> bookings = bookingRepository.findByTourDate_Tour_Owner_Id(ownerId);
+        Stream<Booking> stream = bookings.stream();
+
+
+        // Filter by status
+        if (status != null && !status.isBlank()) {
+            try {
+                BookingStatus statusEnum = BookingStatus.valueOf(status.toUpperCase());
+                stream = stream.filter(b -> b.getStatus() == statusEnum);
+            } catch (IllegalArgumentException e) {
+                
+                System.err.println("Invalid booking status provided: " + status);
+            }
+        }
+
+        // Filter by date
+        if (date != null && !date.isBlank()) {
+            stream = stream.filter(b -> {
+                String bookingDate = new java.text.SimpleDateFormat("yyyy-MM-dd").format(b.getDate());
+                return bookingDate.equals(date);
+            });
+        }
+
+        // Filter by search term
+        if (search != null && !search.trim().isEmpty()) {
+            String lowerSearch = search.toLowerCase();
+            stream = stream.filter(b ->
+                    b.getTourDate().getTour().getTitle().toLowerCase().contains(lowerSearch) ||
+                            b.getTourDate().getTour().getLocation().toLowerCase().contains(lowerSearch) ||
+                            b.getTourists().stream().anyMatch(t -> t.getName().toLowerCase().contains(lowerSearch))
+            );
+        }
+
+        return stream.map(bookingMapper::toBookingResponseDTO).toList();
+    }
+
+    // Status transitions
 
     public Booking updateBookingStatus(Long bookingId, BookingStatus status) {
         Booking booking = getBookingById(bookingId);
@@ -93,8 +153,7 @@ public class BookingService {
     }
 
     public List<Booking> getBookingsByGuideAndStatus(Long guideId, BookingStatus status) {
-        // Assuming you have a method in BookingRepository that finds bookings by guide (tour guides in tour) and booking status
-        return bookingRepository.findBookingsByGuideIdAndStatus(guideId, status);
+              return bookingRepository.findBookingsByGuideIdAndStatus(guideId, status);
     }
 
     public List<Booking> getUpcomingBookingsByGuide(Long guideId) {
@@ -103,9 +162,6 @@ public class BookingService {
     }
 
     public List<Booking> getBookingHistoryByGuide(Long guideId) {
-        // all bookings with guideId, ordered by date desc
-        return bookingRepository.findBookingHistoryByGuideId(guideId);
+                return bookingRepository.findBookingHistoryByGuideId(guideId);
     }
-
-
 }

@@ -1,7 +1,12 @@
 package com.galapass.api.controller;
 
 import com.galapass.api.DTO.tour.CreateTourRequest;
+import com.galapass.api.DTO.tour.TourPatchRequest;
 import com.galapass.api.DTO.tour.TourResponseDTO;
+import com.galapass.api.DTO.tourCompany.TourCompanyPatchRequest;
+import com.galapass.api.DTO.tourCompany.TourCompanyResponse;
+import com.galapass.api.entity.CompanyTourStatus;
+
 import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.tour.TourCategory;
 import com.galapass.api.entity.tour.TourStatus;
@@ -15,6 +20,7 @@ import com.galapass.api.repository.UserRepository;
 import com.galapass.api.service.TourService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,8 +87,8 @@ public class TourController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tour> getTourById(@PathVariable Long id) {
-        return ResponseEntity.ok(tourService.getTourById(id));
+    public ResponseEntity<List<TourResponseDTO>> getToursById(@PathVariable Long id) {
+        return ResponseEntity.ok(tourService.getToursById(id));
     }
 
     @PutMapping
@@ -94,6 +100,16 @@ public class TourController {
     public void deleteTourById(@PathVariable Long id) {
         tourService.deleteTourById(id);
     }
+
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> patchTour(@PathVariable Long id, @RequestBody TourPatchRequest request) {
+        try {
+            TourResponseDTO updatedTour = tourService.patchTour(id, request);
+            return ResponseEntity.ok(updatedTour);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
 
     @GetMapping("/guide/{guideId}/active")
     public ResponseEntity<List<TourResponseDTO>> getActiveToursByGuide(@PathVariable Long guideId) {
@@ -152,5 +168,6 @@ public class TourController {
         return ResponseEntity.ok(
                 tourService.countToursByGuideIdAndCompanyIdAndStatus(guideId, companyId, TourStatus.INACTIVE)
         );
+
     }
 }

@@ -37,10 +37,13 @@ public class User implements UserDetails {
     private String bio;
     private String language = "es";
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    @JsonIgnoreProperties({"guides", "owner", "tours"})
-    private TourCompany company;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "guide_company",
+            joinColumns = @JoinColumn(name = "guide_id"),
+            inverseJoinColumns = @JoinColumn(name = "company_id")
+    )
+    private Set<TourCompany> companies = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = true)

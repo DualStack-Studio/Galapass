@@ -40,8 +40,7 @@ public class TourCompany {
     private String description;
     private String logo;
 
-    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({"company"})
+    @ManyToMany(mappedBy = "companies", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private Set<User> guides = new HashSet<>();
 
     @OneToMany(mappedBy = "company")

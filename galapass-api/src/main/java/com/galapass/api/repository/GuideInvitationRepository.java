@@ -8,7 +8,10 @@ import java.util.List;
 
 public interface GuideInvitationRepository extends JpaRepository<GuideInvitation, Long> {
     List<GuideInvitation> findByCompanyId(Long companyId);
-    List<GuideInvitation> findByGuideId(Long guideId);
-    List<GuideInvitation> findByGuideIdAndStatus(Long guideId, InvitationStatus status);
 
+    List<GuideInvitation> findByCompany_Owner_Id(Long ownerId);
+
+    List<GuideInvitation> findByGuideId(Long guideId);
+  
+    List<GuideInvitation> findByGuideIdAndStatus(Long guideId, InvitationStatus status);
 }

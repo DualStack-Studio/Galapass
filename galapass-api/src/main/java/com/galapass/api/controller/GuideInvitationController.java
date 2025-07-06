@@ -35,6 +35,14 @@ public class GuideInvitationController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/owner/{ownerId}")
+    public List<GuideInvitationResponse> getInvitationsByOwner(@PathVariable Long ownerId) {
+        return service.getInvitationsByOwner(ownerId)
+                .stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
     @DeleteMapping("/{id}")
     public void cancelInvitation(@PathVariable Long id) {
         service.cancelInvitation(id);

@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class    GuideReview {
+public class GuideReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,7 +30,7 @@ public class    GuideReview {
     @PrePersist
     @PreUpdate
     private void validateGuideReview() {
-        if (!booking.getTour().getGuides().contains(guide)) {
+        if (!booking.getTourDate().getTour().getGuides().contains(guide)) {
             throw new IllegalStateException("The guide being reviewed was not assigned to the tour in this booking.");
         }
 

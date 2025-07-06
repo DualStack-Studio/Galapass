@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galapass.api.DTO.guideDashboard.GuideDashboardStatsDTO;
 import com.galapass.api.DTO.user.UserPatchRequest;
 import com.galapass.api.DTO.user.UserResponse;
+import com.galapass.api.entity.TourCompany;
 import com.galapass.api.entity.tour.TourStatus;
+
 import com.galapass.api.entity.user.GuideStatus;
 import com.galapass.api.entity.user.Role;
 import com.galapass.api.entity.user.User;
@@ -19,9 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
+import java.util.HashSet;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -49,10 +54,16 @@ public class UserService {
             user.setStatus(null);
         }
 
-        if (user.getCompany() != null && user.getCompany().getName() != null) {
-            tourCompanyRepository.findByName(user.getCompany().getName())
-                    .ifPresent(user::setCompany);
+        Set<TourCompany> companies = new HashSet<>();
+        if (user.getCompanies() != null) {
+            for (TourCompany company : user.getCompanies()) {
+                TourCompany dbCompany = tourCompanyRepository.findById(company.getId())
+                        .orElseThrow(() -> new RuntimeException("Company not found with ID: " + company.getId()));
+                companies.add(dbCompany);
+                dbCompany.getGuides().add(user);
+            }
         }
+        user.setCompanies(companies);
 
         return userRepository.save(user);
     }
@@ -68,28 +79,50 @@ public class UserService {
     public Optional<User> updateUser(User userUpdate) {
         return userRepository.findById(userUpdate.getId())
                 .map(existingUser -> {
-                    try {
-                        existingUser.setName(userUpdate.getName());
-                        existingUser.setEmail(userUpdate.getEmail());
-                        existingUser.setPassword(userUpdate.getPassword());
-                        existingUser.setRole(userUpdate.getRole());
-                        existingUser.setBio(userUpdate.getBio());
-                        existingUser.setProfilePhoto(userUpdate.getProfilePhoto());
-                        existingUser.setLanguage(userUpdate.getLanguage());
+                    existingUser.setName(userUpdate.getName());
+                    existingUser.setEmail(userUpdate.getEmail());
+                    existingUser.setBio(userUpdate.getBio());
+                    existingUser.setProfilePhoto(userUpdate.getProfilePhoto());
+                    existingUser.setLanguage(userUpdate.getLanguage());
 
-                        if (userUpdate.getCompany() != null && userUpdate.getCompany().getName() != null) {
-                            tourCompanyRepository.findByName(userUpdate.getCompany().getName())
-                                    .ifPresent(existingUser::setCompany);
+                    // ✅ Password handling (hash if needed)
+                    if (userUpdate.getPassword() != null && !userUpdate.getPassword().isEmpty()) {
+                        existingUser.setPassword(userUpdate.getPassword()); // Hash if necessary
+                    }
+
+                    // ✅ Role update and Guide Status handling
+                    existingUser.setRole(userUpdate.getRole());
+                    if (userUpdate.getRole() == Role.GUIDE) {
+                        existingUser.setStatus(GuideStatus.OPERABLE);
+                    } else {
+                        existingUser.setStatus(null);
+                    }
+
+                    // ✅ Handle Many-to-Many companies
+                    if (userUpdate.getCompanies() != null) {
+                        Set<TourCompany> updatedCompanies = new HashSet<>();
+
+                        for (TourCompany company : userUpdate.getCompanies()) {
+                            if (company.getId() != null) {
+                                TourCompany dbCompany = tourCompanyRepository.findById(company.getId())
+                                        .orElseThrow(() -> new RuntimeException("Company not found with ID: " + company.getId()));
+                                updatedCompanies.add(dbCompany);
+                            }
                         }
 
-                        return userRepository.save(existingUser);
-                    } catch (Exception e) {
-                        return null;
+                        // ✅ Update both sides of the relationship
+                        existingUser.getCompanies().clear();
+                        existingUser.getCompanies().addAll(updatedCompanies);
+
                     }
+
+                    return userRepository.save(existingUser);
                 });
     }
 
-    public User patchUser(Long userId, UserPatchRequest request) {
+
+    public UserResponse patchUser(Long userId, UserPatchRequest request) {
+        // 1. Find the existing user
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
@@ -132,7 +165,11 @@ public class UserService {
             existingUser.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
-        return userRepository.save(existingUser);
+        // 9. Save the user
+        User updatedUser = userRepository.save(existingUser);
+
+        // Convert to DTO using your mapper
+        return userMapper.toUserResponse(updatedUser);
     }
 
     public List<UserResponse> getUsersByRole(String role) {

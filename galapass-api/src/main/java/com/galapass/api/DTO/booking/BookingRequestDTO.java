@@ -1,5 +1,6 @@
 package com.galapass.api.DTO.booking;
 
+import com.galapass.api.entity.booking.BookingStatus;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,5 +16,5 @@ public class BookingRequestDTO {
     private LocalDate date;
     private int numberOfPeople;
     private BigDecimal totalPaid;
-    private String status;
+    private BookingStatus status;
 }

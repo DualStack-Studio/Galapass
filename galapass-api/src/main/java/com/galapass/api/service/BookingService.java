@@ -2,16 +2,16 @@ package com.galapass.api.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galapass.api.DTO.booking.BookingRequestDTO;
 import com.galapass.api.DTO.booking.BookingResponseDTO;
 import com.galapass.api.entity.TourDate;
+
 import com.galapass.api.entity.booking.Booking;
 import com.galapass.api.entity.booking.BookingStatus;
 import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.user.User;
-import com.galapass.api.exception.TourNotFoundException; // Assuming you have this
+import com.galapass.api.exception.TourNotFoundException; 
 import com.galapass.api.mapper.BookingMapper;
 import com.galapass.api.repository.BookingRepository;
 import com.galapass.api.repository.TourDateRepository;
@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+
 import java.util.Set;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,11 +37,9 @@ public class BookingService {
     private final BookingMapper bookingMapper;
     private final TourDateRepository tourDateRepository;
 
-    // It's better to define the ObjectMapper as a bean, but for now, this is fine.
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
 
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
@@ -69,25 +68,27 @@ public class BookingService {
                 .status(BookingStatus.PENDING)
                 .build();
 
+
         Booking saved = bookingRepository.save(booking);
         return bookingMapper.toBookingResponseDTO(saved);
     }
 
     public Booking getBookingById(Long id) {
-        return bookingRepository.findById(id).orElse(null);
+        return bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
     }
 
     public Booking updateBooking(Booking bookingUpdate) {
         return bookingRepository.findById(bookingUpdate.getId())
-                .map(existingBooking -> {
+                .map(existing -> {
                     try {
-                        objectMapper.updateValue(existingBooking, bookingUpdate);
-                        return bookingRepository.save(existingBooking);
-                    } catch (JsonMappingException e) {
+                        objectMapper.updateValue(existing, bookingUpdate);
+                        return bookingRepository.save(existing);
+                    } catch (Exception e) {
                         throw new RuntimeException("Failed to update booking", e);
                     }
                 })
-                .orElseThrow(() -> new IllegalArgumentException("Booking with ID " + bookingUpdate.getId() + " not found."));
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingUpdate.getId()));
     }
 
     public void deleteBookingById(Long id) {
@@ -97,6 +98,7 @@ public class BookingService {
     public long getTotalBookingsForTour(Long tourId) {
         return bookingRepository.countBookingsByTourId(tourId);
     }
+
 
     public List<BookingResponseDTO> getBookingsByOwner(Long ownerId) {
         List<Booking> bookings = bookingRepository.findByTourDate_Tour_Owner_Id(ownerId);
@@ -116,7 +118,7 @@ public class BookingService {
                 BookingStatus statusEnum = BookingStatus.valueOf(status.toUpperCase());
                 stream = stream.filter(b -> b.getStatus() == statusEnum);
             } catch (IllegalArgumentException e) {
-                // It's better to silently ignore invalid statuses or log a warning
+                
                 System.err.println("Invalid booking status provided: " + status);
             }
         }
@@ -140,5 +142,26 @@ public class BookingService {
         }
 
         return stream.map(bookingMapper::toBookingResponseDTO).toList();
+    }
+
+    // Status transitions
+
+    public Booking updateBookingStatus(Long bookingId, BookingStatus status) {
+        Booking booking = getBookingById(bookingId);
+        booking.setStatus(status);
+        return bookingRepository.save(booking);
+    }
+
+    public List<Booking> getBookingsByGuideAndStatus(Long guideId, BookingStatus status) {
+              return bookingRepository.findBookingsByGuideIdAndStatus(guideId, status);
+    }
+
+    public List<Booking> getUpcomingBookingsByGuide(Long guideId) {
+        List<BookingStatus> statuses = List.of(BookingStatus.CONFIRMED, BookingStatus.PENDING);
+        return bookingRepository.findUpcomingBookingsByGuideId(guideId, statuses);
+    }
+
+    public List<Booking> getBookingHistoryByGuide(Long guideId) {
+                return bookingRepository.findBookingHistoryByGuideId(guideId);
     }
 }

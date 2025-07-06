@@ -5,6 +5,9 @@ import com.galapass.api.entity.TourReview;
 import com.galapass.api.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity
@@ -31,7 +34,9 @@ public class Tour {
     @Column(name = "photo_url")
     private List<String> photoUrls = new ArrayList<>();
 
-    private CompanyTourStatus status;
+    @Enumerated(EnumType.STRING)
+    private TourStatus status;
+
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
@@ -68,4 +73,10 @@ public class Tour {
     @CollectionTable(name = "tour_highlights", joinColumns = @JoinColumn(name = "tour_id"))
     @Column(name = "highlight")
     private List<String> highlights = new ArrayList<>();
+
+    @Column(nullable = false)
+    private BigDecimal earnings = BigDecimal.ZERO;
+    @Column(nullable = false)
+    private LocalDate startDate;
+
 }

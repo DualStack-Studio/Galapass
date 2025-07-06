@@ -91,4 +91,13 @@ public class GuideInvitationService {
         invitation.setStatus(InvitationStatus.DECLINED);
         invitationRepository.save(invitation);
     }
+
+    public List<GuideInvitation> getInvitationsByGuideId(Long guideId) {
+        return invitationRepository.findByGuideId(guideId);
+    }
+
+    public List<GuideInvitation> getPendingInvitationsByGuideId(Long guideId) {
+        return invitationRepository.findByGuideIdAndStatus(guideId, InvitationStatus.PENDING);
+    }
+
 }

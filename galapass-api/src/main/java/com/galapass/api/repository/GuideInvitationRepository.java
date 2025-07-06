@@ -1,5 +1,6 @@
 package com.galapass.api.repository;
 
+import com.galapass.api.entity.InvitationStatus;
 import com.galapass.api.entity.user.GuideInvitation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,4 +11,7 @@ public interface GuideInvitationRepository extends JpaRepository<GuideInvitation
 
     List<GuideInvitation> findByCompany_Owner_Id(Long ownerId);
 
+    List<GuideInvitation> findByGuideId(Long guideId);
+  
+    List<GuideInvitation> findByGuideIdAndStatus(Long guideId, InvitationStatus status);
 }

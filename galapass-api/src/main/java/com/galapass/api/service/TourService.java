@@ -13,12 +13,15 @@ import com.galapass.api.entity.tour.TourTag;
 import com.galapass.api.entity.user.User;
 import com.galapass.api.mapper.TourMapper;
 import com.galapass.api.repository.TourCompanyRepository;
+import com.galapass.api.entity.tour.TourStatus;
+
 import com.galapass.api.repository.TourRepository;
 import com.galapass.api.repository.TourReviewRepository;
 import com.galapass.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,10 +39,16 @@ public class TourService {
         return tourRepository.findAll();
     }
 
+
     public List<TourResponseDTO> getToursById(Long id) {
         return tourRepository.findById(id).stream()
                 .map(tourMapper::toTourResponseDTO)
                 .toList();
+    }
+
+    public Tour getTourById(Long id) {
+        return tourRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tour with ID " + id + " not found."));
     }
 
     public List<Tour> getToursByCompanyId(Long companyId) {
@@ -77,6 +86,7 @@ public class TourService {
         return avg != null ? avg : 0.0;
     }
 
+
     public TourResponseDTO patchTour(Long tourId, TourPatchRequest request) {
         Tour tour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new RuntimeException("Tour not found with id: " + tourId));
@@ -104,7 +114,7 @@ public class TourService {
 
         if (request.getLocation() != null) {
             try {
-                tour.setLocation(request.getLocation().toUpperCase()); // If you stored `Location` enum before, convert to Location.valueOf(...)
+                tour.setLocation(request.getLocation().toUpperCase()); 
             } catch (IllegalArgumentException e) {
                 throw new RuntimeException("Invalid location: " + request.getLocation());
             }
@@ -168,7 +178,7 @@ public class TourService {
             tour.setGuides(guideUsers);
         }
 
-        // Optional: update owner
+        // update owner
         if (request.getOwner() != null && request.getOwner().getId() != null) {
             User owner = userRepository.findById(request.getOwner().getId())
                     .orElseThrow(() -> new RuntimeException("Owner not found with id: " + request.getOwner().getId()));
@@ -179,4 +189,28 @@ public class TourService {
         return tourMapper.toTourResponseDTO(updated);
     }
 
+
+    public List<Tour> getActiveToursByGuideId(Long guideId) {
+        return tourRepository.findToursByGuideIdAndStatus(guideId, TourStatus.ACTIVE);
+    }
+
+    public List<Tour> getInactiveToursByGuideId(Long guideId) {
+        return tourRepository.findToursByGuideIdAndStatus(guideId, TourStatus.INACTIVE);
+    }
+
+    public List<Tour> getTourHistoryByGuideId(Long guideId) {
+        return tourRepository.findTourHistoryByGuideId(guideId);
+    }
+
+    public BigDecimal sumEarningsByGuideIdAndStatus(Long guideId, TourStatus status) {
+        return tourRepository.sumEarningsByGuideId(guideId, status);
+    }
+
+    public Long countToursByGuideIdAndStatus(Long guideId, TourStatus status) {
+        return tourRepository.countToursByGuideIdAndStatus(guideId, status);
+    }
+
+    public Long countToursByGuideIdAndCompanyIdAndStatus(Long guideId, Long companyId, TourStatus status) {
+        return tourRepository.countToursByGuideIdAndCompanyId(guideId, companyId, status);
+    }
 }

@@ -4,6 +4,8 @@ import com.galapass.api.DTO.booking.BookingResponseDTO;
 import com.galapass.api.DTO.booking.BookingResponseSummaryDTO;
 import com.galapass.api.entity.booking.Booking;
 import org.springframework.context.annotation.Lazy;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -33,7 +35,7 @@ public class BookingMapper {
                 .collect(Collectors.toSet()));
         dto.setNumberOfPeople(booking.getNumberOfPeople());
         dto.setTotalPaid(booking.getTotalPaid());
-        dto.setStatus(String.valueOf(booking.getStatus()));
+        dto.setStatus(booking.getStatus());
         return dto;
     }
 
@@ -46,6 +48,7 @@ public class BookingMapper {
         dto.setNumberOfPeople(booking.getNumberOfPeople());
         dto.setTotalPaid(booking.getTotalPaid());
         dto.setStatus(String.valueOf(booking.getStatus()));
+        dto.setStatus(booking.getStatus());
         return dto;
     }
 }

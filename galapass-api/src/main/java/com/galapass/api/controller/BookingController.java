@@ -5,6 +5,7 @@ import com.galapass.api.DTO.booking.BookingResponseDTO;
 import com.galapass.api.DTO.booking.BookingStatsDTO;
 import com.galapass.api.entity.booking.Booking;
 import com.galapass.api.entity.user.User;
+import com.galapass.api.entity.booking.BookingStatus;
 import com.galapass.api.service.BookingService;
 import com.galapass.api.service.BookingStatsService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -67,5 +68,13 @@ public class BookingController {
     @GetMapping("/owner/stats")
     public ResponseEntity<BookingStatsDTO> getBookingStats(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(statsService.getBookingStats(user.getId()));
+    }
+
+    @PostMapping("/{id}/status/{status}")
+    public ResponseEntity<Booking> updateStatus(
+            @PathVariable Long id,
+            @PathVariable BookingStatus status
+    ) {
+        return ResponseEntity.ok(bookingService.updateBookingStatus(id, status));
     }
 }

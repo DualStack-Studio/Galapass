@@ -31,7 +31,7 @@ const useBookings = ({ ownerId, status, date, search }) => {
             } else {
                 // Basic fetch endpoint
                 response = await axios.get(
-                    `${API_URL}/api/bookings/owner/${ownerId}`,
+                    `${API_URL}/api/bookings/owner`,
                     { withCredentials: true }
                 );
             }

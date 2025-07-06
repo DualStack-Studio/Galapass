@@ -1,4 +1,4 @@
-    import {AlertCircle, Calendar, CheckCircle, Clock, User, MapPin} from "lucide-react";
+import {AlertCircle, Calendar, CheckCircle, Clock, User, MapPin} from "lucide-react";
 import React from "react";
 
 
@@ -26,6 +26,14 @@ const BookingCard = ({ booking, setSelectedBooking }) => {
     const bookingDate = new Date(booking.date);
     const bookedAtDate = booking.bookedAt ? new Date(booking.bookedAt) : null;
 
+    // Defensively get the tour object to prevent errors if data is missing
+    const tour = booking.tourDate?.tour;
+
+    // If there's no tour data, don't render the card to avoid crashing.
+    if (!tour) {
+        return null;
+    }
+
     return (
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
             <div className="p-6">
@@ -33,15 +41,16 @@ const BookingCard = ({ booking, setSelectedBooking }) => {
                     <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
                             <img
-                                src={booking.tour.photoUrls[0]}
-                                alt={booking.tour.title}
+                                // Use a placeholder if no photo is available
+                                src={tour.photoUrls && tour.photoUrls.length > 0 ? tour.photoUrls[0] : 'https://placehold.co/48x48/e2e8f0/64748b?text=Tour'}
+                                alt={tour.title}
                                 className="w-12 h-12 rounded-lg object-cover"
                             />
                             <div>
-                                <h3 className="font-semibold text-gray-900">{booking.tour.title}</h3>
+                                <h3 className="font-semibold text-gray-900">{tour.title}</h3>
                                 <div className="flex items-center text-sm text-gray-500">
                                     <MapPin className="w-4 h-4 mr-1" />
-                                    {booking.tour.location}
+                                    {tour.location}
                                 </div>
                             </div>
                         </div>

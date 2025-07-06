@@ -31,6 +31,13 @@ const getStatusIcon = (status, completed) => {
 
 const BookingDetailsModal = ({ booking, onClose }) => {
     if (!booking) return null;
+    // Defensively get the tour object to prevent errors if data is missing
+    const tour = booking.tourDate?.tour;
+
+    // If there's no tour data, don't render the card to avoid crashing.
+    if (!tour) {
+        return null;
+    }
 
     return (
         <div className="fixed inset-0 bg-black/30 transition-opacity bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -52,18 +59,18 @@ const BookingDetailsModal = ({ booking, onClose }) => {
                             <h3 className="text-lg font-semibold text-gray-900 mb-3">Tour Information</h3>
                             <div className="flex items-start space-x-4">
                                 <img
-                                    src={booking.tour.photoUrls[0]}
-                                    alt={booking.tour.title}
+                                    src={tour.photoUrls[0] || 'as'}
+                                    alt={tour.title}
                                     className="w-20 h-20 rounded-lg object-cover"
                                 />
                                 <div className="flex-1">
-                                    <h4 className="font-medium text-gray-900">{booking.tour.title}</h4>
+                                    <h4 className="font-medium text-gray-900">{tour.title}</h4>
                                     <div className="flex items-center text-sm text-gray-500 mt-1">
                                         <MapPin className="w-4 h-4 mr-1" />
-                                        {booking.tour.location}
+                                        {tour.location}
                                     </div>
                                     <p className="text-sm text-gray-600 mt-1">
-                                        Price per person: ${booking.tour.price}
+                                        Price per person: ${tour.price}
                                     </p>
                                 </div>
                             </div>

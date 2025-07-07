@@ -134,7 +134,7 @@ const TourEditPage = ({ onSuccess }) => {
             JSON.stringify(formData) === JSON.stringify(initialDataRef.current.formData) &&
             JSON.stringify(uploadedImages.map(img => img.url)) === JSON.stringify(initialDataRef.current.uploadedImages.map(img => img.url))
         );
-
+        console.log(formData)
         setUnsavedChanges(!isEqual);
     }, [formData, uploadedImages]);
 
@@ -225,7 +225,7 @@ const TourEditPage = ({ onSuccess }) => {
         if (currentStep > 1) setCurrentStep(currentStep - 1);
     };
 
-    // Step validation (same as creation page)
+    // Step validation
     const isStep1Valid = formData.title && formData.location && formData.category;
     const isStep2Valid = uploadedImages.length > 0;
     const isStep3Valid = formData.description && formData.companyId && formData.duration && formData.maxGuests && formData.selectedGuides.length > 0 && formData.highlights.some(h => h.trim() !== '') && formData.tags.length > 0;
@@ -238,6 +238,8 @@ const TourEditPage = ({ onSuccess }) => {
         !isStep3Valid ||
         !isStep4Valid ||
         !unsavedChanges;
+
+
 
     const handleSave = async (e) => {
         e.preventDefault();
@@ -401,7 +403,7 @@ const TourEditPage = ({ onSuccess }) => {
             </div>
 
             {/* Content */}
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32">
                 {error && (
                     <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
                         <div className="flex items-center">

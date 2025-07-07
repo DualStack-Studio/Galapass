@@ -10,7 +10,7 @@ const TourDateFormModal = ({
                                handleSaveTourDate,
                                handleCancelEdit,
                                handleDeleteTourDate,
-                               handleCancelTourDate, // New prop for the cancellation logic
+                               handleCancelTourDate,
                                totalPeopleBooked
                            }) => {
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -51,14 +51,14 @@ const TourDateFormModal = ({
     return (
         <>
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={handleCancelEdit}>
-                <div className="bg-white rounded-xl shadow-2xl border p-6 w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
+                <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-semibold">{editingDate ? "Edit Tour Date" : "Create Tour Date"}</h3>
                         <button onClick={handleCancelEdit} className="p-1 rounded-full hover:bg-gray-200 cursor-pointer"><X size={20}/></button>
                     </div>
 
                     <div className="space-y-5">
-                        {/* Form fields... */}
+                        {/* Form fields */}
                         <div className="relative">
                             <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
                             <div className="flex items-center">
@@ -67,7 +67,6 @@ const TourDateFormModal = ({
                             </div>
                             {isCalendarOpen && <CompactCalendar isVisible={isCalendarOpen} onSelectDate={handleDateSelect} onClose={() => setIsCalendarOpen(false)} selectedDate={getLocalDateString(newTourDate.date)} position="down" currentMonth={currentMonth} setCurrentMonth={setCurrentMonth}/>}
                         </div>
-                        {/* Other inputs... */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
                             <input type="number" value={newTourDate.price} onChange={(e) => setNewTourDate(prev => ({ ...prev, price: e.target.value }))} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500" placeholder="150"/>

@@ -6,6 +6,15 @@ import { useNavigate } from "react-router-dom";
 const TourCard = ({ tour }) => {
     const navigate = useNavigate();
 
+    const handleViewBookings = () => {
+        navigate('/owner/manage-bookings', {
+            state: {
+                tourId: tour.id,
+                tourTitle: tour.title
+            }
+        });
+    };
+
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
             {/* Image Section */}
@@ -64,7 +73,7 @@ const TourCard = ({ tour }) => {
                             Dates
                         </button>
                         <button
-                            onClick={() => navigate('/owner/manage-bookings')}
+                            onClick={handleViewBookings}
                             className="text-emerald-600 hover:text-emerald-700 text-sm font-medium cursor-pointer"
                         >
                             Bookings

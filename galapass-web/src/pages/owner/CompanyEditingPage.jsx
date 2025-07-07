@@ -271,9 +271,7 @@ const CompanyEditingPage = ({ onSuccess }) => {
                                 </React.Fragment>
                             ))}
                         </div>
-
-                        <div className="text-sm text-gray-600">
-                            Edit Company
+                        <div>
                         </div>
                     </div>
                 </div>
@@ -332,10 +330,10 @@ const CompanyEditingPage = ({ onSuccess }) => {
                             {loading ? (
                                 <span>Updating...</span>
                             ) : (
-                                <span className="flex items-center">
+                                <button className="flex items-center cursor-pointer">
                                     <Save className="h-4 w-4 mr-2" />
                                     Update Company
-                                </span>
+                                </button>
                             )}
                         </button>
                     ) : (

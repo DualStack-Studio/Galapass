@@ -31,10 +31,8 @@ const getStatusIcon = (status, completed) => {
 
 const BookingDetailsModal = ({ booking, onClose }) => {
     if (!booking) return null;
-    // Defensively get the tour object to prevent errors if data is missing
     const tour = booking.tourDate?.tour;
 
-    // If there's no tour data, don't render the card to avoid crashing.
     if (!tour) {
         return null;
     }
@@ -193,20 +191,12 @@ const BookingDetailsModal = ({ booking, onClose }) => {
 
                         {/* Action Buttons */}
                         <div className="flex space-x-3 pt-4 border-t border-gray-200">
-                            <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-pointer">
-                                Contact Guest
-                            </button>
-                            {booking.guides && booking.guides.length > 0 && (
-                                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-pointer">
-                                    Contact Guides
-                                </button>
-                            )}
-                            {booking.status === 'pending' && (
+                            {booking.status === 'PENDING' && (
                                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
                                     Confirm Booking
                                 </button>
                             )}
-                            {!booking.completed && booking.status !== 'cancelled' && (
+                            {booking.status !== 'CANCELED' && (
                                 <button className="border border-red-300 text-red-700 hover:bg-red-50 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer">
                                     Cancel Booking
                                 </button>

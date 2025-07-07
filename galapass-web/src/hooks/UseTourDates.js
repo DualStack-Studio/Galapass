@@ -8,12 +8,6 @@ const useTourDates = (tourId) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    const parseLocalDate = (dateString) => {
-        if (!dateString) return null;
-        const parts = dateString.split(/[-T]/);
-        return new Date(parts[0], parts[1] - 1, parts[2]);
-    };
-
     const fetchTourDates = async () => {
         try {
             setLoading(true);
@@ -22,8 +16,8 @@ const useTourDates = (tourId) => {
             );
             const formatted = res.data.map(td => ({
                 ...td,
-                date: parseLocalDate(td.date),
-                bookedGuests: td.maxGuests
+                date: new Date(td.date),
+                bookedGuests: td.bookings?.length || 0
             }));
             setTourDates(formatted);
         } catch (err) {
@@ -43,8 +37,8 @@ const useTourDates = (tourId) => {
             );
             const newDate = {
                 ...res.data,
-                date: parseLocalDate(res.data.date),
-                bookedGuests: res.data.maxGuests
+                date: new Date(res.data.date),
+                bookedGuests: res.data.bookings?.length || 0
             };
             setTourDates(prev => [...prev, newDate]);
             toast.success('Tour date created');
@@ -73,12 +67,14 @@ const useTourDates = (tourId) => {
                 td.id === id ? { ...td, status: 'CANCELLED', available: false } : td
             ));
             toast.success('Tour date has been cancelled.');
-        } catch (err) {
+        } catch (err)
+        {
             const errorMessage = err.response?.data?.message || 'Failed to cancel the tour date.';
             throw new Error(errorMessage);
         }
     };
 
+    // This function is for optimistic updates and does not need to change.
     const updateTourDateLocal = (updated) => {
         setTourDates(prev =>
             prev.map(td => (td.id === updated.id ? updated : td))
@@ -86,7 +82,9 @@ const useTourDates = (tourId) => {
     };
 
     useEffect(() => {
-        if (tourId) fetchTourDates();
+        if (tourId) {
+            fetchTourDates();
+        }
     }, [tourId]);
 
     return {

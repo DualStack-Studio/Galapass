@@ -23,8 +23,8 @@ const getStatusIcon = (status, completed) => {
 };
 
 const BookingCard = ({ booking, setSelectedBooking }) => {
-    const bookingDate = new Date(booking.date);
-    const bookedAtDate = booking.bookedAt ? new Date(booking.bookedAt) : null;
+    const bookingDate = new Date(booking.tourDate.date);
+    const bookedAtDate = booking.date ? new Date(booking.date) : null;
 
     // Defensively get the tour object to prevent errors if data is missing
     const tour = booking.tourDate?.tour;
@@ -41,7 +41,6 @@ const BookingCard = ({ booking, setSelectedBooking }) => {
                     <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
                             <img
-                                // Use a placeholder if no photo is available
                                 src={tour.photoUrls && tour.photoUrls.length > 0 ? tour.photoUrls[0] : 'https://placehold.co/48x48/e2e8f0/64748b?text=Tour'}
                                 alt={tour.title}
                                 className="w-12 h-12 rounded-lg object-cover"

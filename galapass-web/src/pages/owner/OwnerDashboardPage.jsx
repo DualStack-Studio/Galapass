@@ -181,7 +181,7 @@ const OwnerDashboardPage = () => {
                                     <p className="text-gray-600 mb-4">You haven’t created any companies yet.</p>
                                     <button
                                         onClick={() => navigate('/owner/add-company')}
-                                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto"
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto cursor-pointer"
                                     >
                                         <Plus className="w-4 h-4" />
                                         <span>Add Your First Company</span>
@@ -203,7 +203,7 @@ const OwnerDashboardPage = () => {
                                     className="border border-emerald-600 text-emerald-600 hover:bg-emerald-50 px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"
                                 >
                                     <MapPin className="h-4 w-4" />
-                                    <span>View Bookings</span>
+                                    <span>View All Bookings</span>
                                 </button>
                                 <button
                                     onClick={() => navigate('/owner/add-tour')}
@@ -227,7 +227,7 @@ const OwnerDashboardPage = () => {
                                     <p className="text-gray-600 mb-4">You haven’t added any tours yet.</p>
                                     <button
                                         onClick={() => navigate('/owner/add-tour')}
-                                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto"
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto cursor-pointer"
                                     >
                                         <Plus className="w-4 h-4" />
                                         <span>Add Your First Tour</span>
@@ -289,7 +289,7 @@ const OwnerDashboardPage = () => {
                                         <p className="text-gray-600 mb-4">You don’t have any guides added to your company yet.</p>
                                         <button
                                             onClick={() => navigate('/owner/add-guide')}
-                                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto"
+                                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto cursor-pointer"
                                         >
                                             <Plus className="w-4 h-4" />
                                             <span>Invite Your First Guide</span>

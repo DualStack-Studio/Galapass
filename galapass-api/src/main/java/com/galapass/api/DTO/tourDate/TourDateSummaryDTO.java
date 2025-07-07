@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 
 
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Builder
 public class TourDateSummaryDTO {
     private Long id;
-    private LocalDate date;
+    private ZonedDateTime date;
     private BigDecimal price;
     private boolean available;
     private Integer maxGuests;

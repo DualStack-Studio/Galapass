@@ -8,7 +8,7 @@ import lombok.*;
 
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Entity
@@ -41,7 +41,7 @@ public class Booking {
     @JoinColumn(name = "tour_date_id", nullable = false)
     private TourDate tourDate;
 
-    private LocalDate date;
+    private ZonedDateTime date;
     private int numberOfPeople;
     private BigDecimal totalPaid;
 

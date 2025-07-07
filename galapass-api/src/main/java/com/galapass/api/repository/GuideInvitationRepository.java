@@ -1,6 +1,6 @@
 package com.galapass.api.repository;
 
-import com.galapass.api.entity.InvitationStatus;
+import com.galapass.api.entity.user.InvitationStatus;
 import com.galapass.api.entity.user.GuideInvitation;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -73,10 +73,8 @@ public class TourDateMapper {
     }
 
     public TourDateSummaryDTO toTourDateSummaryDTO(TourDate tourDate) {
-        // 1. Get the raw Tour entity from the TourDate object
         Tour tourEntity = tourDate.getTour();
 
-        // 2. **THE MISSING STEP**: Convert the Tour entity into the correct DTO
         TourResponseOwnerViewDTO tourDTO = tourMapper.toTourResponseOwnerViewDTO(tourEntity);
 
         return TourDateSummaryDTO.builder()

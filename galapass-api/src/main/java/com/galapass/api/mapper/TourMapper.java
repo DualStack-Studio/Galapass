@@ -75,6 +75,7 @@ public class TourMapper {
                 .id(tour.getId())
                 .title(tour.getTitle()) 
                 .price(tour.getPrice())
+                .location(tour.getLocation())
                 .photoUrls(tour.getPhotoUrls())
                 .status(String.valueOf(tour.getStatus()))
                 .owner(userMapper.toOwnerSummaryDTO(tour.getOwner()))

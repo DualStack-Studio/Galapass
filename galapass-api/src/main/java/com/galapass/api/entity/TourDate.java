@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +21,7 @@ public class TourDate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Temporal(TemporalType.DATE)
-    private LocalDate date;
+    private ZonedDateTime date;
 
     private BigDecimal price;
 

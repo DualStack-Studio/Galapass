@@ -1,4 +1,4 @@
-package com.galapass.api.entity;
+package com.galapass.api.entity.user;
 
 public enum InvitationStatus {
     PENDING,

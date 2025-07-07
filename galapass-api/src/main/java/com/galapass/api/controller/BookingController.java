@@ -55,14 +55,16 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getBookingsByOwner(user.getId()));
     }
 
-    @GetMapping("/owner/search")
-    public ResponseEntity<List<BookingResponseDTO>> searchBookingsByOwner(
+    @GetMapping("/search")
+    public ResponseEntity<List<BookingResponseDTO>> searchBookings(
             @AuthenticationPrincipal User user,
+            @RequestParam(required = false) Long tourId,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String date,
             @RequestParam(required = false) String search
     ) {
-        return ResponseEntity.ok(bookingService.searchBookingsByOwner(user.getId(), status, date, search));
+        Long ownerId = user.getId();
+        return ResponseEntity.ok(bookingService.searchBookings(ownerId, tourId, status, date, search));
     }
 
     @GetMapping("/owner/stats")
@@ -71,10 +73,15 @@ public class BookingController {
     }
 
     @PostMapping("/{id}/status/{status}")
-    public ResponseEntity<Booking> updateStatus(
+    public ResponseEntity<BookingResponseDTO> updateStatus(
             @PathVariable Long id,
             @PathVariable BookingStatus status
     ) {
         return ResponseEntity.ok(bookingService.updateBookingStatus(id, status));
+    }
+
+    @GetMapping("/tour/{tourId}")
+    public ResponseEntity<List<BookingResponseDTO>> getBookingByTourId(@PathVariable Long tourId) {
+        return ResponseEntity.ok(bookingService.getBookingByTourId(tourId));
     }
 }

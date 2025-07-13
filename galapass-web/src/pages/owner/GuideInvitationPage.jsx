@@ -51,7 +51,7 @@ const AddGuidePage = () => {
             <div className="sticky top-0 z-10 bg-white border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex items-center justify-between py-4">
-                        <button onClick={() => navigate('/owner/dashboard')} className="flex items-center text-gray-600 cursor-pointer">
+                        <button onClick={() => navigate('/owner/dashboard?tab=guides')} className="flex items-center text-gray-600 cursor-pointer">
                             <ArrowLeft className="h-5 w-5 mr-2" />
                             Exit
                         </button>

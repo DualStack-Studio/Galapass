@@ -1,15 +1,17 @@
-import { Clock, Users, Building2 } from 'lucide-react';
+import { Clock, Users, Building2, Package } from 'lucide-react';
 
 const StepDetails = ({
                          formData,
-                         setFormData,
                          handleInputChange,
                          handleHighlightChange,
                          handleGuideToggle,
                          handleTagToggle,
+                         handleBringToggle,
                          companies,
                          guides,
                          availableTags,
+                         availableBrings,
+                         durations,
                      }) => {
     return (
         <div className="space-y-8">
@@ -63,14 +65,18 @@ const StepDetails = ({
                         </label>
                         <div className="relative">
                             <Clock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                            <input
-                                type="text"
+                            {/* Changed from text input to a select dropdown */}
+                            <select
                                 name="duration"
                                 value={formData.duration}
                                 onChange={handleInputChange}
-                                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black"
-                                placeholder="e.g., 4 hours"
-                            />
+                                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black cursor-pointer bg-white"
+                            >
+                                <option value="">Select duration</option>
+                                {durations.map(d => (
+                                    <option key={d.id} value={d.id}>{d.name}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 
@@ -159,6 +165,31 @@ const StepDetails = ({
                             >
                                 <span className="mr-2">{tag.icon}</span>
                                 {tag.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Recommended to Bring */}
+                <div>
+                    <label className="block text-lg font-medium text-gray-900 mb-3">
+                        <Package className="inline-block h-5 w-5 mr-2 -mt-1" />
+                        What should guests bring?
+                    </label>
+                    <div className="flex flex-wrap gap-3">
+                        {availableBrings.map((bring) => (
+                            <button
+                                key={bring.id}
+                                type="button"
+                                onClick={() => handleBringToggle(bring.id)}
+                                className={`px-4 py-2 rounded-full text-sm border transition-all cursor-pointer ${
+                                    formData.brings.includes(bring.id)
+                                        ? 'bg-black text-white border-black'
+                                        : 'bg-white text-gray-700 border-gray-300 hover:border-gray-500'
+                                }`}
+                            >
+                                <span className="mr-2">{bring.icon}</span>
+                                {bring.name}
                             </button>
                         ))}
                     </div>

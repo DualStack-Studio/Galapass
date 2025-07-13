@@ -15,12 +15,14 @@ const TourCard = ({ tour }) => {
         });
     };
 
+    const coverImage = tour.media?.find(m => m.type === 'IMAGE').url;
+
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
             {/* Image Section */}
             <div className="relative h-48 w-full">
                 <img
-                    src={(tour.photoUrls && tour.photoUrls[0]) || '/images/galapassLogo.png'}
+                    src={coverImage || '/images/galapassLogo.png'}
                     alt={tour.title || 'Tour Image'}
                     className="w-full h-full object-cover"
                     onError={(e) => {

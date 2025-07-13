@@ -1,4 +1,5 @@
 import { DollarSign, Users, MapPin, Clock } from 'lucide-react';
+import {convertDurationName, convertLocationName} from "../../../api/tourApi.js";
 
 const TourInfo = (tour) => {
     return (
@@ -7,11 +8,11 @@ const TourInfo = (tour) => {
             <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                     <MapPin className="h-5 w-5 text-gray-400" />
-                    <span className="text-gray-600">{tour.location}</span>
+                    <span className="text-gray-600">{convertLocationName(tour.location)}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                     <Clock className="h-5 w-5 text-gray-400" />
-                    <span className="text-gray-600">{tour.duration}</span>
+                    <span className="text-gray-600">{convertDurationName(tour.duration)}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                     <DollarSign className="h-5 w-5 text-gray-400" />

@@ -6,11 +6,12 @@ import TourInfo from "../../components/OwnerView/TourDates/TourInfo.jsx";
 import TourDateFormModal from "../../components/OwnerView/TourDates/TourDateFormModal.jsx";
 import UpcomingTourDates from "../../components/OwnerView/TourDates/UpcomingTourDates.jsx";
 import useTourDates from "../../hooks/UseTourDates.js";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {fetchTour} from "../../api/tourApi.js";
 import ErrorModal from "../../components/ErrorModal.jsx";
 
 const TourDatesManager = () => {
+    const navigate = useNavigate();
     const { tourId } = useParams()
     const [tour, setTour] = useState(null);
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -107,8 +108,8 @@ const TourDatesManager = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const tourArray = await fetchTour(tourId);
-                setTour(tourArray[0]);
+                const tour = await fetchTour(tourId);
+                setTour(tour);
             } catch (err) {
                 console.error('Failed to fetch tour:', err);
                 setError('Failed to load tour');
@@ -129,7 +130,7 @@ const TourDatesManager = () => {
     return (
         // The main container for the page
         <div className="min-h-screen bg-white">
-            {/* ✅ The Modal is now rendered here, at the top level */}
+            {/* The Modal is now rendered here, at the top level */}
             <ErrorModal
                 isOpen={errorModal.isOpen}
                 onClose={() => setErrorModal({ isOpen: false, message: '' })}
@@ -138,6 +139,7 @@ const TourDatesManager = () => {
 
             {isCreating && (
                 <TourDateFormModal
+                    isOpen={isCreating}
                     editingDate={editingDate}
                     newTourDate={newTourDate}
                     setNewTourDate={setNewTourDate}
@@ -155,7 +157,7 @@ const TourDatesManager = () => {
                     <div className="flex items-center justify-between py-6">
                         <div className="flex items-center space-x-4">
                             <button
-                                onClick={() => window.history.back()}
+                                onClick={() => navigate("/owner/dashboard?tab=tours")}
                                 className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
                             >
                                 <ArrowLeft className="h-5 w-5" />

@@ -1,14 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, User, Settings, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import {useNavigate} from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import CompactSearchBar from './TouristView/CompactSearchBar.jsx';
 
-const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
+const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, searchBarProps }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isRoleChanging, setIsRoleChanging] = useState(false);
+    const [showStickySearch, setShowStickySearch] = useState(false);
     const dropdownRef = useRef(null);
     const { user, logout, refreshUser } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -23,6 +26,26 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    // Dynamic header scroll behavior - only on home page
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollY = window.scrollY;
+            // Show sticky search when scrolled past 80px AND on home page
+            if (scrollY > 200 && location.pathname === '/') {
+                setShowStickySearch(true);
+            } else {
+                setShowStickySearch(false);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [location.pathname]);
+
+    const handleLogoClick = () => {
+        navigate('/');
+    };
 
     const handleLogout = async () => {
         await logout();
@@ -71,10 +94,18 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
     };
 
     const handleBecomeGuide = () => {
+        if (!user) {
+            onLoginClick();
+            return;
+        }
         handleRoleChange('GUIDE', '/guide/dashboard');
     };
 
     const handleBecomeTourOperator = () => {
+        if (!user) {
+            onLoginClick();
+            return;
+        }
         handleRoleChange('OWNER', '/owner/dashboard');
     };
 
@@ -89,11 +120,16 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
     };
 
     return (
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <header className={`bg-white border-b border-gray-200 sticky top-0 z-50 transition-all duration-300 ${
+            showStickySearch ? 'shadow-lg' : 'shadow-sm'
+        }`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <div className="flex items-center gap-1">
+                    <div
+                        className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={handleLogoClick}
+                    >
                         <img
                             src="/images/galapassLogo.png"
                             alt="Galapass Logo"
@@ -102,31 +138,21 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
                         <h1 className="text-xl font-bold text-emerald-700">Galapass</h1>
                     </div>
 
+                    {/* Compact Search Bar (appears on scroll AND only on home page) */}
+                    <div
+                        className={`absolute left-1/2 transform -translate-x-1/2 transition-all duration-300 ease-in-out ${
+                            showStickySearch && location.pathname === '/'
+                                ? 'opacity-100 translate-y-0 pointer-events-auto' 
+                                : 'opacity-0 -translate-y-4 pointer-events-none'
+                        }`}
+                    >
+                        {searchBarProps && location.pathname === '/' && (
+                            <CompactSearchBar {...searchBarProps} />
+                        )}
+                    </div>
+
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center space-x-8">
-                        {user?.role !== "OWNER" && (
-                            <>
-                                {user?.role !== "GUIDE" && (
-                                    <button
-                                        onClick={handleBecomeGuide}
-                                        disabled={isRoleChanging}
-                                        className="text-gray-700 hover:text-emerald-600 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isRoleChanging ? 'Processing...' : 'Become a guide'}
-                                    </button>
-                                )}
-                                {user?.role !== "OWNER" && (
-                                    <button
-                                        onClick={handleBecomeTourOperator}
-                                        disabled={isRoleChanging}
-                                        className="text-gray-700 hover:text-emerald-600 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isRoleChanging ? 'Processing...' : 'Become a Tour Operator'}
-                                    </button>
-                                )}
-                            </>
-                        )}
-
                         <div className="flex items-center space-x-3 ml-6">
                             {user ? (
                                 // User Profile Dropdown
@@ -233,15 +259,13 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
                                         {isRoleChanging ? 'Processing...' : 'Become a Guide'}
                                     </button>
                                 )}
-                                {user?.role !== "OWNER" && (
-                                    <button
-                                        onClick={handleBecomeTourOperator}
-                                        disabled={isRoleChanging}
-                                        className="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isRoleChanging ? 'Processing...' : 'Become a Tour Operator'}
-                                    </button>
-                                )}
+                                <button
+                                    onClick={handleBecomeTourOperator}
+                                    disabled={isRoleChanging}
+                                    className="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isRoleChanging ? 'Processing...' : 'Become a Tour Operator'}
+                                </button>
                             </>
                         )}
 

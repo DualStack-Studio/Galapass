@@ -11,9 +11,8 @@ const UpcomingTourDates = ({ tourDates, setEditingDate, setNewTourDate, setIsCre
                     .filter(td => td.date >= new Date(new Date().setHours(0, 0, 0, 0)))
                     // Sort them with the soonest date first
                     .sort((a, b) => a.date - b.date)
-                    .slice(0, 5) // Show up to 5 upcoming dates
+                    .slice(0, 5)
                     .map(tourDate => {
-                        // ✅ FIX: Calculate booked guests for EACH tour date individually
                         const peopleBookedOnThisDate = (tourDate.bookings ?? []).reduce(
                             (sum, booking) => sum + (booking.numberOfPeople || 0),
                             0

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Import useEffect
 import { X } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
@@ -16,7 +16,22 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    if (!isOpen) return null;
+    // 1. Add state to control visibility for animations
+    const [isVisible, setIsVisible] = useState(isOpen);
+
+    // 2. Use an effect to handle the animation timing
+    useEffect(() => {
+        if (isOpen) {
+            setIsVisible(true);
+        } else {
+            // Wait for the animation to finish before unmounting
+            const timer = setTimeout(() => setIsVisible(false), 300); // Duration matches animation
+            return () => clearTimeout(timer);
+        }
+    }, [isOpen]);
+
+    // 3. Change the render condition to use the new visibility state
+    if (!isVisible) return null;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -24,6 +39,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     };
 
     const handleSubmit = async (e) => {
+        // ... (Your existing submit logic remains unchanged)
         e.preventDefault();
         setIsLoading(true);
         setError('');
@@ -38,7 +54,6 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
             if (!response.ok) throw new Error("Registration failed");
 
-            // Get user info right after successful registration
             const userResponse = await fetch("http://localhost:8080/auth/me", {
                 credentials: "include",
             });
@@ -48,10 +63,8 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 login(userData);
             }
 
-            // Reset and close
             setFormData({ name: '', email: '', password: '', language: 'es' });
             onClose();
-            // navigate("/dashboard");
         } catch (err) {
             setError(err.message);
             console.error(err);
@@ -61,6 +74,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     };
 
     const handleGoogleSuccess = async (credentialResponse) => {
+        // ... (Your existing Google logic remains unchanged)
         try {
             const res = await fetch("http://localhost:8080/auth/google", {
                 method: "POST",
@@ -84,17 +98,24 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     };
 
     return (
+        // 4. Conditionally apply animation to the overlay
         <div
-            className="fixed inset-0 bg-black/30 flex justify-center items-center z-50 transition-opacity duration-300"
+            className={`fixed inset-0 bg-black/30 flex justify-center items-center z-50 ${
+                isOpen ? 'animate-fade-in' : 'animate-fade-out'
+            }`}
             onClick={onClose}
         >
+            {/* 5. Conditionally apply animation to the modal content */}
             <div
-                className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm relative"
+                className={`bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm relative ${
+                    isOpen ? 'animate-slide-up' : 'animate-slide-down'
+                }`}
                 onClick={(e) => e.stopPropagation()}
             >
+                {/* ... (Your existing modal content) ... */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
+                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
                 >
                     <X size={24} />
                 </button>
@@ -111,6 +132,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 )}
 
                 <form onSubmit={handleSubmit}>
+                    {/* ... (Your form inputs) ... */}
                     <div className="space-y-4">
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -165,7 +187,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                                 name="language"
                                 value={formData.language}
                                 onChange={handleChange}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
                                 disabled={isLoading}
                             >
                                 <option value="es">Español</option>
@@ -173,17 +195,16 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                             </select>
                         </div>
                     </div>
-
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full mt-6 bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                        className="w-full mt-6 bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer"
                     >
                         {isLoading ? 'Creating account...' : 'Register'}
                     </button>
                 </form>
 
-                {/* Divider */}
+                {/* ... (Your Google button and 'Log In' link) ... */}
                 <div className="relative mt-6 mb-6">
                     <div className="absolute inset-0 flex items-center">
                         <div className="w-full border-t border-gray-300"></div>
@@ -192,8 +213,6 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                         <span className="px-2 bg-white text-gray-500">Or continue with</span>
                     </div>
                 </div>
-
-                {/* Custom Styled Google Login Button */}
                 <div className="relative">
                     <GoogleLogin
                         onSuccess={handleGoogleSuccess}
@@ -216,8 +235,6 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                             </button>
                         )}
                     />
-
-                    {/* Fallback if render prop doesn't work */}
                     <div className="absolute inset-0 opacity-0 pointer-events-none">
                         <GoogleLogin
                             onSuccess={handleGoogleSuccess}
@@ -231,19 +248,32 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                         />
                     </div>
                 </div>
-
-                {/* Sign In Link */}
                 <p className="text-center text-sm text-gray-600 mt-6">
                     Already have an account?{' '}
                     <button
                         type="button"
                         onClick={onSwitchToLogin}
-                        className="font-semibold text-emerald-600 hover:underline"
+                        className="font-semibold text-emerald-600 hover:underline cursor-pointer"
                     >
                         Log in
                     </button>
                 </p>
             </div>
+
+            {/* 6. Add the CSS animations */}
+            <style>{`
+                @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+                .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
+                
+                @keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+                .animate-fade-out { animation: fade-out 0.3s ease-out forwards; }
+                
+                @keyframes slide-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+                .animate-slide-up { animation: slide-up 0.3s ease-out forwards; }
+                
+                @keyframes slide-down { from { transform: translateY(0); opacity: 1; } to { transform: translateY(20px); opacity: 0; } }
+                .animate-slide-down { animation: slide-down 0.3s ease-out forwards; }
+            `}</style>
         </div>
     );
 };

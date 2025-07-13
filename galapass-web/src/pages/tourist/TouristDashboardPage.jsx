@@ -2,10 +2,15 @@ import React, {useEffect, useRef, useState} from 'react';
 import TourCard from "../../components/TouristView/TourCard.jsx";
 import axios from "axios";
 import SearchBar from "../../components/TouristView/SearchBar.jsx";
+import {useNavigate} from "react-router-dom";
+import FiltersModal from "../../components/TouristView/FiltersModal.jsx";
+import useTourEnums from "../../hooks/useTourEnums.js";
 
 
 
 const TouristDashboardPage = () => {
+    const navigate = useNavigate();
+
     const [tours, setTours] = useState([]);
     const [error, setError] = useState('');
     const [searchData, setSearchData] = useState({
@@ -21,6 +26,27 @@ const TouristDashboardPage = () => {
     const checkInRef = useRef(null);
     const checkOutRef = useRef(null);
     const guestRef = useRef(null);
+
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+
+    const [filters, setFilters] = useState({
+        searchTerm: '',
+        categories: [],
+        tags: [],
+        durations: [],
+        date: null,
+        guests: 1,
+    });
+
+    const handleFilterToggle = (filterType, value) => {
+        setFilters(prev => {
+            const currentValues = prev[filterType];
+            const newValues = currentValues.includes(value)
+                ? currentValues.filter(item => item !== value)
+                : [...currentValues, value];
+            return { ...prev, [filterType]: newValues };
+        });
+    };
 
     const formatDate = (dateString) => {
         if (!dateString) return 'Add dates';
@@ -90,6 +116,7 @@ const TouristDashboardPage = () => {
                         handleSearch={handleSearch}
                         currentMonth={currentMonth}
                         setCurrentMonth={setCurrentMonth}
+                        setIsFilterModalOpen={setIsFilterModalOpen}
                     />
                 </div>
             </section>
@@ -98,9 +125,25 @@ const TouristDashboardPage = () => {
                 <h2 className="text-3xl font-bold text-gray-900 mb-8">Popular tours in Santa Cruz</h2>
                 {error && <div className="text-red-500 mb-4">{error}</div>}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {tours.map(tour => <TourCard key={tour.id} tour={tour} />)}
+                    {tours.map(tour => (
+                        <TourCard
+                            key={tour.id}
+                            tour={tour}
+                            onClick={() => navigate(`/tourist/tour/${tour.id}`)}
+                        />
+                    ))}
                 </div>
             </main>
+
+            <FiltersModal
+                isOpen={isFilterModalOpen}
+                onClose={() => setIsFilterModalOpen(false)}
+                filters={filters}
+                onFilterToggle={handleFilterToggle}
+                onClear={() => {
+                    setFilters(prev => ({...prev, categories: [], tags: [], durations: []}));
+                }}
+            />
         </div>
     );
 };

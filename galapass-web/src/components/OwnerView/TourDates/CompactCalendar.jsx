@@ -8,7 +8,8 @@ const CompactCalendar = ({
                              selectedDate,
                              position = 'left',
                              currentMonth,
-                             setCurrentMonth
+                             setCurrentMonth,
+                             renderDay // new prop for custom day rendering
                          }) => {
     if (!isVisible) return null;
 
@@ -68,7 +69,7 @@ const CompactCalendar = ({
 
     return (
         <div
-            className={`absolute top-full mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 p-4 z-50 ${
+            className={`absolute top-full mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 p-4 z-50 animate-fade-in ${
                 position === 'right'
                     ? 'right-0'
                     : position === 'center' || position === 'down'
@@ -107,23 +108,35 @@ const CompactCalendar = ({
 
             {/* Calendar Days */}
             <div className="grid grid-cols-7 gap-1">
-                {days.map((day, index) => (
-                    <button
-                        key={index}
-                        onClick={() => handleDateClick(day)}
-                        disabled={!day}
-                        className={`
-                            h-8 w-8 rounded-full text-xs transition-all duration-200 cursor-pointer
-                            ${!day ? 'invisible' : ''}
-                            ${isToday(day) ? 'bg-gray-100 font-semibold' : ''}
-                            ${isSelected(day) ? 'bg-emerald-600 text-white font-semibold transform scale-105' : 'hover:bg-gray-100 text-gray-700'}
-                            ${day && !isSelected(day) ? 'hover:bg-emerald-50 hover:text-emerald-600' : ''}
-                        `}
-                    >
-                        {day}
-                    </button>
-                ))}
+                {days.map((day, index) => {
+                    let custom = renderDay ? renderDay(day) : null;
+                    let customClass = '';
+                    if (custom === 'booked') {
+                        customClass = 'bg-orange-200 text-orange-900 font-bold animate-pulse';
+                    }
+                    return (
+                        <button
+                            key={index}
+                            onClick={() => handleDateClick(day)}
+                            disabled={!day}
+                            className={`
+                                h-8 w-8 rounded-full text-xs transition-all duration-200 cursor-pointer
+                                ${!day ? 'invisible' : ''}
+                                ${isToday(day) ? 'bg-gray-100 font-semibold' : ''}
+                                ${isSelected(day) ? 'bg-emerald-600 text-white font-semibold transform scale-105' : 'hover:bg-gray-100 text-gray-700'}
+                                ${day && !isSelected(day) ? 'hover:bg-emerald-50 hover:text-emerald-600' : ''}
+                                ${customClass}
+                            `}
+                        >
+                            {day}
+                        </button>
+                    );
+                })}
             </div>
+            <style>{`
+                @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+                .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
+            `}</style>
         </div>
     );
 };

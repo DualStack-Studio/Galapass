@@ -116,7 +116,7 @@ const TourBookingManagementPage = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between py-6">
                         <div className="flex items-center space-x-4">
-                            <button onClick={() => navigate(-1)} className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 cursor-pointer">
+                            <button onClick={() => navigate("/owner/dashboard?tab=tours")} className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 cursor-pointer">
                                 <ArrowLeft className="h-5 w-5" />
                                 <span>Back</span>
                             </button>
@@ -202,12 +202,11 @@ const TourBookingManagementPage = () => {
 
                     {loading && <p className="text-center">Loading bookings...</p>}
 
-                    {selectedBooking && (
-                        <BookingDetailsModal
-                            booking={selectedBooking}
-                            onClose={() => setSelectedBooking(null)}
-                        />
-                    )}
+                    <BookingDetailsModal
+                        isOpen={!!selectedBooking}
+                        booking={selectedBooking}
+                        onClose={() => setSelectedBooking(null)}
+                    />
                 </div>
             </div>
         </div>

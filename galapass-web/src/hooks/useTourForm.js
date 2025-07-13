@@ -8,11 +8,12 @@ export const useTourForm = () => {
         category: '',
         location: '',
         companyId: '',
-        selectedGuides: [],
-        tags: [],
         duration: '',
         maxGuests: '',
         highlights: ['', '', ''],
+        tags: [],
+        selectedGuides: [],
+        brings: [],
     });
 
     const handleInputChange = (e) => {

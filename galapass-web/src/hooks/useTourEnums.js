@@ -66,11 +66,11 @@ const useTourEnums = () => {
             try {
                 // Fetch all enums in parallel
                 const [resCat, resTags, resLoc, resBrings, resDurs] = await Promise.all([
-                    fetch('http://localhost:8080/api/enums/categories', { credentials: 'include' }),
-                    fetch('http://localhost:8080/api/enums/tags', { credentials: 'include' }),
-                    fetch('http://localhost:8080/api/enums/locations', { credentials: 'include' }),
-                    fetch('http://localhost:8080/api/enums/brings', { credentials: 'include' }),
-                    fetch('http://localhost:8080/api/enums/durations', { credentials: 'include' }),
+                    fetch('http://localhost:8080/api/enums/categories'),
+                    fetch('http://localhost:8080/api/enums/tags'),
+                    fetch('http://localhost:8080/api/enums/locations'),
+                    fetch('http://localhost:8080/api/enums/brings'),
+                    fetch('http://localhost:8080/api/enums/durations'),
                 ]);
 
                 // Parse all JSON responses

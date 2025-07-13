@@ -4,8 +4,6 @@ import axios from "axios";
 import SearchBar from "../../components/TouristView/SearchBar.jsx";
 import {useNavigate} from "react-router-dom";
 import FiltersModal from "../../components/TouristView/FiltersModal.jsx";
-import useTourEnums from "../../hooks/useTourEnums.js";
-
 
 
 const TouristDashboardPage = () => {

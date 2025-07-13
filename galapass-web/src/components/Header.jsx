@@ -24,6 +24,10 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
         };
     }, []);
 
+    const handleLogoClick = () => {
+        navigate('/');
+    };
+
     const handleLogout = async () => {
         await logout();
         navigate('/');
@@ -71,10 +75,18 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
     };
 
     const handleBecomeGuide = () => {
+        if (!user) {
+            onLoginClick();
+            return;
+        }
         handleRoleChange('GUIDE', '/guide/dashboard');
     };
 
     const handleBecomeTourOperator = () => {
+        if (!user) {
+            onLoginClick();
+            return;
+        }
         handleRoleChange('OWNER', '/owner/dashboard');
     };
 
@@ -93,7 +105,10 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <div className="flex items-center gap-1">
+                    <div
+                        className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={handleLogoClick}
+                    >
                         <img
                             src="/images/galapassLogo.png"
                             alt="Galapass Logo"
@@ -115,15 +130,13 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
                                         {isRoleChanging ? 'Processing...' : 'Become a guide'}
                                     </button>
                                 )}
-                                {user?.role !== "OWNER" && (
-                                    <button
-                                        onClick={handleBecomeTourOperator}
-                                        disabled={isRoleChanging}
-                                        className="text-gray-700 hover:text-emerald-600 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isRoleChanging ? 'Processing...' : 'Become a Tour Operator'}
-                                    </button>
-                                )}
+                                <button
+                                    onClick={handleBecomeTourOperator}
+                                    disabled={isRoleChanging}
+                                    className="text-gray-700 hover:text-emerald-600 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isRoleChanging ? 'Processing...' : 'Become a Tour Operator'}
+                                </button>
                             </>
                         )}
 
@@ -233,15 +246,13 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick}) => {
                                         {isRoleChanging ? 'Processing...' : 'Become a Guide'}
                                     </button>
                                 )}
-                                {user?.role !== "OWNER" && (
-                                    <button
-                                        onClick={handleBecomeTourOperator}
-                                        disabled={isRoleChanging}
-                                        className="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isRoleChanging ? 'Processing...' : 'Become a Tour Operator'}
-                                    </button>
-                                )}
+                                <button
+                                    onClick={handleBecomeTourOperator}
+                                    disabled={isRoleChanging}
+                                    className="block w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isRoleChanging ? 'Processing...' : 'Become a Tour Operator'}
+                                </button>
                             </>
                         )}
 

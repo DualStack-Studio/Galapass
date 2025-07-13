@@ -4,6 +4,7 @@ import axios from "axios";
 import SearchBar from "../../components/TouristView/SearchBar.jsx";
 import {useNavigate} from "react-router-dom";
 import FiltersModal from "../../components/TouristView/FiltersModal.jsx";
+import {BASE_URL} from "../../config.js";
 
 
 const TouristDashboardPage = () => {
@@ -78,7 +79,7 @@ const TouristDashboardPage = () => {
     useEffect(() => {
         const fetchTours = async () => {
             try {
-                const res = await axios.get('http://localhost:8080/api/tours');
+                const res = await axios.get(`${BASE_URL}/api/tours`);
                 setTours(res.data);
             } catch (err) {
                 setError('Failed to fetch tours.');

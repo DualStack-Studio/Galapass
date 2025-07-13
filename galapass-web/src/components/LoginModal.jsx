@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { useGoogleAuth } from "../hooks/useGoogleAuth.js";
+import {BASE_URL} from "../config.js";
 
 const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [email, setEmail] = useState('');
@@ -38,7 +39,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
     setError('');
 
     try {
-      const response = await fetch("http://localhost:8080/auth/login", {
+      const response = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({email, password}),
@@ -47,7 +48,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
 
       if (!response.ok) throw new Error("Invalid credentials");
 
-      const userResponse = await fetch("http://localhost:8080/auth/me", {
+      const userResponse = await fetch(`${BASE_URL}/auth/me`, {
         credentials: "include",
       });
 

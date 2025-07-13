@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from "axios";
+import {BASE_URL} from "../config.js";
 
 const AuthContext = createContext({});
 
@@ -23,7 +24,7 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
         try {
             // Using 'include' to send cookies with the request
-            const response = await axios.get("http://localhost:8080/auth/me", { withCredentials: true });
+            const response = await axios.get(`${BASE_URL}/auth/me`, { withCredentials: true });
             setUser(response.data);
         } catch (error) {
             setUser(null);
@@ -34,7 +35,7 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuthStatus = async () => {
         try {
-            const response = await fetch("http://localhost:8080/auth/me", {
+            const response = await fetch(`${BASE_URL}/auth/me`, {
                 credentials: "include",
             });
 
@@ -55,7 +56,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await fetch("http://localhost:8080/auth/logout", {
+            await fetch(`${BASE_URL}/auth/logout`, {
                 method: "POST",
                 credentials: "include",
             });

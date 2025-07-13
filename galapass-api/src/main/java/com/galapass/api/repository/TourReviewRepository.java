@@ -12,6 +12,12 @@ public interface TourReviewRepository extends JpaRepository<TourReview, Long> {
 
     @Query("SELECT AVG(r.rating) FROM TourReview r WHERE r.tour.id = :tourId")
     Double getAverageRatingByTourId(@Param("tourId") Long tourId);
+
+    @Query("SELECT AVG(r.rating) FROM TourReview r " +
+            "JOIN r.tour.guides g " +
+            "WHERE g.id = :guideId")
+    Double getAverageRatingByGuideId(@Param("guideId") Long guideId);
+
 }
 
 

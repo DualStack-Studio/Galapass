@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Set;
 
@@ -13,7 +14,7 @@ public class BookingRequestDTO {
     private Long tourDateId;
     private Set<Long> guideIds;
     private Set<Long> touristIds;
-    private LocalDate date;
+    private ZonedDateTime date;
     private int numberOfPeople;
     private BigDecimal totalPaid;
     private BookingStatus status;

@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ public class BookingResponseDTO {
     private TourDateSummaryDTO tourDate;
     private Set<OwnerSummaryDTO> guides;
     private Set<OwnerSummaryDTO> tourists;
-    private LocalDate date;
+    private ZonedDateTime date;
     private int numberOfPeople;
     private BigDecimal totalPaid;
     private BookingStatus status;

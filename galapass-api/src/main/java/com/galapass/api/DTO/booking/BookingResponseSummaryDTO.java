@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Set;
 @Builder
@@ -18,7 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class BookingResponseSummaryDTO {
     private Long id;
-    private LocalDate date;
+    private ZonedDateTime date;
     private int numberOfPeople;
     private BigDecimal totalPaid;
     private BookingStatus status;

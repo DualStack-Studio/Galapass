@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -38,7 +40,7 @@ public class BookingStatsService {
 
         // Calculate upcoming bookings from today onwards
         long upcomingBookings = confirmedBookings.stream()
-                .filter(b -> !b.getTourDate().getDate().isBefore(LocalDate.now()))
+                .filter(b -> !b.getTourDate().getDate().isBefore(ZonedDateTime.now()))
                 .count();
 
         // Calculate average booking value, handling division by zero

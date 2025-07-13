@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galapass.api.DTO.booking.BookingRequestDTO;
 import com.galapass.api.DTO.booking.BookingResponseDTO;
+import com.galapass.api.DTO.guideDashboard.GuideDashboardStatsDTO;
 import com.galapass.api.entity.TourDate;
 
 import com.galapass.api.entity.booking.Booking;
@@ -18,14 +19,15 @@ import com.galapass.api.repository.TourDateRepository;
 import com.galapass.api.repository.TourRepository;
 import com.galapass.api.repository.UserRepository;
 import com.galapass.api.specification.BookingSpecification;
+import com.galapass.api.repository.TourReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.math.BigDecimal;
 import java.util.HashSet;
-
 import java.util.Set;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +42,7 @@ public class BookingService {
     private final TourRepository tourRepository;
     private final BookingMapper bookingMapper;
     private final TourDateRepository tourDateRepository;
+    private final TourReviewRepository tourReviewRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -161,6 +164,12 @@ public class BookingService {
 
         return bookingMapper.toBookingResponseDTO(savedBooking);
     }
+    public List<BookingResponseDTO> getBookingsByGuide(Long guideId) {
+        List<Booking> bookings = bookingRepository.findByTourDate_Tour_Guides_Id(guideId);
+        return bookings.stream()
+                .map(bookingMapper::toBookingResponseDTO)
+                .collect(Collectors.toList());
+    }
 
     public List<Booking> getBookingsByGuideAndStatus(Long guideId, BookingStatus status) {
               return bookingRepository.findBookingsByGuideIdAndStatus(guideId, status);
@@ -175,10 +184,32 @@ public class BookingService {
                 return bookingRepository.findBookingHistoryByGuideId(guideId);
     }
 
+
     public List<BookingResponseDTO> getBookingByTourId(Long tourId) {
         List<Booking> bookings = bookingRepository.findByTourDate_Tour_Id(tourId);
         return bookings.stream()
                 .map(bookingMapper::toBookingResponseDTO)
                 .collect(Collectors.toList());
+    }
+  
+    public GuideDashboardStatsDTO getDashboardStatsForGuide(Long guideId) {
+        long activeToursCount = bookingRepository.countActiveToursByGuideId(guideId); // custom query needed
+        long upcomingToursCount = bookingRepository.countUpcomingToursByGuideId(guideId); // custom query needed
+        long completedToursCount = bookingRepository.countCompletedToursByGuideId(guideId); // custom query needed
+
+        Double avgRatingObj = tourReviewRepository.getAverageRatingByGuideId(guideId);
+        double averageRating = avgRatingObj != null ? avgRatingObj : 0.0;
+
+        BigDecimal totalEarnings = bookingRepository.getTotalEarningsByGuideId(guideId);
+        if (totalEarnings == null) totalEarnings = BigDecimal.ZERO;
+
+        return new GuideDashboardStatsDTO(
+                activeToursCount,
+                upcomingToursCount,
+                completedToursCount,
+                averageRating,
+                totalEarnings
+        );
+
     }
 }

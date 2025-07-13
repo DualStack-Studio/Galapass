@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 
-
 @Data
 @Builder
 public class TourDateSummaryDTO {

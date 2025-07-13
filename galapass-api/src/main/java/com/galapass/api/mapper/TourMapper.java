@@ -103,6 +103,15 @@ public class TourMapper {
                 .reviewCount(tourReviewRepository.countByTourId(tour.getId()))
                 .build();
     }
+    public List<TourResponseOwnerViewDTO> toTourResponseOwnerViewDTOList(List<Tour> tours) {
+        if (tours == null) {
+            return null;
+        }
+        return tours.stream()
+                .map(this::toTourResponseOwnerViewDTO)
+                .collect(Collectors.toList());
+    }
+
 
 
     public TourDraftResponse toTourDraftResponse(Tour tour) {

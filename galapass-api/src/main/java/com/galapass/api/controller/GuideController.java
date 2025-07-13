@@ -1,10 +1,16 @@
 package com.galapass.api.controller;
 
+import com.galapass.api.DTO.booking.BookingResponseDTO;
+import com.galapass.api.DTO.guideDashboard.GuideDashboardStatsDTO;
+import com.galapass.api.DTO.guideInvitation.GuideInvitationResponse;
 import com.galapass.api.DTO.tour.TourResponseDTO;
+import com.galapass.api.DTO.tour.TourResponseOwnerViewDTO;
 import com.galapass.api.DTO.tourCompany.TourCompanyResponse;
 import com.galapass.api.entity.booking.Booking;
 import com.galapass.api.entity.booking.BookingStatus;
 import com.galapass.api.entity.tour.Tour;
+import com.galapass.api.entity.user.GuideInvitation;
+import com.galapass.api.mapper.GuideInvitationMapper;
 import com.galapass.api.mapper.TourMapper;
 import com.galapass.api.service.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,17 +31,19 @@ public class GuideController {
     private final BookingService bookingService;
     private final TourMapper tourMapper;
     private final TourCompanyService tourCompanyService;
+    private final GuideInvitationService guideInvitationService;
+    private final GuideInvitationMapper guideInvitationMapper;
 
     @PreAuthorize("hasRole('GUIDE')")
     @GetMapping("/{guideId}/companies")
     public ResponseEntity<List<TourCompanyResponse>> getCompaniesByGuide(@PathVariable Long guideId) {
-        return ResponseEntity.ok(tourCompanyService.getCompaniesByOwnerId(guideId));
+        return ResponseEntity.ok(tourCompanyService.getCompaniesByGuideId(guideId));
     }
 
     // Active tours from bookings with CONFIRMED status
     @PreAuthorize("hasRole('GUIDE')")
     @GetMapping("/{guideId}/tours/active")
-    public ResponseEntity<List<TourResponseDTO>> getActiveToursByGuide(@PathVariable Long guideId) {
+    public ResponseEntity<List<TourResponseOwnerViewDTO>> getActiveToursByGuide(@PathVariable Long guideId) {
         List<Booking> bookings = bookingService.getBookingsByGuideAndStatus(guideId, BookingStatus.CONFIRMED);
 
         List<Tour> tours = bookings.stream()
@@ -43,7 +51,14 @@ public class GuideController {
                 .distinct()
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(tourMapper.toTourResponseDTOList(tours));
+        return ResponseEntity.ok(tourMapper.toTourResponseOwnerViewDTOList(tours));
+
+    }
+    @PreAuthorize("hasRole('GUIDE')")
+    @GetMapping("/{guideId}/bookings")
+    public ResponseEntity<List<BookingResponseDTO>> getBookingsByGuide(@PathVariable Long guideId) {
+        List<BookingResponseDTO> bookings = bookingService.getBookingsByGuide(guideId);
+        return ResponseEntity.ok(bookings);
     }
 
     // Completed tours from bookings with COMPLETED status
@@ -87,4 +102,24 @@ public class GuideController {
 
         return ResponseEntity.ok(tourMapper.toTourResponseDTOList(tours));
     }
+
+    @GetMapping("/{guideId}/dashboard-stats")
+    public ResponseEntity<GuideDashboardStatsDTO> getDashboardStats(@PathVariable Long guideId) {
+        GuideDashboardStatsDTO stats = bookingService.getDashboardStatsForGuide(guideId);
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/{guideId}/invitations")
+    public ResponseEntity<List<GuideInvitationResponse>> getInvitationsByGuide(@PathVariable Long guideId) {
+        List<GuideInvitation> invitations = guideInvitationService.getInvitationsByGuideId(guideId);
+
+        List<GuideInvitationResponse> response = invitations.stream()
+                .map(guideInvitationMapper::toResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
+
+
 }

@@ -75,31 +75,6 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
         }
     };
 
-
-    const handleGoogleSuccess = async (credentialResponse) => {
-        // ... (Your existing Google logic remains unchanged)
-        try {
-            const res = await fetch("http://localhost:8080/auth/google", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ idToken: credentialResponse.credential }),
-                credentials: "include",
-            });
-
-            if (!res.ok) throw new Error("Google login failed");
-
-            const userRes = await fetch("http://localhost:8080/auth/me", {
-                credentials: "include",
-            });
-
-            const userData = await userRes.json();
-            login(userData);
-            onClose();
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
     return (
         // 4. Conditionally apply animation to the overlay
         <div

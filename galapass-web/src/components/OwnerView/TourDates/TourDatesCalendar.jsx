@@ -1,5 +1,6 @@
 import {ArrowLeft, Calendar} from "lucide-react";
 import React, {useState} from "react";
+import CompactCalendar from "./CompactCalendar";
 
 const TourDatesCalendar = ({
                                tourDates,
@@ -13,7 +14,8 @@ const TourDatesCalendar = ({
                                selectedDate,
                                setSelectedDate
                            }) => {
-
+    const [animating, setAnimating] = useState(false);
+    const [monthKey, setMonthKey] = useState(currentDate.getMonth() + '-' + currentDate.getFullYear());
 
     const isSameDate = (date1, date2) => {
         return date1.toDateString() === date2.toDateString();
@@ -59,12 +61,20 @@ const TourDatesCalendar = ({
     };
 
     const navigateMonth = (direction) => {
-        setCurrentDate(prev => {
-            const newDate = new Date(prev);
-            newDate.setMonth(prev.getMonth() + direction);
-            return newDate;
-        });
+        setAnimating(true);
+        setTimeout(() => {
+            setCurrentDate(prev => {
+                const newDate = new Date(prev);
+                newDate.setMonth(prev.getMonth() + direction);
+                setMonthKey(newDate.getMonth() + '-' + newDate.getFullYear());
+                return newDate;
+            });
+            setAnimating(false);
+        }, 200);
     };
+
+    // Helper to check if a tour date has bookings
+    const hasBookings = (tourDate) => tourDate && Array.isArray(tourDate.bookings) && tourDate.bookings.length > 0;
 
     const renderCalendar = () => {
         const daysInMonth = getDaysInMonth(currentDate);
@@ -76,7 +86,6 @@ const TourDatesCalendar = ({
             days.push(<div key={`empty-${i}`} className="h-12"></div>);
         }
 
-
         // Days of the month
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
@@ -84,6 +93,7 @@ const TourDatesCalendar = ({
             const isToday = isSameDate(date, new Date());
             const isPast = date < new Date().setHours(0, 0, 0, 0);
             const isSelected = selectedDate && isSameDate(date, selectedDate);
+            const isBooked = tourDate && Array.isArray(tourDate.bookings) && tourDate.bookings.length > 0;
 
             days.push(
                 <div
@@ -93,7 +103,7 @@ const TourDatesCalendar = ({
                         relative h-12 flex items-center justify-center cursor-pointer rounded-lg border-2 transition-all duration-200
                         ${isPast ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'hover:border-emerald-300'}
                         ${isToday ? 'border-emerald-500 bg-emerald-50' : 'border-transparent'}
-                        ${tourDate ? (tourDate.available ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800') : 'hover:bg-gray-50'}
+                        ${isBooked ? 'bg-orange-200 text-orange-900 font-bold animate-pulse' : tourDate ? (tourDate.available ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800') : 'hover:bg-gray-50'}
                         ${isSelected ? 'ring-2 ring-emerald-500 ring-offset-2' : ''}
                     `}
                 >
@@ -140,7 +150,10 @@ const TourDatesCalendar = ({
                     </div>
                 ))}
             </div>
-            <div className="grid grid-cols-7 gap-1">
+            <div
+                key={monthKey}
+                className={`grid grid-cols-7 gap-1 transition-opacity duration-200 ${animating ? 'opacity-0' : 'opacity-100'}`}
+            >
                 {renderCalendar()}
             </div>
 
@@ -158,6 +171,10 @@ const TourDatesCalendar = ({
                     <div className="flex items-center space-x-2">
                         <div className="w-4 h-4 bg-emerald-50 border-2 border-emerald-500 rounded"></div>
                         <span className="text-gray-600">Today</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-orange-200 rounded border border-orange-300"></div>
+                        <span className="text-gray-600">Booked</span>
                     </div>
                 </div>
             </div>

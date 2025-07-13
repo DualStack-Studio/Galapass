@@ -1,30 +1,39 @@
 import {AlertCircle, Calendar, CheckCircle, Clock, User, MapPin} from "lucide-react";
 import React from "react";
+import {convertLocationName} from "../../../api/tourApi.js";
 
-
+// Helper functions remain the same
 const getStatusColor = (status, completed) => {
-    if (completed) return 'bg-green-100 text-green-800';
+    if (completed) return "bg-green-100 text-green-800";
     switch (status) {
-        case 'confirmed': return 'bg-blue-100 text-blue-800';
-        case 'pending': return 'bg-yellow-100 text-yellow-800';
-        case 'cancelled': return 'bg-red-100 text-red-800';
-        default: return 'bg-gray-100 text-gray-800';
+        case "CONFIRMED":
+            return "bg-blue-100 text-blue-800";
+        case "PENDING":
+            return "bg-yellow-100 text-yellow-800";
+        case "CANCELED":
+            return "bg-red-100 text-red-800";
+        default:
+            return "bg-gray-100 text-gray-800";
     }
 };
 
 const getStatusIcon = (status, completed) => {
-    if (completed) return <CheckCircle className="w-4 h-4" />;
+    if (completed) return <CheckCircle className="w-4 h-4 mr-1" />;
     switch (status) {
-        case 'confirmed': return <Calendar className="w-4 h-4" />;
-        case 'pending': return <Clock className="w-4 h-4" />;
-        case 'cancelled': return <AlertCircle className="w-4 h-4" />;
-        default: return <Clock className="w-4 h-4" />;
+        case "CONFIRMED":
+            return <CheckCircle className="w-4 h-4 mr-1" />;
+        case "PENDING":
+            return <Clock className="w-4 h-4 mr-1" />;
+        case "CANCELED":
+            return <AlertCircle className="w-4 h-4 mr-1" />;
+        default:
+            return null;
     }
 };
 
 const BookingCard = ({ booking, setSelectedBooking }) => {
-    const bookingDate = new Date(booking.date);
-    const bookedAtDate = booking.bookedAt ? new Date(booking.bookedAt) : null;
+    const bookingDate = new Date(booking.tourDate.date);
+    const bookedAtDate = booking.date ? new Date(booking.date) : null;
 
     // Defensively get the tour object to prevent errors if data is missing
     const tour = booking.tourDate?.tour;
@@ -41,8 +50,7 @@ const BookingCard = ({ booking, setSelectedBooking }) => {
                     <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
                             <img
-                                // Use a placeholder if no photo is available
-                                src={tour.photoUrls && tour.photoUrls.length > 0 ? tour.photoUrls[0] : 'https://placehold.co/48x48/e2e8f0/64748b?text=Tour'}
+                                src={tour.media?.find(m => m.type === 'IMAGE').url || 'https://placehold.co/48x48/e2e8f0/64748b?text=Tour'}
                                 alt={tour.title}
                                 className="w-12 h-12 rounded-lg object-cover"
                             />
@@ -50,7 +58,7 @@ const BookingCard = ({ booking, setSelectedBooking }) => {
                                 <h3 className="font-semibold text-gray-900">{tour.title}</h3>
                                 <div className="flex items-center text-sm text-gray-500">
                                     <MapPin className="w-4 h-4 mr-1" />
-                                    {tour.location}
+                                    {convertLocationName(tour.location)}
                                 </div>
                             </div>
                         </div>

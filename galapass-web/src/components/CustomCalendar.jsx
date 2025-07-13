@@ -10,7 +10,8 @@ const CustomCalendar = ({
                             selectedDate,
                             position = 'left',
                             currentMonth,
-                            setCurrentMonth
+                            setCurrentMonth,
+                            onClear
                         }) => {
     if (!isVisible) return null;
 
@@ -133,7 +134,7 @@ const CustomCalendar = ({
             {/* Footer */}
             <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-100">
                 <button
-                    onClick={onClose}
+                    onClick={onClear}
                     className="text-sm text-gray-500 hover:text-gray-700 underline cursor-pointer"
                 >
                     Clear

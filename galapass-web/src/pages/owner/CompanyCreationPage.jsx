@@ -5,7 +5,7 @@ import StepBasicInfo from '../../components/OwnerView/CompanyCreation/StepBasicI
 import StepBranding from '../../components/OwnerView/CompanyCreation/StepBranding';
 import StepDetails from '../../components/OwnerView/CompanyCreation/StepDetails';
 import useTourEnums from "../../hooks/useTourEnums.js";
-import { useImageUpload } from "../../hooks/useImageUpload.js";
+import { useMediaUpload } from "../../hooks/useMediaUpload.js";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../contexts/AuthContext.jsx";
 import StepPricing from "../../components/OwnerView/TourCreation/StepPricing.jsx";
@@ -18,11 +18,12 @@ const CompanyCreationPage = ({ onSuccess }) => {
     const { formData, handleInputChange, handleSpecialtyToggle } = useCompanyForm();
     const [currentStep, setCurrentStep] = useState(1);
     const {
-        uploadedImages,
+        media: uploadedImages,
+        handleGeneralImageUploads,
+        removeGeneralMedia,
         isUploading,
-        handleImageUpload,
-        removeImage
-    } = useImageUpload();
+        isDeleting
+    } = useMediaUpload();
 
     const uploadedLogo = uploadedImages[0] || null;
 
@@ -37,6 +38,7 @@ const CompanyCreationPage = ({ onSuccess }) => {
     ];
 
     const isStep1Valid = formData.name && formData.location;
+    const isStep2Valid = uploadedLogo
     const isStep3Valid =
         formData.description &&
         formData.phone &&
@@ -96,10 +98,9 @@ const CompanyCreationPage = ({ onSuccess }) => {
     };
 
 
-    const handleFileSelect = (e) => {
-        const file = e.target.files[0];
+    const handleFileSelect = (file) => {
         if (file) {
-            handleImageUpload([file]);
+            handleGeneralImageUploads([file]);
         }
     };
 
@@ -111,8 +112,9 @@ const CompanyCreationPage = ({ onSuccess }) => {
                 <StepBranding
                     uploadedLogo={uploadedLogo}
                     handleFileSelect={handleFileSelect}
-                    removeLogo={() => removeImage(uploadedLogo?.id)}
-                    isUploading={isUploading}
+                    removeLogo={removeGeneralMedia}
+                    isUploading={isUploading.image}
+                    isDeleting={isDeleting}
                 />
             );
         if (currentStep === 3)
@@ -179,7 +181,7 @@ const CompanyCreationPage = ({ onSuccess }) => {
                     {currentStep > 1 && currentStep < 4 ? (
                         <button
                             onClick={prevStep}
-                            className="text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-lg"
+                            className="text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-lg cursor-pointer"
                         >
                             Back
                         </button>
@@ -188,8 +190,8 @@ const CompanyCreationPage = ({ onSuccess }) => {
                     {currentStep < 3 ? (
                         <button
                             onClick={nextStep}
-                            disabled={(currentStep === 1 && !isStep1Valid)}
-                            className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                            disabled={(currentStep === 1 && !isStep1Valid && !isStep2Valid)}
+                            className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer"
                         >
                             Next
                         </button>
@@ -203,9 +205,9 @@ const CompanyCreationPage = ({ onSuccess }) => {
                                 <span>Creating...</span>
                             ) : (
                                 <span className="flex items-center">
-                        <Save className="h-4 w-4 mr-2" />
-                        Create Company
-                    </span>
+                                    <Save className="h-4 w-4 mr-2" />
+                                    Create Company
+                                </span>
                             )}
                         </button>
                     ) : (

@@ -6,7 +6,7 @@ import StepBasicInfo from '../../components/OwnerView/CompanyCreation/StepBasicI
 import StepBranding from '../../components/OwnerView/CompanyCreation/StepBranding';
 import StepDetails from '../../components/OwnerView/CompanyCreation/StepDetails';
 import useTourEnums from "../../hooks/useTourEnums.js";
-import { useImageUpload } from "../../hooks/useImageUpload.js";
+import { useMediaUpload } from "../../hooks/useMediaUpload.js";
 import StepSummary from "../../components/OwnerView/CompanyCreation/StepSummary.jsx";
 
 const CompanyEditingPage = ({ onSuccess }) => {
@@ -16,12 +16,13 @@ const CompanyEditingPage = ({ onSuccess }) => {
     const [currentStep, setCurrentStep] = useState(1);
     const [originalCompanyData, setOriginalCompanyData] = useState(null);
     const {
-        uploadedImages,
+        media: uploadedImages,
+        handleGeneralImageUploads,
+        removeGeneralMedia,
         isUploading,
-        handleImageUpload,
-        removeImage,
-        setUploadedImages
-    } = useImageUpload();
+        isDeleting,
+        setMedia: setUploadedImages
+    } = useMediaUpload();
 
     const initialDataRef = useRef({ formData: null, uploadedImages: null });
     const uploadedLogo = uploadedImages[0] || null;
@@ -162,10 +163,9 @@ const CompanyEditingPage = ({ onSuccess }) => {
         }
     };
 
-    const handleFileSelect = (e) => {
-        const file = e.target.files[0];
+    const handleFileSelect = (file) => {
         if (file) {
-            handleImageUpload([file]);
+            handleGeneralImageUploads([file]);
         }
     };
 
@@ -196,8 +196,9 @@ const CompanyEditingPage = ({ onSuccess }) => {
                 <StepBranding
                     uploadedLogo={uploadedLogo}
                     handleFileSelect={handleFileSelect}
-                    removeLogo={() => removeImage(uploadedLogo?.id)}
-                    isUploading={isUploading}
+                    removeLogo={removeGeneralMedia}
+                    isUploading={isUploading.image}
+                    isDeleting={isDeleting}
                 />
             );
         if (currentStep === 3)
@@ -271,9 +272,7 @@ const CompanyEditingPage = ({ onSuccess }) => {
                                 </React.Fragment>
                             ))}
                         </div>
-
-                        <div className="text-sm text-gray-600">
-                            Edit Company
+                        <div>
                         </div>
                     </div>
                 </div>
@@ -332,10 +331,10 @@ const CompanyEditingPage = ({ onSuccess }) => {
                             {loading ? (
                                 <span>Updating...</span>
                             ) : (
-                                <span className="flex items-center">
+                                <button className="flex items-center cursor-pointer">
                                     <Save className="h-4 w-4 mr-2" />
                                     Update Company
-                                </span>
+                                </button>
                             )}
                         </button>
                     ) : (

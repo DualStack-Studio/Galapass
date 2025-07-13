@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Make sure to import useEffect
 import { X } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
@@ -12,12 +12,31 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+  // 1. Add state to control visibility for animations
+  const [isVisible, setIsVisible] = useState(isOpen);
+
+  // 2. Use an effect to handle the animation timing
+  useEffect(() => {
+    if (isOpen) {
+      setIsVisible(true);
+    } else {
+      // Wait for the animation to finish before unmounting
+      const timer = setTimeout(() => setIsVisible(false), 300); // Must match animation duration
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  // 3. Change the render condition to use the new state
+  if (!isVisible) {
+
   const handleGoogleSuccess = useGoogleAuth(onClose);
   if (!isOpen) {
+
     return null;
   }
 
   const handleSubmit = async (e) => {
+    // ... (Your existing submit logic remains unchanged)
     e.preventDefault();
     setIsLoading(true);
     setError('');
@@ -32,22 +51,18 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
 
       if (!response.ok) throw new Error("Invalid credentials");
 
-      // Get user data after successful login
       const userResponse = await fetch("http://localhost:8080/auth/me", {
         credentials: "include",
       });
 
       if (userResponse.ok) {
         const userData = await userResponse.json();
-        login(userData); // Update auth context
+        login(userData);
       }
 
-      onClose(); // Close the modal
-      // Reset form
+      onClose();
       setEmail('');
       setPassword('');
-      // Optionally navigate to a different page
-      // navigate("/dashboard");
     } catch (err) {
       setError(err.message);
       console.error(err);
@@ -55,22 +70,49 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
       setIsLoading(false);
     }
   };
+  const handleGoogleSuccess = async (credentialResponse) => {
+    // ... (Your existing Google logic remains unchanged)
+    try {
+      const res = await fetch("http://localhost:8080/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken: credentialResponse.credential }),
+        credentials: "include",
+      });
 
+      if (!res.ok) throw new Error("Google login failed");
+
+      const userRes = await fetch("http://localhost:8080/auth/me", {
+        credentials: "include",
+      });
+
+      const userData = await userRes.json();
+      login(userData);
+      onClose();
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
-      // Modal Overlay
+      // 4. Conditionally apply animation to Modal Overlay
       <div
-          className="fixed inset-0 bg-black/30 flex justify-center items-center z-50 transition-opacity duration-300"
+          className={`fixed inset-0 bg-black/30 flex justify-center items-center z-50 ${
+              isOpen ? 'animate-fade-in' : 'animate-fade-out'
+          }`}
           onClick={onClose}
       >
-        {/* Modal Content */}
+        {/* 5. Conditionally apply animation to Modal Content */}
         <div
-            className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm relative"
+            className={`bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm relative ${
+                isOpen ? 'animate-slide-up' : 'animate-slide-down'
+            }`}
             onClick={(e) => e.stopPropagation()}
         >
+          {/* ... Your entire modal content here ... */}
           {/* Close Button */}
           <button
               onClick={onClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
           >
             <X size={24} />
           </button>
@@ -133,7 +175,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full mt-6 bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full mt-6 bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer"
             >
               {isLoading ? 'Logging in...' : 'Log In'}
             </button>
@@ -149,7 +191,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
             </div>
           </div>
 
-          {/* Custom Styled Google Login Button */}
+          {/* ... Your Google button and other content ... */}
           <div className="relative">
             <GoogleLogin
                 onSuccess={handleGoogleSuccess}
@@ -172,8 +214,6 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                     </button>
                 )}
             />
-
-            {/* Fallback if render prop doesn't work */}
             <div className="absolute inset-0 opacity-0 pointer-events-none">
               <GoogleLogin
                   onSuccess={handleGoogleSuccess}
@@ -187,19 +227,32 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
               />
             </div>
           </div>
-
-          {/* Sign Up Link */}
           <p className="text-center text-sm text-gray-600 mt-6">
             Don't have an account?{' '}
             <button
                 type="button"
                 onClick={onSwitchToRegister}
-                className="font-semibold text-emerald-600 hover:underline"
+                className="font-semibold text-emerald-600 hover:underline cursor-pointer"
             >
               Sign up
             </button>
           </p>
         </div>
+
+        {/* 6. Add the CSS animations */}
+        <style>{`
+            @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+            .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
+            
+            @keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+            .animate-fade-out { animation: fade-out 0.3s ease-out forwards; }
+            
+            @keyframes slide-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            .animate-slide-up { animation: slide-up 0.3s ease-out forwards; }
+            
+            @keyframes slide-down { from { transform: translateY(0); opacity: 1; } to { transform: translateY(20px); opacity: 0; } }
+            .animate-slide-down { animation: slide-down 0.3s ease-out forwards; }
+        `}</style>
       </div>
   );
 };

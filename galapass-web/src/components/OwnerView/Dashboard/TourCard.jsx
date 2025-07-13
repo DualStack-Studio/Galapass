@@ -6,12 +6,23 @@ import { useNavigate } from "react-router-dom";
 const TourCard = ({ tour }) => {
     const navigate = useNavigate();
 
+    const handleViewBookings = () => {
+        navigate('/owner/manage-bookings', {
+            state: {
+                tourId: tour.id,
+                tourTitle: tour.title
+            }
+        });
+    };
+
+    const coverImage = tour.media?.find(m => m.type === 'IMAGE').url;
+
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
             {/* Image Section */}
             <div className="relative h-48 w-full">
                 <img
-                    src={(tour.photoUrls && tour.photoUrls[0]) || '/images/galapassLogo.png'}
+                    src={coverImage || '/images/galapassLogo.png'}
                     alt={tour.title || 'Tour Image'}
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -64,7 +75,7 @@ const TourCard = ({ tour }) => {
                             Dates
                         </button>
                         <button
-                            onClick={() => navigate('/owner/manage-bookings')}
+                            onClick={handleViewBookings}
                             className="text-emerald-600 hover:text-emerald-700 text-sm font-medium cursor-pointer"
                         >
                             Bookings

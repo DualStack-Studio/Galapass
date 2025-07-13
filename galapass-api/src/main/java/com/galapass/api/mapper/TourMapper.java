@@ -84,6 +84,15 @@ public class TourMapper {
                 .totalBookings(bookingRepository.countBookingsByTourId(tour.getId()))
                 .build();
     }
+    public List<TourResponseOwnerViewDTO> toTourResponseOwnerViewDTOList(List<Tour> tours) {
+        if (tours == null) {
+            return null;
+        }
+        return tours.stream()
+                .map(this::toTourResponseOwnerViewDTO)
+                .collect(Collectors.toList());
+    }
+
 
     public TourResponseOwnerViewDTO toTourOwnerViewDTO(Tour tour) {
         if (tour == null) return null;

@@ -43,6 +43,13 @@ public class TourCompanyService {
                 .toList();
     }
 
+    public List<TourCompanyResponse> getCompaniesByGuideId(Long guideId) {
+        return tourCompanyRepository.findAllByGuideId(guideId).stream()
+                .map(tourCompanyMapper::toTourCompanyResponse)
+                .toList();
+    }
+
+
     public List<TourCompanyEditing> getTourCompaniesById(Long id) {
         return tourCompanyRepository.findById(id).stream()
                 .map(tourCompanyMapper::toEditingDTO)

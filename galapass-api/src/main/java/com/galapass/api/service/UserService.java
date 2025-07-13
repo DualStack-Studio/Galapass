@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galapass.api.DTO.guideDashboard.GuideDashboardStatsDTO;
+import com.galapass.api.DTO.user.UserCompaniesDTO;
 import com.galapass.api.DTO.user.UserPatchRequest;
 import com.galapass.api.DTO.user.UserResponse;
 import com.galapass.api.entity.TourCompany;
@@ -27,6 +28,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +45,10 @@ public class UserService {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserCompaniesDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toUserCompaniesDTO)
+                .collect(Collectors.toList());
     }
 
     public User createUser(User user) {

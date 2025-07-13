@@ -1,6 +1,7 @@
 package com.galapass.api.controller;
 
 import com.galapass.api.DTO.user.GuideSearchRequest;
+import com.galapass.api.DTO.user.UserCompaniesDTO;
 import com.galapass.api.DTO.user.UserPatchRequest;
 import com.galapass.api.DTO.user.UserResponse;
 import com.galapass.api.entity.user.User;
@@ -24,7 +25,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserCompaniesDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 

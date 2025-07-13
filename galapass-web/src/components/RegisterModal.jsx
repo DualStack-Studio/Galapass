@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
+import {useGoogleAuth} from "../hooks/useGoogleAuth.js";
 
 const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     const [error, setError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
+    const handleGoogleSuccess = useGoogleAuth(onClose);
 
     if (!isOpen) return null;
 
@@ -60,28 +62,6 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
         }
     };
 
-    const handleGoogleSuccess = async (credentialResponse) => {
-        try {
-            const res = await fetch("http://localhost:8080/auth/google", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ idToken: credentialResponse.credential }),
-                credentials: "include",
-            });
-
-            if (!res.ok) throw new Error("Google login failed");
-
-            const userRes = await fetch("http://localhost:8080/auth/me", {
-                credentials: "include",
-            });
-
-            const userData = await userRes.json();
-            login(userData);
-            onClose();
-        } catch (err) {
-            console.error(err);
-        }
-    };
 
     return (
         <div

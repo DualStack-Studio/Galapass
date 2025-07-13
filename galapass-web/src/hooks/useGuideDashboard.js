@@ -39,30 +39,17 @@ export const useGuideDashboard = (guideId) => {
         setTourHistory(await history.json());
     };
 
-    // Fetch invitations from all companies, then filter by guideId & status 'PENDING'
-    const fetchInvitations = async (companiesList) => {
-        if (!companiesList.length) {
-            setInvitations([]);
-            return;
-        }
+    const fetchInvitations = async () => {
+        const res = await fetch(`${API_URL}/api/guides/${guideId}/invitations`, { credentials: 'include' });
+        if (!res.ok) throw new Error('Failed to fetch guide invitations');
+        const allInvitations = await res.json();
+        console.log("Guide invitations:", allInvitations);
 
-        // Fetch invitations for all companies concurrently
-        const invitationsArrays = await Promise.all(
-            companiesList.map(async (company) => {
-                const res = await fetch(`${API_URL}/api/invitations/company/${company.id}`, { credentials: 'include' });
-                if (!res.ok) throw new Error('Failed to fetch invitations for company ' + company.id);
-                return await res.json();
-            })
-        );
-
-        // Flatten array of arrays and filter by guideId & PENDING status
-        const allInvitations = invitationsArrays.flat();
-        const guidePendingInvitations = allInvitations.filter(
-            (inv) => inv.guideId === guideId && inv.status === 'PENDING'
-        );
-
+        const guidePendingInvitations = allInvitations.filter(inv => inv.status === 'PENDING');
         setInvitations(guidePendingInvitations);
     };
+
+
 
     const fetchStats = async () => {
         const res = await fetch(`${API_URL}/api/guides/${guideId}/dashboard-stats`, { credentials: 'include' });
@@ -73,10 +60,10 @@ export const useGuideDashboard = (guideId) => {
     const fetchAll = async () => {
         setLoading(true);
         try {
-            const companiesList = await fetchCompanies();
+            await fetchCompanies();
             await Promise.all([
                 fetchTours(),
-                fetchInvitations(companiesList),
+                fetchInvitations(),
                 fetchStats(),
             ]);
         } catch (err) {
@@ -86,6 +73,8 @@ export const useGuideDashboard = (guideId) => {
             setLoading(false);
         }
     };
+
+
 
     useEffect(() => {
         if (!guideId) return;

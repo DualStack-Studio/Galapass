@@ -1,11 +1,10 @@
 package com.galapass.api.DTO.guideInvitation;
 
-import com.galapass.api.DTO.user.GuideSummaryDTO;
-import com.galapass.api.entity.InvitationStatus;
+import com.galapass.api.entity.user.InvitationStatus;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 @Builder
@@ -14,7 +13,7 @@ public class GuideInvitationResponse {
     private String email;
     private String message;
     private InvitationStatus status;
-    private LocalDateTime sentAt;
+    private ZonedDateTime sentAt;
     private String name;
     private String company;
 }

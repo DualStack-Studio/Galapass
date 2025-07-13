@@ -35,8 +35,8 @@ public class TourCompanyController {
         return ResponseEntity.ok(tourCompanyService.getAllTourCompanies());
     }
 
-    @PreAuthorize("hasRole('OWNER')")
     @PostMapping
+    @PreAuthorize("hasAuthority('OWNER')")
     public ResponseEntity<?> createTourCompany(@RequestBody TourCompanyCreateRequest tourCompany) {
         try {
             tourCompanyService.createTourCompany(tourCompany);

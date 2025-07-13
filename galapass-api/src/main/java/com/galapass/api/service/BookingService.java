@@ -14,13 +14,20 @@ import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.user.User;
 import com.galapass.api.exception.TourNotFoundException; 
 import com.galapass.api.mapper.BookingMapper;
-import com.galapass.api.repository.*;
+import com.galapass.api.repository.BookingRepository;
+import com.galapass.api.repository.TourDateRepository;
+import com.galapass.api.repository.TourRepository;
+import com.galapass.api.repository.UserRepository;
+import com.galapass.api.specification.BookingSpecification;
+import com.galapass.api.repository.TourReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.math.BigDecimal;
 import java.util.HashSet;
-
 import java.util.Set;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -107,49 +114,55 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
-    public List<BookingResponseDTO> searchBookingsByOwner(Long ownerId, String status, String date, String search) {
-        List<Booking> bookings = bookingRepository.findByTourDate_Tour_Owner_Id(ownerId);
-        Stream<Booking> stream = bookings.stream();
+    public List<BookingResponseDTO> searchBookings(Long ownerId, Long tourId, String status, String date, String search) {
 
+        Specification<Booking> spec = Specification.where(null);
 
-        // Filter by status
+        // Security: Always scope to the owner if an ownerId is present
+        if (ownerId != null) {
+            spec = spec.and(BookingSpecification.hasOwnerId(ownerId));
+        }
+
+        // Add the tourId filter if it's provided
+        if (tourId != null) {
+            spec = spec.and(BookingSpecification.hasTourId(tourId));
+        }
+
         if (status != null && !status.isBlank()) {
             try {
-                BookingStatus statusEnum = BookingStatus.valueOf(status.toUpperCase());
-                stream = stream.filter(b -> b.getStatus() == statusEnum);
+                spec = spec.and(BookingSpecification.hasStatus(BookingStatus.valueOf(status.toUpperCase())));
             } catch (IllegalArgumentException e) {
-                
-                System.err.println("Invalid booking status provided: " + status);
+                // Log invalid status
             }
         }
 
-        // Filter by date
         if (date != null && !date.isBlank()) {
-            stream = stream.filter(b -> {
-                String bookingDate = new java.text.SimpleDateFormat("yyyy-MM-dd").format(b.getDate());
-                return bookingDate.equals(date);
-            });
+            try {
+                LocalDate parsedDate = LocalDate.parse(date);
+                spec = spec.and(BookingSpecification.onDate(parsedDate));
+            } catch (DateTimeParseException e) {
+                // Log invalid date format
+            }
         }
 
-        // Filter by search term
         if (search != null && !search.trim().isEmpty()) {
-            String lowerSearch = search.toLowerCase();
-            stream = stream.filter(b ->
-                    b.getTourDate().getTour().getTitle().toLowerCase().contains(lowerSearch) ||
-                            b.getTourDate().getTour().getLocation().toLowerCase().contains(lowerSearch) ||
-                            b.getTourists().stream().anyMatch(t -> t.getName().toLowerCase().contains(lowerSearch))
-            );
+            spec = spec.and(BookingSpecification.containsSearchTerm(search));
         }
 
-        return stream.map(bookingMapper::toBookingResponseDTO).toList();
+        List<Booking> bookings = bookingRepository.findAll(spec);
+
+        return bookings.stream()
+                .map(bookingMapper::toBookingResponseDTO)
+                .toList();
     }
 
-    // Status transitions
 
-    public Booking updateBookingStatus(Long bookingId, BookingStatus status) {
+    public BookingResponseDTO updateBookingStatus(Long bookingId, BookingStatus status) {
         Booking booking = getBookingById(bookingId);
         booking.setStatus(status);
-        return bookingRepository.save(booking);
+        Booking savedBooking = bookingRepository.save(booking);
+
+        return bookingMapper.toBookingResponseDTO(savedBooking);
     }
     public List<BookingResponseDTO> getBookingsByGuide(Long guideId) {
         List<Booking> bookings = bookingRepository.findByTourDate_Tour_Guides_Id(guideId);
@@ -171,6 +184,14 @@ public class BookingService {
                 return bookingRepository.findBookingHistoryByGuideId(guideId);
     }
 
+
+    public List<BookingResponseDTO> getBookingByTourId(Long tourId) {
+        List<Booking> bookings = bookingRepository.findByTourDate_Tour_Id(tourId);
+        return bookings.stream()
+                .map(bookingMapper::toBookingResponseDTO)
+                .collect(Collectors.toList());
+    }
+  
     public GuideDashboardStatsDTO getDashboardStatsForGuide(Long guideId) {
         long activeToursCount = bookingRepository.countActiveToursByGuideId(guideId); // custom query needed
         long upcomingToursCount = bookingRepository.countUpcomingToursByGuideId(guideId); // custom query needed
@@ -189,5 +210,6 @@ public class BookingService {
                 averageRating,
                 totalEarnings
         );
+
     }
 }

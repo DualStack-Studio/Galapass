@@ -1,10 +1,9 @@
 package com.galapass.api.entity.user;
 
-import com.galapass.api.entity.InvitationStatus;
 import com.galapass.api.entity.TourCompany;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
 @Data
@@ -22,7 +21,7 @@ public class GuideInvitation {
     @Enumerated(EnumType.STRING)
     private InvitationStatus status = InvitationStatus.PENDING;
 
-    private LocalDateTime sentAt;
+    private ZonedDateTime sentAt;
 
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false)

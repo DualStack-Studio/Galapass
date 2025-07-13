@@ -1,12 +1,17 @@
 package com.galapass.api.mapper;
 
 import com.galapass.api.DTO.booking.BookingResponseSummaryDTO;
+import com.galapass.api.DTO.media.MediaResponse;
 import com.galapass.api.DTO.tour.TourResponseOwnerViewDTO;
 import com.galapass.api.DTO.tourDate.TourDateRequestDTO;
 import com.galapass.api.DTO.tourDate.TourDateResponseDTO;
 import com.galapass.api.DTO.tourDate.TourDateSummaryDTO;
+import com.galapass.api.DTO.tourDate.TourDateTourDetailDTO;
+import com.galapass.api.entity.booking.Booking;
+import com.galapass.api.entity.booking.BookingStatus;
 import com.galapass.api.entity.tour.Tour;
 import com.galapass.api.entity.TourDate;
+import com.galapass.api.repository.TourReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -25,12 +30,13 @@ public class TourDateMapper {
     // Injecting BookingMapper to handle booking-related mapping.
     // This promotes separation of concerns and uses the application's main BookingMapper.
     private final BookingMapper bookingMapper;
-    private final TourMapper tourMapper;
+    private final TourReviewRepository tourReviewRepository;
+    private final UserMapper userMapper;
 
     /**
      * Converts a TourDateRequestDTO to a TourDate entity.
      *
-     * @param dto The request DTO containing tour date details.
+     * @param dto  The request DTO containing tour date details.
      * @param tour The parent Tour entity to associate with this date.
      * @return A new TourDate entity, ready to be persisted.
      */
@@ -73,11 +79,25 @@ public class TourDateMapper {
     }
 
     public TourDateSummaryDTO toTourDateSummaryDTO(TourDate tourDate) {
-        // 1. Get the raw Tour entity from the TourDate object
-        Tour tourEntity = tourDate.getTour();
+        Tour tour = tourDate.getTour();
 
-        // 2. **THE MISSING STEP**: Convert the Tour entity into the correct DTO
-        TourResponseOwnerViewDTO tourDTO = tourMapper.toTourResponseOwnerViewDTO(tourEntity);
+        // Manually build TourResponseOwnerViewDTO here instead of calling tourMapper
+        TourResponseOwnerViewDTO tourDTO = TourResponseOwnerViewDTO.builder()
+                .id(tour.getId())
+                .title(tour.getTitle())
+                .price(tour.getPrice())
+                .location(tour.getLocation())
+                .destination(tour.getDestination())
+                .media(tour.getMedia().stream()
+                        .map(media -> new MediaResponse(media.getUrl(), media.getType()))
+                        .collect(Collectors.toList()))
+                .status(String.valueOf(tour.getStatus()))
+                .owner(userMapper.toOwnerSummaryDTO(tour.getOwner())) // Keep this line if userMapper is available
+                .rating(tourReviewRepository.getAverageRatingByTourId(tour.getId()) != null
+                        ? tourReviewRepository.getAverageRatingByTourId(tour.getId())
+                        : 0.0)
+                .reviewCount(tourReviewRepository.countByTourId(tour.getId()))
+                .build();
 
         return TourDateSummaryDTO.builder()
                 .id(tourDate.getId())
@@ -88,4 +108,21 @@ public class TourDateMapper {
                 .tour(tourDTO)
                 .build();
     }
+
+
+    public TourDateTourDetailDTO toTourDateTourDetailDTO(TourDate tourDate) {
+        TourDateTourDetailDTO dto = new TourDateTourDetailDTO();
+        dto.setId(tourDate.getId());
+        dto.setDate(tourDate.getDate());
+        dto.setPrice(tourDate.getPrice());
+        dto.setAvailable(tourDate.isAvailable());
+        dto.setMaxGuests(tourDate.getMaxGuests());
+        dto.setTotalPeopleBooked(tourDate.getBookings().stream()
+                .filter(b -> b.getStatus() == BookingStatus.CONFIRMED)
+                .mapToInt(Booking::getNumberOfPeople)
+                .sum());
+        return dto;
+    }
+
+
 }

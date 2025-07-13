@@ -1,8 +1,9 @@
 package com.galapass.api.DTO.tour;
 
+import com.galapass.api.DTO.media.MediaRequest;
 import com.galapass.api.DTO.tourCompany.TourCompanySummaryDTO;
 import com.galapass.api.DTO.user.GuideSummaryDTO;
-import com.galapass.api.DTO.user.OwnerSummaryDTO;
+import com.galapass.api.DTO.user.UserSummaryDTO;
 import lombok.Data;
 
 import java.util.List;
@@ -15,10 +16,10 @@ public class TourPatchRequest {
     private Double price;
     private String category;
     private String location;
-    private List<String> photoUrls;
+    private List<MediaRequest> media;
     private String status;
 
-    private OwnerSummaryDTO owner;
+    private UserSummaryDTO owner;
     private TourCompanySummaryDTO company;
     private Set<GuideSummaryDTO> guides;
 
@@ -28,4 +29,5 @@ public class TourPatchRequest {
     private String duration;
     private Integer maxGuests;
     private List<String> highlights;
+    private List<String> brings;
 }

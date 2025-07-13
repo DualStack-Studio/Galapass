@@ -2,10 +2,10 @@ package com.galapass.api.mapper;
 
 import com.galapass.api.DTO.tourCompany.TourCompanySummaryDTO;
 import com.galapass.api.DTO.user.GuideSummaryDTO;
-import com.galapass.api.DTO.user.UserCompaniesDTO;
+import com.galapass.api.DTO.user.ReviewerDTO;
 import com.galapass.api.DTO.user.UserResponse;
-import com.galapass.api.DTO.user.OwnerSummaryDTO;
-import com.galapass.api.DTO.user.UserExamenpleDTO;
+import com.galapass.api.DTO.user.UserSummaryDTO;
+import com.galapass.api.DTO.user.UserCompaniesDTO;
 import com.galapass.api.entity.CompanyTourStatus;
 import com.galapass.api.entity.TourCompany;
 import com.galapass.api.entity.user.User;
@@ -55,11 +55,11 @@ public class UserMapper {
                 .build();
     }
 
-    public OwnerSummaryDTO toOwnerSummaryDTO(User user) {
+    public UserSummaryDTO toOwnerSummaryDTO(User user) {
         if (user == null) {
             return null;
         }
-        OwnerSummaryDTO dto = new OwnerSummaryDTO();
+        UserSummaryDTO dto = new UserSummaryDTO();
         dto.setId(user.getId());
         dto.setEmail(user.getEmail());
         dto.setName(user.getName());
@@ -87,11 +87,11 @@ public class UserMapper {
         return dto;
     }
 
-    public UserExamenpleDTO toUserExamenpleDTO(User user) {
-        if (user == null) return null;
-        return UserExamenpleDTO.builder()
+    public ReviewerDTO toReviewerDTO(User user) {
+        return ReviewerDTO.builder()
                 .id(user.getId())
-                .language(user.getLanguage())
+                .name(user.getName())
+                .profilePictureUrl(user.getProfilePhoto())
                 .build();
     }
 }

@@ -1,6 +1,5 @@
 package com.galapass.api.DTO.tourCompany;
 
-import com.galapass.api.DTO.user.OwnerSummaryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

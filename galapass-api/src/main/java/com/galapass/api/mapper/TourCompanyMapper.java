@@ -3,16 +3,23 @@ package com.galapass.api.mapper;
 import com.galapass.api.DTO.tourCompany.TourCompanyBasicDTO;
 import com.galapass.api.DTO.tourCompany.TourCompanyEditing;
 import com.galapass.api.DTO.tourCompany.TourCompanyResponse;
+import com.galapass.api.DTO.tourCompany.TourCompanyTourDetailDTO;
 import com.galapass.api.entity.TourCompany;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
 @Component
 public class TourCompanyMapper {
 
     private final UserMapper userMapper;
     private final TourMapper tourMapper;
+
+    public TourCompanyMapper(UserMapper userMapper, @Lazy TourMapper tourMapper) {
+        this.userMapper = userMapper;
+        this.tourMapper = tourMapper;
+    }
 
     public TourCompanyResponse toTourCompanyResponse(TourCompany company) {
         return TourCompanyResponse.builder()
@@ -57,5 +64,12 @@ public class TourCompanyMapper {
                 .build();
     }
 
+    public TourCompanyTourDetailDTO toTourCompanyDetailDTO(TourCompany company) {
+        return TourCompanyTourDetailDTO.builder()
+                .id(company.getId())
+                .name(company.getName())
+                .logo(company.getLogo())
+                .build();
+    }
 
 }

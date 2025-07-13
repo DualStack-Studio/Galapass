@@ -36,6 +36,7 @@ public class BookingMapper {
         dto.setNumberOfPeople(booking.getNumberOfPeople());
         dto.setTotalPaid(booking.getTotalPaid());
         dto.setStatus(booking.getStatus());
+        dto.setDate(booking.getDate());
         return dto;
     }
 

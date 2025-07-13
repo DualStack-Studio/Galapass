@@ -2,18 +2,17 @@ package com.galapass.api.service;
 
 import com.galapass.api.DTO.guideInvitation.GuideInvitationRequest;
 import com.galapass.api.controller.TourCompanyController;
-import com.galapass.api.entity.InvitationStatus;
+import com.galapass.api.entity.user.InvitationStatus;
 import com.galapass.api.entity.TourCompany;
 import com.galapass.api.entity.user.GuideInvitation;
 import com.galapass.api.entity.user.User;
-import com.galapass.api.mapper.GuideInvitationMapper;
 import com.galapass.api.repository.GuideInvitationRepository;
 import com.galapass.api.repository.TourCompanyRepository;
 import com.galapass.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -36,7 +35,7 @@ public class GuideInvitationService {
                 .guide(guide)
                 .message(request.getMessage())
                 .status(InvitationStatus.PENDING)
-                .sentAt(LocalDateTime.now())
+                .sentAt(ZonedDateTime.now())
                 .build();
 
         return invitationRepository.save(invitation);
@@ -59,7 +58,7 @@ public class GuideInvitationService {
                 .orElseThrow(() -> new RuntimeException("Invitation not found"));
 
         invitation.setStatus(InvitationStatus.PENDING);
-        invitation.setSentAt(LocalDateTime.now());
+        invitation.setSentAt(ZonedDateTime.now());
 
         return invitationRepository.save(invitation);
     }

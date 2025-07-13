@@ -1,13 +1,11 @@
 package com.galapass.api.controller;
 
-import com.galapass.api.DTO.tour.CreateTourRequest;
-import com.galapass.api.DTO.tour.TourPatchRequest;
-import com.galapass.api.DTO.tour.TourResponseDTO;
+import com.galapass.api.DTO.tour.*;
 
-import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.entity.tour.TourCategory;
+import com.galapass.api.entity.Location;
+import com.galapass.api.entity.media.Media;
+import com.galapass.api.entity.tour.*;
 import com.galapass.api.entity.CompanyTourStatus;
-import com.galapass.api.entity.tour.TourTag;
 import com.galapass.api.entity.TourCompany;
 import com.galapass.api.entity.user.User;
 import com.galapass.api.mapper.TourMapper;
@@ -19,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -43,6 +42,28 @@ public class TourController {
         return ResponseEntity.ok(tourMapper.toTourResponseDTOList(tours));
     }
 
+    @PostMapping("/draft")
+    public ResponseEntity<TourDraftResponse> createDraft(
+            @RequestBody CreateTourDraft request,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        User owner = userRepository.findById(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException("Owner not found with id: " + currentUser.getId()));
+
+        Tour tour = Tour.builder()
+                .owner(owner)
+                .title(request.getTitle())
+                .category(TourCategory.valueOf(request.getCategory()))
+                .location(Location.valueOf(request.getLocation()))
+                .destination(Destination.valueOf(request.getDestination()))
+                .status(CompanyTourStatus.DRAFT)
+                .build();
+
+        Tour savedTour = tourRepository.save(tour);
+
+        return ResponseEntity.ok(tourMapper.toTourDraftResponse(savedTour));
+    }
+
     @PostMapping
     public ResponseEntity<TourResponseDTO> createTour(@RequestBody CreateTourRequest request) {
         User owner = userRepository.findById(request.getOwnerId())
@@ -61,22 +82,50 @@ public class TourController {
                 })
                 .collect(Collectors.toSet());
 
+        List<Bring> brings = Optional.ofNullable(request.getBrings()).orElse(List.of()).stream()
+                .map(bring -> {
+                    try {
+                        return Bring.valueOf(bring.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("Invalid bring: " + bring);
+                    }
+                })
+                .toList();
+
+
+
         Tour tour = Tour.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .price(request.getPrice())
                 .category(TourCategory.valueOf(request.getCategory()))
-                .location(request.getLocation())
-                .photoUrls(request.getPhotoUrls())
+                .location(Location.valueOf(request.getLocation()))
+                .duration(Duration.valueOf(request.getDuration()))
+                .destination(Destination.valueOf(request.getDestination()))
                 .owner(owner)
                 .company(company)
                 .guides(guides)
                 .tags(tags)
                 .status(CompanyTourStatus.ACTIVE)
                 .maxGuests(request.getMaxGuests())
-                .duration(request.getDuration())
                 .highlights(request.getHighlights())
+                .brings(brings)
                 .build();
+
+        if (request.getMedia() != null && !request.getMedia().isEmpty()) {
+            List<Media> mediaEntities = request.getMedia().stream()
+                    .map(mediaRequest -> {
+                        Media mediaEntity = new Media();
+                        mediaEntity.setUrl(mediaRequest.getUrl());
+                        mediaEntity.setType(mediaRequest.getType());
+                        mediaEntity.setDisplayOrder(mediaRequest.getDisplayOrder());
+                        mediaEntity.setTour(tour);
+                        return mediaEntity;
+                    })
+                    .collect(Collectors.toList());
+
+            tour.setMedia(mediaEntities);
+        }
 
         Tour savedTour = tourRepository.save(tour);
 
@@ -84,8 +133,13 @@ public class TourController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<TourResponseDTO>> getToursById(@PathVariable Long id) {
-        return ResponseEntity.ok(tourService.getToursById(id));
+    public ResponseEntity<TourResponseDTO> getTourById(@PathVariable Long id) {
+        return ResponseEntity.ok(tourService.getTourById(id));
+    }
+
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<TourDetailPageDTO> getTourDetailPageDTOById(@PathVariable Long id) {
+        return ResponseEntity.ok(tourService.getTourDetailPageDTOById(id));
     }
 
     @PutMapping

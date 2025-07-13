@@ -1,6 +1,6 @@
 package com.galapass.api.DTO.tourReview;
 
-import com.galapass.api.DTO.user.OwnerSummaryDTO;
+import com.galapass.api.DTO.user.UserSummaryDTO;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,6 +10,6 @@ public class TourReviewResponse {
     private Long id;
     private double rating;
     private String comment;
-    private OwnerSummaryDTO reviewer;
+    private UserSummaryDTO reviewer;
     private Long tourId;
 }

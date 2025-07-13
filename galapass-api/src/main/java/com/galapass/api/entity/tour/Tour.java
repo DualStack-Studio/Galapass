@@ -1,13 +1,15 @@
 package com.galapass.api.entity.tour;
 import com.galapass.api.entity.CompanyTourStatus;
+import com.galapass.api.entity.Location;
 import com.galapass.api.entity.TourCompany;
 import com.galapass.api.entity.TourReview;
+import com.galapass.api.entity.media.Media;
 import com.galapass.api.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Entity
@@ -27,16 +29,24 @@ public class Tour {
     @Enumerated(EnumType.STRING)
     private TourCategory category;
 
-    private String location;
+    @Enumerated(EnumType.STRING)
+    private Location location;
 
-    @ElementCollection
-    @CollectionTable(name = "tour_photos", joinColumns = @JoinColumn(name = "tour_id"))
-    @Column(name = "photo_url")
-    private List<String> photoUrls = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    private Destination destination;
+
+    @ElementCollection(targetClass = Bring.class)
+    @CollectionTable(name = "tour_brings", joinColumns = @JoinColumn(name = "tour_id"))
+    @Column(name = "bring", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private List<Bring> brings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("displayOrder ASC")
+    private List<Media> media = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private CompanyTourStatus status;
-
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
@@ -54,8 +64,6 @@ public class Tour {
     @JoinColumn(name = "company_id")
     private TourCompany company;
 
-    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
-    private List<TourReview> reviews = new ArrayList<>();
 
     @ElementCollection(targetClass = TourTag.class)
     @CollectionTable(name = "tour_tags", joinColumns = @JoinColumn(name = "tour_id"))
@@ -63,8 +71,8 @@ public class Tour {
     @Enumerated(EnumType.STRING)
     private Set<TourTag> tags = new HashSet<>();
 
-    @Column
-    private String duration;
+    @Enumerated(EnumType.STRING)
+    private Duration duration;
 
     @Column
     private Integer maxGuests;

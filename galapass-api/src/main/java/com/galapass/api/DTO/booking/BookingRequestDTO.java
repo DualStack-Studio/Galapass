@@ -4,7 +4,6 @@ import com.galapass.api.entity.booking.BookingStatus;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Set;

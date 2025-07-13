@@ -3,13 +3,15 @@ package com.galapass.api.service;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.galapass.api.DTO.tour.TourDetailPageDTO;
 import com.galapass.api.DTO.tour.TourPatchRequest;
 import com.galapass.api.DTO.tour.TourResponseDTO;
+import com.galapass.api.entity.Location;
 import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.entity.tour.TourCategory;
-import com.galapass.api.entity.tour.TourTag;
+import com.galapass.api.entity.media.Media;
+import com.galapass.api.entity.tour.*;
 import com.galapass.api.entity.user.User;
+import com.galapass.api.exception.TourNotFoundException;
 import com.galapass.api.mapper.TourMapper;
 import com.galapass.api.repository.TourCompanyRepository;
 import com.galapass.api.entity.CompanyTourStatus;
@@ -20,7 +22,6 @@ import com.galapass.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,15 +40,17 @@ public class TourService {
     }
 
 
-    public List<TourResponseDTO> getToursById(Long id) {
-        return tourRepository.findById(id).stream()
+    public TourResponseDTO getTourById(Long id) {
+        return tourRepository.findById(id)
                 .map(tourMapper::toTourResponseDTO)
-                .toList();
+                .orElseThrow(() -> new TourNotFoundException("Tour not found with id: " + id));
     }
 
-    public Tour getTourById(Long id) {
+
+    public TourDetailPageDTO getTourDetailPageDTOById(Long id) {
         return tourRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Tour with ID " + id + " not found."));
+                .map(tourMapper::tourDetailPageDTO)
+                .orElseThrow(() -> new TourNotFoundException("Tour not found with id: " + id));
     }
 
     public List<Tour> getToursByCompanyId(Long companyId) {
@@ -57,9 +60,6 @@ public class TourService {
     public Tour createTour(Tour tour) {
         return tourRepository.save(tour);
     }
-
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     public Tour updateTour(Tour tourUpdate) {
         return tourRepository.findById(tourUpdate.getId())
@@ -113,14 +113,32 @@ public class TourService {
 
         if (request.getLocation() != null) {
             try {
-                tour.setLocation(request.getLocation().toUpperCase()); 
+                tour.setLocation(Location.valueOf(request.getLocation()));
             } catch (IllegalArgumentException e) {
                 throw new RuntimeException("Invalid location: " + request.getLocation());
             }
         }
 
-        if (request.getPhotoUrls() != null) {
-            tour.setPhotoUrls(request.getPhotoUrls());
+        if (request.getMedia() != null) {
+            // 1. Clear the existing collection of media entities.
+            tour.getMedia().clear();
+
+            // 2. Map the new incoming media data from the request to new Media entities.
+            if (!request.getMedia().isEmpty()) {
+                List<Media> newMediaEntities = request.getMedia().stream()
+                        .map(mediaRequest -> {
+                            Media mediaEntity = new Media();
+                            mediaEntity.setUrl(mediaRequest.getUrl());
+                            mediaEntity.setType(mediaRequest.getType());
+                            mediaEntity.setDisplayOrder(mediaRequest.getDisplayOrder());
+                            mediaEntity.setTour(tour);
+                            return mediaEntity;
+                        })
+                        .toList();
+
+                // 3. Add the new collection of media entities to the tour.
+                tour.getMedia().addAll(newMediaEntities);
+            }
         }
 
         if (request.getStatus() != null) {
@@ -133,7 +151,12 @@ public class TourService {
         }
 
         if (request.getDuration() != null) {
-            tour.setDuration(request.getDuration());
+            try {
+                Duration durationEnum = Duration.valueOf(request.getDuration());
+                tour.setDuration(durationEnum);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid duration: " + request.getDuration());
+            }
         }
 
         if (request.getMaxGuests() != null) {
@@ -155,6 +178,19 @@ public class TourService {
                     })
                     .collect(Collectors.toSet());
             tour.setTags(tags);
+        }
+
+        if (request.getBrings() != null) {
+            List<Bring> brings = request.getBrings().stream()
+                    .map(bring -> {
+                        try {
+                            return Bring.valueOf(bring);
+                        } catch (IllegalArgumentException e) {
+                            throw new RuntimeException("Invalid bring: " + bring);
+                        }
+                    })
+                    .collect(Collectors.toList());
+            tour.setBrings(brings);
         }
 
         // Update company

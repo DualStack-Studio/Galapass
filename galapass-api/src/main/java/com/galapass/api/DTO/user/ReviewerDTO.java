@@ -1,18 +1,16 @@
-package com.galapass.api.DTO.tourCompany;
+package com.galapass.api.DTO.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.List;
-import com.galapass.api.DTO.user.GuideSummaryDTO;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TourCompanyBasicDTO {
+@Builder
+public class ReviewerDTO {
     private Long id;
     private String name;
-    private List<GuideSummaryDTO> guides;
+    private String profilePictureUrl;
 }

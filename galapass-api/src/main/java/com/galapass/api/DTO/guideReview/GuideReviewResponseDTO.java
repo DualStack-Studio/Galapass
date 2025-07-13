@@ -1,6 +1,6 @@
 package com.galapass.api.DTO.guideReview;
 
-import com.galapass.api.DTO.user.OwnerSummaryDTO;
+import com.galapass.api.DTO.user.UserSummaryDTO;
 import lombok.Data;
 
 @Data
@@ -9,7 +9,7 @@ public class GuideReviewResponseDTO {
     private double rating;
     private String comment;
 
-    private OwnerSummaryDTO reviewer;
-    private OwnerSummaryDTO guide;
+    private UserSummaryDTO reviewer;
+    private UserSummaryDTO guide;
     private Long bookingId;
 }

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
@@ -45,6 +47,7 @@ public class UserController {
 
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<?> patchUser(@PathVariable Long id, @RequestBody UserPatchRequest request) {
        try {
            UserResponse updatedUser = userService.patchUser(id, request);
@@ -55,11 +58,13 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or #id == authentication.principal.id")
     public void deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
     }
 
     @GetMapping("/role/{role}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<UserResponse>> getUsersByRole(@PathVariable String role) {
         return ResponseEntity.ok(userService.getUsersByRole(role));
     }
@@ -68,5 +73,4 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> searchGuides(@RequestBody GuideSearchRequest request) {
         return ResponseEntity.ok(userService.getGuideByName(request.getName()));
     }
-
 }

@@ -1,15 +1,15 @@
 package com.galapass.api.DTO.tour;
 
-import com.galapass.api.DTO.tourCompany.TourCompanySummaryDTO;
-import com.galapass.api.DTO.user.GuideSummaryDTO;
-import com.galapass.api.DTO.user.OwnerSummaryDTO;
+import com.galapass.api.DTO.media.MediaResponse;
+import com.galapass.api.DTO.user.UserSummaryDTO;
+import com.galapass.api.entity.Location;
+import com.galapass.api.entity.tour.Destination;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder
@@ -18,12 +18,13 @@ import java.util.Set;
 public class TourResponseOwnerViewDTO {
     private Long id;
     private String title;
-    private String location;
+    private Location location;
+    private Destination destination;
     private Double price;
-    private List<String> photoUrls;
+    private List<MediaResponse> media;
 
-    private OwnerSummaryDTO owner;
-    private double rating;
-    private long totalBookings;
+    private UserSummaryDTO owner;
+    private Double rating;
+    private long reviewCount;
     private String status;
 }

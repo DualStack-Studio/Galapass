@@ -1,7 +1,5 @@
 package com.galapass.api.DTO.booking;
 
-import com.galapass.api.DTO.tour.TourResponseOwnerViewDTO;
-import com.galapass.api.DTO.user.OwnerSummaryDTO;
 import com.galapass.api.entity.booking.BookingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,8 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.Set;
+
 @Builder
 @Data
 @NoArgsConstructor

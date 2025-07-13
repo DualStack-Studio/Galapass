@@ -1,8 +1,9 @@
 package com.galapass.api.mapper;
 
 import com.galapass.api.DTO.user.GuideSummaryDTO;
+import com.galapass.api.DTO.user.ReviewerDTO;
 import com.galapass.api.DTO.user.UserResponse;
-import com.galapass.api.DTO.user.OwnerSummaryDTO;
+import com.galapass.api.DTO.user.UserSummaryDTO;
 import com.galapass.api.entity.CompanyTourStatus;
 import com.galapass.api.entity.user.User;
 import com.galapass.api.repository.GuideReviewRepository;
@@ -27,11 +28,11 @@ public class UserMapper {
                 .build();
     }
 
-    public OwnerSummaryDTO toOwnerSummaryDTO(User user) {
+    public UserSummaryDTO toOwnerSummaryDTO(User user) {
         if (user == null) {
             return null;
         }
-        OwnerSummaryDTO dto = new OwnerSummaryDTO();
+        UserSummaryDTO dto = new UserSummaryDTO();
         dto.setId(user.getId());
         dto.setEmail(user.getEmail());
         dto.setName(user.getName());
@@ -57,5 +58,13 @@ public class UserMapper {
                         tourRepository.countToursByGuideIdAndStatus(user.getId(), CompanyTourStatus.ACTIVE) : 0
         );
         return dto;
+    }
+
+    public ReviewerDTO toReviewerDTO(User user) {
+        return ReviewerDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .profilePictureUrl(user.getProfilePhoto())
+                .build();
     }
 }

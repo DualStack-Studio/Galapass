@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
+import { useGoogleAuth } from "../hooks/useGoogleAuth.js";
 
 const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [email, setEmail] = useState('');
@@ -11,7 +12,6 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
-
   // 1. Add state to control visibility for animations
   const [isVisible, setIsVisible] = useState(isOpen);
 
@@ -28,6 +28,10 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
 
   // 3. Change the render condition to use the new state
   if (!isVisible) {
+
+  const handleGoogleSuccess = useGoogleAuth(onClose);
+  if (!isOpen) {
+
     return null;
   }
 
@@ -66,7 +70,6 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
       setIsLoading(false);
     }
   };
-
   const handleGoogleSuccess = async (credentialResponse) => {
     // ... (Your existing Google logic remains unchanged)
     try {
@@ -90,8 +93,6 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
       console.error(err);
     }
   };
-
-
   return (
       // 4. Conditionally apply animation to Modal Overlay
       <div

@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
+import {useGoogleAuth} from "../hooks/useGoogleAuth.js";
 
 const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     const [error, setError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
+    const handleGoogleSuccess = useGoogleAuth(onClose);
 
     // 1. Add state to control visibility for animations
     const [isVisible, setIsVisible] = useState(isOpen);
@@ -72,6 +74,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             setIsLoading(false);
         }
     };
+
 
     const handleGoogleSuccess = async (credentialResponse) => {
         // ... (Your existing Google logic remains unchanged)

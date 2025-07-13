@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Building2, MapPin, Clock, History, ClipboardList, Check, X } from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Building2, MapPin, Clock, History, ClipboardList, Check, X, Star } from 'lucide-react';
 import { useGuideDashboard } from '../../hooks/useGuideDashboard.js';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import GuideCompanyCard from '../../components/GuideView/Dashboard/GuideCompanyCard.jsx';
@@ -8,14 +8,18 @@ import InvitationCard from '../../components/GuideView/Invitation/InvitationCard
 import BookingModal from '../../components/GuideView/Booking/BookingModal.jsx';
 import StatCard from '../../components/StatCard.jsx';
 import LoadingSpinner from '../../components/LoadingSpinner.jsx';
+import BookingFilters from '../../components/OwnerView/Bookings/BookingFilter.jsx';
 import { toast } from 'react-hot-toast';
 
 const GuideDashboardPage = () => {
     const { user } = useAuth();
     const guideId = user?.id;
     const [activeTab, setActiveTab] = useState('companies');
-    const [bookingStatusFilter, setBookingStatusFilter] = useState('CONFIRMED');
-    const [selectedTour, setSelectedTour] = useState(null);
+    const [activeFilter, setActiveFilter] = useState('CONFIRMED');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [dateFilter, setDateFilter] = useState(null);
+    const [showCheckInCalendar, setShowCheckInCalendar] = useState(false);
+    const [currentMonth, setCurrentMonth] = useState(new Date());
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedBookings, setSelectedBookings] = useState([]);
 
@@ -32,17 +36,16 @@ const GuideDashboardPage = () => {
         refetch
     } = useGuideDashboard(guideId);
 
-    const handleViewBookings = async (tour) => {
+    const handleViewBookings = async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/bookings?tourId=${tour.id}&guideId=${guideId}`, {
+            const res = await fetch(`http://localhost:8080/api/guides/${guideId}/bookings`, {
                 credentials: 'include'
             });
             const data = await res.json();
-            setSelectedTour(tour);
             setSelectedBookings(data);
             setModalOpen(true);
         } catch (err) {
-            toast.error("Failed to load bookings");
+            toast.error("Failed to load guide bookings");
         }
     };
 
@@ -74,6 +77,24 @@ const GuideDashboardPage = () => {
         }
     };
 
+    const allTours = [...upcomingTours, ...activeTours, ...completedTours, ...tourHistory];
+    const uniqueTours = allTours.filter((tour, idx, self) => self.findIndex(t => t.id === tour.id) === idx);
+
+    const filteredBookings = uniqueTours.filter(t => {
+        const matchesStatus = activeFilter === 'ALL' || t.status === activeFilter;
+        const matchesSearch = t.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesDate = dateFilter ? new Date(t.startDate).toDateString() === new Date(dateFilter).toDateString() : true;
+        return matchesStatus && matchesSearch && matchesDate;
+    });
+
+    const filterButtons = [
+        { id: 'ALL', label: 'All', count: uniqueTours.length },
+        { id: 'CONFIRMED', label: 'Confirmed', count: uniqueTours.filter(t => t.status === 'CONFIRMED').length },
+        { id: 'PENDING', label: 'Pending', count: uniqueTours.filter(t => t.status === 'PENDING').length },
+        { id: 'COMPLETED', label: 'Completed', count: uniqueTours.filter(t => t.status === 'COMPLETED').length },
+        { id: 'CANCELLED', label: 'Cancelled', count: uniqueTours.filter(t => t.status === 'CANCELLED').length }
+    ];
+
     if (loading) return <LoadingSpinner />;
     if (error) return <div className="p-8 text-red-600">Error loading dashboard: {error}</div>;
 
@@ -86,11 +107,36 @@ const GuideDashboardPage = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <StatCard icon={Building2} title="Companies" value={stats.companiesCount} subtitle="Affiliated" />
-                    <StatCard icon={MapPin} title="Upcoming Tours" value={stats.upcomingToursCount} subtitle="Scheduled" color="blue" />
-                    <StatCard icon={Clock} title="Active Tours" value={stats.activeToursCount} subtitle="Ongoing" color="purple" />
-                    <StatCard icon={History} title="Completed" value={stats.completedToursCount} subtitle="Tours done" color="green" />
+                    <StatCard
+                        icon={History}
+                        title="Completed"
+                        value={stats.completedToursCount}
+                        subtitle="Tours done"
+                        color="purple"
+                    />
+                    <StatCard
+                        icon={MapPin}
+                        title="Upcoming"
+                        value={stats.upcomingToursCount}
+                        subtitle="Scheduled"
+                        color="blue"
+                    />
+                    <StatCard
+                        icon={Check}
+                        title="Total Earnings"
+                        value={`$${(stats.totalEarnings || 0).toLocaleString()}`}
+                        subtitle="Income from tours"
+                        color="emerald"
+                    />
+                    <StatCard
+                        icon={Star}
+                        title="Average Rating"
+                        value={stats.averageRating?.toFixed(1) || '0.0'}
+                        subtitle="Out of 5"
+                        color="yellow"
+                    />
                 </div>
+
 
                 <div className="border-b border-gray-200 mb-6">
                     <nav className="-mb-px flex space-x-8">
@@ -116,77 +162,54 @@ const GuideDashboardPage = () => {
                 </div>
 
                 {activeTab === 'companies' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {companies.map(company => <GuideCompanyCard key={company.id} company={company} />)}
-                    </div>
+                    <>
+                        {companies.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {companies.map(company => <GuideCompanyCard key={company.id} company={company} />)}
+                            </div>
+                        ) : (
+                            <div className="text-center py-12">
+                                <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                    <Building2 className="w-8 h-8 text-gray-400" />
+                                </div>
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">No companies yet</h3>
+                                <p className="text-gray-500">You're not affiliated with any companies yet. Wait for invitations or contact companies directly.</p>
+                            </div>
+                        )}
+                    </>
                 )}
 
-                // Enhanced booking status filter section
                 {activeTab === 'bookings' && (
                     <>
-                        <div className="mb-6 flex flex-wrap gap-3">
-                            {[
-                                {
-                                    status: 'CONFIRMED',
-                                    label: 'Confirmed',
-                                    icon: Check,
-                                    color: 'emerald',
-                                    bgColor: 'bg-emerald-50',
-                                    textColor: 'text-emerald-700',
-                                    borderColor: 'border-emerald-200',
-                                    activeBg: 'bg-emerald-600',
-                                    hoverBg: 'hover:bg-emerald-100'
-                                },
-                                {
-                                    status: 'PENDING',
-                                    label: 'Pending',
-                                    icon: Clock,
-                                    color: 'amber',
-                                    bgColor: 'bg-amber-50',
-                                    textColor: 'text-amber-700',
-                                    borderColor: 'border-amber-200',
-                                    activeBg: 'bg-amber-600',
-                                    hoverBg: 'hover:bg-amber-100'
-                                },
-                                {
-                                    status: 'COMPLETED',
-                                    label: 'Completed',
-                                    icon: History,
-                                    color: 'green',
-                                    bgColor: 'bg-green-50',
-                                    textColor: 'text-green-700',
-                                    borderColor: 'border-green-200',
-                                    activeBg: 'bg-green-600',
-                                    hoverBg: 'hover:bg-green-100'
-                                }
-                            ].map(({ status, label, icon: Icon, bgColor, textColor, borderColor, activeBg, hoverBg }) => (
-                                <button
-                                    key={status}
-                                    onClick={() => setBookingStatusFilter(status)}
-                                    className={`
-                        relative flex items-center space-x-2 px-4 py-2.5 rounded-lg font-medium text-sm 
-                        border transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]
-                        ${bookingStatusFilter === status
-                                        ? `${activeBg} text-white border-transparent shadow-md`
-                                        : `${bgColor} ${textColor} ${borderColor} ${hoverBg} hover:shadow-sm`
-                                    }
-                    `}
-                                >
-                                    <Icon className="h-4 w-4" />
-                                    <span>{label}</span>
-                                    {bookingStatusFilter === status && (
-                                        <div className="absolute -top-1 -right-1 w-2 h-2 bg-white rounded-full"></div>
-                                    )}
-                                </button>
-                            ))}
-                        </div>
+                        <BookingFilters
+                            filterButtons={filterButtons}
+                            activeFilter={activeFilter}
+                            setActiveFilter={setActiveFilter}
+                            searchTerm={searchTerm}
+                            setSearchTerm={setSearchTerm}
+                            dateFilter={dateFilter}
+                            setDateFilter={setDateFilter}
+                            showCheckInCalendar={showCheckInCalendar}
+                            setShowCheckInCalendar={setShowCheckInCalendar}
+                            handleCheckInSelect={setDateFilter}
+                            searchData={{ checkIn: dateFilter }}
+                            currentMonth={currentMonth}
+                            setCurrentMonth={setCurrentMonth}
+                        />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {[...activeTours, ...upcomingTours, ...completedTours, ...tourHistory]
-                                .filter((tour, idx, self) => self.findIndex(t => t.id === tour.id) === idx)
-                                .filter(t => t.status === bookingStatusFilter)
-                                .map(t => <GuideTourCard key={t.id} tour={t} onViewBookings={handleViewBookings} />)}
-                        </div>
+                        {filteredBookings.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                                {filteredBookings.map(t => <GuideTourCard key={t.id} tour={t} onViewBookings={handleViewBookings} />)}
+                            </div>
+                        ) : (
+                            <div className="text-center py-12">
+                                <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                    <ClipboardList className="w-8 h-8 text-gray-400" />
+                                </div>
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
+                                <p className="text-gray-500">Try adjusting your filters or search terms.</p>
+                            </div>
+                        )}
 
                         <BookingModal
                             isOpen={modalOpen}

@@ -138,6 +138,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, sear
                         <h1 className="text-xl font-bold text-emerald-700">Galapass</h1>
                     </div>
 
+
                     {/* Compact Search Bar (appears on scroll AND only on home page) */}
                     <div
                         className={`absolute left-1/2 transform -translate-x-1/2 transition-all duration-300 ease-in-out ${

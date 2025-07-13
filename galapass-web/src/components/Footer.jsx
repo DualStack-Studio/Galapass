@@ -33,13 +33,13 @@ const Footer = () => {
                                 <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">
                                     <Facebook size={20} />
                                 </a>
-                                <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">
+                                <a href="https://www.instagram.com/galapass.ec/" target="_blank" className="text-gray-400 hover:text-emerald-400 transition-colors">
                                     <Instagram size={20} />
                                 </a>
                                 <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">
                                     <Twitter size={20} />
                                 </a>
-                                <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">
+                                <a href="https://www.tiktok.com/@galapass.ec" target="_blank" className="text-gray-400 hover:text-emerald-400 transition-colors">
                                     <TikTokIcon size={20} />
                                 </a>
                             </div>

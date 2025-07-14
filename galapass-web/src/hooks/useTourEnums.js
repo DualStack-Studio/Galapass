@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { BASE_URL } from '../config';
 
 // Meta-information for styling and icons
 const categoryMeta = {
@@ -66,11 +67,11 @@ const useTourEnums = () => {
             try {
                 // Fetch all enums in parallel
                 const [resCat, resTags, resLoc, resBrings, resDurs] = await Promise.all([
-                    fetch('http://localhost:8080/api/enums/categories'),
-                    fetch('http://localhost:8080/api/enums/tags'),
-                    fetch('http://localhost:8080/api/enums/locations'),
-                    fetch('http://localhost:8080/api/enums/brings'),
-                    fetch('http://localhost:8080/api/enums/durations'),
+                    fetch(`${BASE_URL}/api/enums/categories`),
+                    fetch(`${BASE_URL}/api/enums/tags`),
+                    fetch(`${BASE_URL}/api/enums/locations`),
+                    fetch(`${BASE_URL}/api/enums/brings`),
+                    fetch(`${BASE_URL}/api/enums/durations`),
                 ]);
 
                 // Parse all JSON responses

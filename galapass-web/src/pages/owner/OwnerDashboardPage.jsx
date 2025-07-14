@@ -13,6 +13,7 @@ import { toast } from 'react-hot-toast';
 import ConfirmModal from "../../components/OwnerView/ConfirmModal.jsx";
 import ErrorModal from '../../components/ErrorModal.jsx';
 import { useTranslation } from 'react-i18next';
+import { BASE_URL } from '../../config.js';
 
 const OwnerDashboardPage = () => {
     const { user } = useAuth();
@@ -120,7 +121,7 @@ const OwnerDashboardPage = () => {
 
     async function handleRemoveGuide() {
         try {
-            const res = await fetch(`http://localhost:8080/api/companies/${companyId}/guides/${guideToRemove}`, {
+            const res = await fetch(`${BASE_URL}/api/companies/${companyId}/guides/${guideToRemove}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });

@@ -48,7 +48,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
         setError('');
 
         try {
-            const response = await fetch("http://localhost:8080/auth/register", {
+            const response = await fetch(`${BASE_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
@@ -57,7 +57,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
             if (!response.ok) throw new Error(t('registration_failed'));
 
-            const userResponse = await fetch("http://localhost:8080/auth/me", {
+            const userResponse = await fetch(`${BASE_URL}/auth/me`, {
                 credentials: "include",
             });
 

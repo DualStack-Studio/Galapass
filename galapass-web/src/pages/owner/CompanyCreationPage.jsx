@@ -11,6 +11,7 @@ import {useAuth} from "../../contexts/AuthContext.jsx";
 import StepPricing from "../../components/OwnerView/TourCreation/StepPricing.jsx";
 import StepSummary from "../../components/OwnerView/CompanyCreation/StepSummary.jsx";
 import { useTranslation } from 'react-i18next';
+import { BASE_URL } from '../../config.js';
 
 const CompanyCreationPage = ({ onSuccess }) => {
     const navigate = useNavigate();
@@ -68,7 +69,7 @@ const CompanyCreationPage = ({ onSuccess }) => {
         };
 
         try {
-            const response = await fetch('http://localhost:8080/api/companies', {
+            const response = await fetch(`${BASE_URL}/api/companies`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

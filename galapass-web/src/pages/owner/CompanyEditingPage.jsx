@@ -48,7 +48,7 @@ const CompanyEditingPage = ({ onSuccess }) => {
         const fetchCompanyData = async () => {
             try {
                 setFetchLoading(true);
-                const response = await fetch(`http://localhost:8080/api/companies/${companyId}`, {
+                const response = await fetch(`${BASE_URL}/api/companies/${companyId}`, {
                     credentials: 'include'
                 });
 
@@ -133,7 +133,7 @@ const CompanyEditingPage = ({ onSuccess }) => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/companies/${companyId}`, {
+            const response = await fetch(`${BASE_URL}/api/companies/${companyId}`, {
                 method: 'PATCH', // ✅ Use PATCH instead of PUT
                 headers: {
                     'Content-Type': 'application/json'

@@ -10,6 +10,7 @@ import StatCard from '../../components/StatCard.jsx';
 import LoadingSpinner from '../../components/LoadingSpinner.jsx';
 import BookingFilters from '../../components/OwnerView/Bookings/BookingFilter.jsx';
 import { toast } from 'react-hot-toast';
+import { BASE_URL } from '../../config.js';
 
 const GuideDashboardPage = () => {
     const { user } = useAuth();
@@ -38,7 +39,7 @@ const GuideDashboardPage = () => {
 
     const handleViewBookings = async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/guides/${guideId}/bookings`, {
+            const res = await fetch(`${BASE_URL}/api/guides/${guideId}/bookings`, {
                 credentials: 'include'
             });
             const data = await res.json();
@@ -51,7 +52,7 @@ const GuideDashboardPage = () => {
 
     const handleAccept = async (id) => {
         try {
-            const res = await fetch(`http://localhost:8080/api/invitations/${id}/accept`, {
+            const res = await fetch(`${BASE_URL}/api/invitations/${id}/accept`, {
                 method: 'POST',
                 credentials: 'include'
             });
@@ -65,7 +66,7 @@ const GuideDashboardPage = () => {
 
     const handleDecline = async (id) => {
         try {
-            const res = await fetch(`http://localhost:8080/api/invitations/${id}/decline`, {
+            const res = await fetch(`${BASE_URL}/api/invitations/${id}/decline`, {
                 method: 'POST',
                 credentials: 'include'
             });

@@ -1,12 +1,13 @@
 // src/hooks/useGoogleAuth.js
 import { useAuth } from "../contexts/AuthContext";
+import {BASE_URL} from "../config.js";
 
 export const useGoogleAuth = (onClose) => {
     const { login } = useAuth();
 
     const handleGoogleSuccess = async (credentialResponse) => {
         try {
-            const res = await fetch("http://localhost:8080/auth/google", {
+            const res = await fetch(`${BASE_URL}/auth/google`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ idToken: credentialResponse.credential }),
@@ -15,7 +16,7 @@ export const useGoogleAuth = (onClose) => {
 
             if (!res.ok) throw new Error("Google login failed");
 
-            const userRes = await fetch("http://localhost:8080/auth/me", {
+            const userRes = await fetch(`${BASE_URL}/auth/me`, {
                 credentials: "include",
             });
 

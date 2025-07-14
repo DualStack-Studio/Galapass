@@ -1,5 +1,7 @@
+import { BASE_URL } from "../config";
+
 export const searchGuidesByName = async (name) => {
-    const response = await fetch('http://localhost:8080/api/users/guides/search', {
+    const response = await fetch(`${BASE_URL}/api/users/guides/search`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -16,7 +18,7 @@ export const searchGuidesByName = async (name) => {
 };
 
 export const sendGuideInvitation = async (payload) => {
-    const response = await fetch(`http://localhost:8080/api/invitations`, {
+    const response = await fetch(`${BASE_URL}/api/invitations`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { BASE_URL } from '../config';
 
 export const useMediaUpload = (tourId) => {
     const [media, setMedia] = useState([]);
@@ -13,7 +14,7 @@ export const useMediaUpload = (tourId) => {
             const formDataUpload = new FormData();
             formDataUpload.append('file', file);
 
-            return fetch(`http://localhost:8080/api/tours/${tourId}/media/upload`, {
+            return fetch(`${BASE_URL}/api/tours/${tourId}/media/upload`, {
                 method: 'POST',
                 credentials: 'include',
                 body: formDataUpload,
@@ -41,7 +42,7 @@ export const useMediaUpload = (tourId) => {
         formDataUpload.append('file', file);
 
         try {
-            const response = await fetch(`http://localhost:8080/api/tours/${tourId}/media/upload`, {
+            const response = await fetch(`${BASE_URL}/api/tours/${tourId}/media/upload`, {
                 method: 'POST',
                 credentials: 'include',
                 body: formDataUpload,
@@ -68,7 +69,7 @@ export const useMediaUpload = (tourId) => {
             const formData = new FormData();
             formData.append('file', file);
 
-            return fetch(`http://localhost:8080/api/media/upload/image`, {
+            return fetch(`${BASE_URL}/api/media/upload/image`, {
                 method: 'POST',
                 credentials: 'include',
                 body: formData,
@@ -98,7 +99,7 @@ export const useMediaUpload = (tourId) => {
         if (!urlToRemove) return;
         setIsDeleting(true); // Set deleting state to true
         try {
-            const response = await fetch(`http://localhost:8080/api/tours/${tourId}/media/delete`, {
+            const response = await fetch(`${BASE_URL}/api/tours/${tourId}/media/delete`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -121,7 +122,7 @@ export const useMediaUpload = (tourId) => {
         if (!urlToRemove) return;
         setIsDeleting(true); // Set deleting state to true
         try {
-            const response = await fetch(`http://localhost:8080/api/media/delete`, {
+            const response = await fetch(`${BASE_URL}/api/media/delete`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

@@ -3,20 +3,31 @@ import { Menu, X, User, Settings, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from "react-router-dom";
 import CompactSearchBar from './TouristView/CompactSearchBar.jsx';
+import { useTranslation } from 'react-i18next';
 
 const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, searchBarProps }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isRoleChanging, setIsRoleChanging] = useState(false);
     const [showStickySearch, setShowStickySearch] = useState(false);
-    const dropdownRef = useRef(null);
-    const { user, logout, refreshUser } = useAuth();
+    const [showLangDropdown, setShowLangDropdown] = useState(false);
+    const langDropdownRef = useRef(null);
+    const userDropdownRef = useRef(null);
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const { t, i18n } = useTranslation();
 
-    // Close dropdown when clicking outside
+    const languages = [
+        { code: 'es', label: 'Español' },
+        { code: 'en', label: 'English' }
+    ];
+
+    // Cerrar dropdowns al hacer click fuera
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
+                setShowLangDropdown(false);
+            }
+            if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
                 setIsDropdownOpen(false);
             }
         };
@@ -27,18 +38,11 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, sear
         };
     }, []);
 
-    // Dynamic header scroll behavior - only on home page
+    // Mostrar search sticky si scroll es suficiente
     useEffect(() => {
         const handleScroll = () => {
-            const scrollY = window.scrollY;
-            // Show sticky search when scrolled past 80px AND on home page
-            if (scrollY > 200 && location.pathname === '/') {
-                setShowStickySearch(true);
-            } else {
-                setShowStickySearch(false);
-            }
+            setShowStickySearch(window.scrollY > 200 && location.pathname === '/');
         };
-
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, [location.pathname]);
@@ -53,109 +57,90 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, sear
         setIsDropdownOpen(false);
     };
 
+    const handleLanguageChange = (lang) => {
+        i18n.changeLanguage(lang);
+        setShowLangDropdown(false);
+    };
 
     const getUserInitials = (name) => {
-        if (!name) return 'U';
-        return name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
+        return name ? name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) : 'U';
     };
 
-    const getProfileImage = () => {
-        // Return user's profile picture if available, otherwise return null for initials fallback
-        return user?.profilePhoto || null;
-    };
+    const getProfileImage = () => user?.profilePhoto || null;
 
     return (
-        <header className={`bg-white border-b border-gray-200 sticky top-0 z-50 transition-all duration-300 ${
-            showStickySearch ? 'shadow-lg' : 'shadow-sm'
-        }`}>
+        <header className={`bg-white border-b border-gray-200 sticky top-0 z-50 transition-all duration-300 ${showStickySearch ? 'shadow-lg' : 'shadow-sm'}`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <div
-                        className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
-                        onClick={handleLogoClick}
-                    >
-                        <img
-                            src="/images/galapassLogo.png"
-                            alt="Galapass Logo"
-                            className="h-9 w-auto object-contain"
-                        />
+                    <div className="flex items-center gap-1 cursor-pointer hover:opacity-80" onClick={handleLogoClick}>
+                        <img src="/images/galapassLogo.png" alt="Galapass Logo" className="h-9 w-auto object-contain" />
                         <h1 className="text-xl font-bold text-emerald-700">Galapass</h1>
                     </div>
 
-
-                    {/* Compact Search Bar (appears on scroll AND only on home page) */}
-                    <div
-                        className={`absolute left-1/2 transform -translate-x-1/2 transition-all duration-300 ease-in-out ${
-                            showStickySearch && location.pathname === '/'
-                                ? 'opacity-100 translate-y-0 pointer-events-auto' 
-                                : 'opacity-0 -translate-y-4 pointer-events-none'
-                        }`}
-                    >
-                        {searchBarProps && location.pathname === '/' && (
-                            <CompactSearchBar {...searchBarProps} />
-                        )}
+                    {/* Sticky SearchBar */}
+                    <div className={`absolute left-1/2 transform -translate-x-1/2 transition-all duration-300 ease-in-out ${showStickySearch && location.pathname === '/' ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
+                        {searchBarProps && location.pathname === '/' && <CompactSearchBar {...searchBarProps} />}
                     </div>
 
-                    {/* Desktop Navigation */}
+                    {/* Desktop nav */}
                     <nav className="hidden md:flex items-center space-x-8">
                         <div className="flex items-center space-x-3 ml-6">
+                            {/* Language Dropdown */}
+                            <div className="relative" ref={langDropdownRef}>
+                                <button
+                                    onClick={() => setShowLangDropdown(prev => !prev)}
+                                    className="px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium flex items-center"
+                                >
+                                    {languages.find(l => l.code === i18n.language)?.label || 'Idioma'}
+                                    <ChevronDown size={16} className="ml-2 text-gray-400" />
+                                </button>
+                                {showLangDropdown && (
+                                    <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                                        {languages.map(lang => (
+                                            <button
+                                                key={lang.code}
+                                                onClick={() => handleLanguageChange(lang.code)}
+                                                className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${i18n.language === lang.code ? 'font-bold text-emerald-600' : 'text-gray-700'}`}
+                                            >
+                                                {lang.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* User dropdown */}
                             {user ? (
-                                // User Profile Dropdown
-                                <div className="relative" ref={dropdownRef}>
+                                <div className="relative" ref={userDropdownRef}>
                                     <button
-                                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                        onClick={() => setIsDropdownOpen(prev => !prev)}
                                         className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-50 transition-colors"
                                     >
                                         <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center overflow-hidden">
                                             {getProfileImage() ? (
-                                                <img
-                                                    src={getProfileImage()}
-                                                    alt={user.name || 'User'}
-                                                    className="w-full h-full object-cover"
-                                                />
+                                                <img src={getProfileImage()} alt={user.name || 'User'} className="w-full h-full object-cover" />
                                             ) : (
-                                                <span className="text-white text-sm font-medium">
-                                                    {getUserInitials(user.name)}
-                                                </span>
+                                                <span className="text-white text-sm font-medium">{getUserInitials(user.name)}</span>
                                             )}
                                         </div>
                                         <ChevronDown size={16} className="text-gray-400" />
                                     </button>
 
-                                    {/* Dropdown Menu */}
                                     {isDropdownOpen && (
                                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                                            {(() => {
-                                                const roleMap = {
-                                                    GUIDE: "Guide",
-                                                    OWNER: "Tour Operator",
-                                                    TOURIST: "Tourist",
-                                                    ADMIN: "Admin"
-                                                };
-                                                const role = roleMap[user.role] || "Tourist";
-
-                                                return (
-                                                    <div className="px-4 py-2 border-b border-gray-100">
-                                                        <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                                                        <p className="text-sm text-gray-500">{role}</p>
-                                                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                                                    </div>
-                                                );
-                                            })()}
-                                            <a
-                                                href="#"
-                                                className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                                            >
+                                            <div className="px-4 py-2 border-b border-gray-100">
+                                                <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                                                <p className="text-sm text-gray-500">{user.role}</p>
+                                                <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                            </div>
+                                            <a href="#" className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                                 <User size={16} />
-                                                <span>Profile</span>
+                                                <span>{t('profile')}</span>
                                             </a>
-                                            <a
-                                                href="#"
-                                                className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                                            >
+                                            <a href="#" className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                                 <Settings size={16} />
-                                                <span>Settings</span>
+                                                <span>{t('settings')}</span>
                                             </a>
                                             <hr className="my-1" />
                                             <button
@@ -163,28 +148,24 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, sear
                                                 className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left"
                                             >
                                                 <LogOut size={16} />
-                                                <span>Logout</span>
+                                                <span>{t('logout')}</span>
                                             </button>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                // Login Button (when not authenticated)
                                 <button
                                     onClick={onLoginClick}
                                     className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
                                 >
-                                    Log in
+                                    {t('login')}
                                 </button>
                             )}
                         </div>
                     </nav>
 
                     {/* Mobile Menu Button */}
-                    <button
-                        className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                    >
+                    <button className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
                 </div>
@@ -196,20 +177,13 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, sear
                     <div className="px-4 py-2 space-y-1">
                         <div className="px-3 py-2">
                             {user ? (
-                                // Mobile User Menu
                                 <div className="space-y-2">
                                     <div className="flex items-center space-x-3 py-2">
                                         <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center overflow-hidden">
                                             {getProfileImage() ? (
-                                                <img
-                                                    src={getProfileImage()}
-                                                    alt={user.name || 'User'}
-                                                    className="w-full h-full object-cover"
-                                                />
+                                                <img src={getProfileImage()} alt={user.name || 'User'} className="w-full h-full object-cover" />
                                             ) : (
-                                                <span className="text-white text-sm font-medium">
-                                                    {getUserInitials(user.name)}
-                                                </span>
+                                                <span className="text-white text-sm font-medium">{getUserInitials(user.name)}</span>
                                             )}
                                         </div>
                                         <div>
@@ -220,32 +194,34 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, sear
                                     <div className="flex flex-col space-y-1">
                                         <a href="#" className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
                                             <User size={16} />
-                                            <span>Profile</span>
+                                            <span>{t('profile')}</span>
                                         </a>
                                         <a href="#" className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
                                             <Settings size={16} />
-                                            <span>Settings</span>
+                                            <span>{t('settings')}</span>
                                         </a>
                                         <button
                                             onClick={handleLogout}
                                             className="flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg w-full text-left"
                                         >
                                             <LogOut size={16} />
-                                            <span>Logout</span>
+                                            <span>{t('logout')}</span>
                                         </button>
                                     </div>
                                 </div>
                             ) : (
-                                // Mobile Login Buttons
                                 <div className="flex space-x-2">
                                     <button
                                         onClick={onLoginClick}
                                         className="flex-1 px-4 py-2 text-emerald-600 border border-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors font-medium text-sm"
                                     >
-                                        Log in
+                                        {t('login')}
                                     </button>
-                                    <button className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium text-sm">
-                                        Sign up
+                                    <button
+                                        onClick={onRegisterClick}
+                                        className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium text-sm"
+                                    >
+                                        {t('signup')}
                                     </button>
                                 </div>
                             )}

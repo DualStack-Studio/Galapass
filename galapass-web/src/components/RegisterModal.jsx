@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'; // Import useEffect
-import { X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Globe } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
-import {useGoogleAuth} from "../hooks/useGoogleAuth.js";
+import { useGoogleAuth } from "../hooks/useGoogleAuth.js";
+import { useTranslation } from 'react-i18next';
 
 const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     const [formData, setFormData] = useState({
@@ -17,22 +18,23 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     const { login } = useAuth();
     const navigate = useNavigate();
     const handleGoogleSuccess = useGoogleAuth(onClose);
-
-    // 1. Add state to control visibility for animations
     const [isVisible, setIsVisible] = useState(isOpen);
+    const { t, i18n } = useTranslation();
 
-    // 2. Use an effect to handle the animation timing
     useEffect(() => {
         if (isOpen) {
             setIsVisible(true);
         } else {
-            // Wait for the animation to finish before unmounting
-            const timer = setTimeout(() => setIsVisible(false), 300); // Duration matches animation
+            const timer = setTimeout(() => setIsVisible(false), 300);
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
 
-    // 3. Change the render condition to use the new visibility state
+    // Sync form language with i18n language
+    useEffect(() => {
+        setFormData(prev => ({ ...prev, language: i18n.language }));
+    }, [i18n.language]);
+
     if (!isVisible) return null;
 
     const handleChange = (e) => {
@@ -41,7 +43,6 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     };
 
     const handleSubmit = async (e) => {
-        // ... (Your existing submit logic remains unchanged)
         e.preventDefault();
         setIsLoading(true);
         setError('');
@@ -54,7 +55,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 credentials: "include",
             });
 
-            if (!response.ok) throw new Error("Registration failed");
+            if (!response.ok) throw new Error(t('registration_failed'));
 
             const userResponse = await fetch("http://localhost:8080/auth/me", {
                 credentials: "include",
@@ -65,7 +66,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 login(userData);
             }
 
-            setFormData({ name: '', email: '', password: '', language: 'es' });
+            setFormData({ name: '', email: '', password: '', language: i18n.language });
             onClose();
         } catch (err) {
             setError(err.message);
@@ -75,22 +76,24 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
         }
     };
 
+    const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng);
+    };
+
     return (
-        // 4. Conditionally apply animation to the overlay
         <div
             className={`fixed inset-0 bg-black/30 flex justify-center items-center z-50 ${
                 isOpen ? 'animate-fade-in' : 'animate-fade-out'
             }`}
             onClick={onClose}
         >
-            {/* 5. Conditionally apply animation to the modal content */}
             <div
                 className={`bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm relative ${
                     isOpen ? 'animate-slide-up' : 'animate-slide-down'
                 }`}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* ... (Your existing modal content) ... */}
+                {/* Close Button */}
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
@@ -98,11 +101,26 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     <X size={24} />
                 </button>
 
-                <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">Create Account</h2>
-                    <p className="text-gray-500">Start your journey with Galapass</p>
+                {/* Language Selector */}
+                <div className="absolute top-4 left-4 flex items-center space-x-1">
+                    <Globe size={16} className="text-gray-400" />
+                    <select
+                        value={i18n.language}
+                        onChange={(e) => changeLanguage(e.target.value)}
+                        className="text-xs bg-transparent border-none outline-none text-gray-600 cursor-pointer"
+                    >
+                        <option value="es">ES</option>
+                        <option value="en">EN</option>
+                    </select>
                 </div>
 
+                {/* Header */}
+                <div className="text-center mb-6 mt-6">
+                    <h2 className="text-2xl font-bold text-gray-800">{t('create_account')}</h2>
+                    <p className="text-gray-500">{t('start_journey')}</p>
+                </div>
+
+                {/* Error Message */}
                 {error && (
                     <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                         <p className="text-red-600 text-sm">{error}</p>
@@ -110,11 +128,10 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 )}
 
                 <form onSubmit={handleSubmit}>
-                    {/* ... (Your form inputs) ... */}
                     <div className="space-y-4">
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                                Full Name
+                                {t('full_name')}
                             </label>
                             <input
                                 type="text"
@@ -129,7 +146,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                Email Address
+                                {t('email_address')}
                             </label>
                             <input
                                 type="email"
@@ -144,7 +161,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                                Password
+                                {t('password')}
                             </label>
                             <input
                                 type="password"
@@ -159,7 +176,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
                         <div>
                             <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-1">
-                                Language
+                                {t('language')}
                             </label>
                             <select
                                 name="language"
@@ -178,19 +195,21 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                         disabled={isLoading}
                         className="w-full mt-6 bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer"
                     >
-                        {isLoading ? 'Creating account...' : 'Register'}
+                        {isLoading ? t('creating_account') : t('register')}
                     </button>
                 </form>
 
-                {/* ... (Your Google button and 'Log In' link) ... */}
+                {/* Divider */}
                 <div className="relative mt-6 mb-6">
                     <div className="absolute inset-0 flex items-center">
                         <div className="w-full border-t border-gray-300"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                        <span className="px-2 bg-white text-gray-500">{t('or_continue_with')}</span>
                     </div>
                 </div>
+
+                {/* Google Login Button */}
                 <div className="relative">
                     <GoogleLogin
                         onSuccess={handleGoogleSuccess}
@@ -209,7 +228,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                                 </svg>
-                                <span>Continue with Google</span>
+                                <span>{t('continue_with_google')}</span>
                             </button>
                         )}
                     />
@@ -227,18 +246,18 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     </div>
                 </div>
                 <p className="text-center text-sm text-gray-600 mt-6">
-                    Already have an account?{' '}
+                    {t('already_have_account')}{' '}
                     <button
                         type="button"
                         onClick={onSwitchToLogin}
                         className="font-semibold text-emerald-600 hover:underline cursor-pointer"
                     >
-                        Log in
+                        {t('log_in')}
                     </button>
                 </p>
             </div>
 
-            {/* 6. Add the CSS animations */}
+            {/* CSS animations */}
             <style>{`
                 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
                 .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }

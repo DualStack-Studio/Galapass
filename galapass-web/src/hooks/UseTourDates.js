@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-const BASE_URL = 'http://localhost:8080';
+import { BASE_URL } from '../config.js';
 
 const useTourDates = (tourId) => {
     const [tourDates, setTourDates] = useState([]);

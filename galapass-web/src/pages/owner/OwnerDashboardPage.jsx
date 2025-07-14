@@ -12,6 +12,7 @@ import { cancelInvitation, resendInvitation, useInvitations } from '../../hooks/
 import { toast } from 'react-hot-toast';
 import ConfirmModal from "../../components/OwnerView/ConfirmModal.jsx";
 import ErrorModal from '../../components/ErrorModal.jsx';
+import { useTranslation } from 'react-i18next';
 
 const OwnerDashboardPage = () => {
     const { user } = useAuth();
@@ -25,6 +26,8 @@ const OwnerDashboardPage = () => {
         const tab = params.get('tab');
         if (tab) setActiveTab(tab);
     }, [location.search]);
+
+    const { t, i18n } = useTranslation();
 
     const [activeTab, setActiveTab] = useState('companies');
     const [activeSubTab, setActiveSubTab] = useState('guides-list');
@@ -82,7 +85,7 @@ const OwnerDashboardPage = () => {
     }
 
     if (error) {
-        return <div className="p-8 text-red-600">Error loading dashboard: {error}</div>;
+        return <div className="p-8 text-red-600">{t('error_loading_dashboard')}: {error}</div>;
     }
 
     // 2. Modify the Add Tour handler
@@ -148,35 +151,44 @@ const OwnerDashboardPage = () => {
 
     return (
         <div className="bg-white">
+            {/* Language Switcher */}
+            <div className="absolute right-8 top-6 z-10">
+                <select
+                    value={i18n.language}
+                    onChange={e => i18n.changeLanguage(e.target.value)}
+                    className="border rounded px-2 py-1 text-xs"
+                >
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
             {/* Header and other components remain the same */}
             <div className="bg-white shadow-sm border-b border-gray-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between py-6">
                         <div className="flex items-center space-x-4">
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-900">Tour Operator Dashboard</h1>
-                                <p className="text-gray-600">Manage your Galápagos tour business</p>
+                                <h1 className="text-2xl font-bold text-gray-900">{t('tour_operator_dashboard')}</h1>
+                                <p className="text-gray-600">{t('manage_tour_business')}</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <StatCard icon={Building2} title="Companies" value={stats.companiesCount} subtitle="Active businesses" />
-                    <StatCard icon={MapPin} title="Tours" value={stats.toursCount} subtitle="Total offerings" color="blue" />
-                    <StatCard icon={Users} title="Guides" value={stats.guidesCount} subtitle="Team members" color="purple" />
-                    <StatCard icon={DollarSign} title="Revenue" value={`$${stats.revenue}`} subtitle="This month" color="green" />
+                    <StatCard icon={Building2} title={t('companies')} value={stats.companiesCount} subtitle={t('active_businesses')} />
+                    <StatCard icon={MapPin} title={t('tours')} value={stats.toursCount} subtitle={t('total_offerings')} color="blue" />
+                    <StatCard icon={Users} title={t('guides')} value={stats.guidesCount} subtitle={t('team_members')} color="purple" />
+                    <StatCard icon={DollarSign} title={t('revenue')} value={`$${stats.revenue}`} subtitle={t('this_month')} color="green" />
                 </div>
-
                 {/* Navigation Tabs */}
                 <div className="border-b border-gray-200 mb-8">
                     <nav className="-mb-px flex space-x-8">
                         {[
-                            { id: 'companies', label: 'Companies', icon: Building2 },
-                            { id: 'tours', label: 'Tours', icon: MapPin },
-                            { id: 'guides', label: 'Guides', icon: Users },
+                            { id: 'companies', label: t('companies'), icon: Building2 },
+                            { id: 'tours', label: t('tours'), icon: MapPin },
+                            { id: 'guides', label: t('guides'), icon: Users },
                         ].map((tab) => (
                             <button
                                 key={tab.id}
@@ -198,7 +210,7 @@ const OwnerDashboardPage = () => {
                 {activeTab === 'companies' && (
                     <div>
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-semibold text-gray-900">Your Companies</h2>
+                            <h2 className="text-xl font-semibold text-gray-900">{t('your_companies')}</h2>
 
                             <div className="flex space-x-3">
                                 <button
@@ -206,7 +218,7 @@ const OwnerDashboardPage = () => {
                                     className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"
                                 >
                                     <Plus className="h-4 w-4" />
-                                    <span>Add Company</span>
+                                    <span>{t('add_company')}</span>
                                 </button>
                             </div>
                         </div>
@@ -221,13 +233,13 @@ const OwnerDashboardPage = () => {
                                     <div className="mx-auto mb-4 w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                                         <Building2 className="w-8 h-8 text-gray-400" />
                                     </div>
-                                    <p className="text-gray-600 mb-4">You haven’t created any companies yet.</p>
+                                    <p className="text-gray-600 mb-4">{t('no_companies_yet')}</p>
                                     <button
                                         onClick={() => navigate('/owner/add-company')}
                                         className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto cursor-pointer"
                                     >
                                         <Plus className="w-4 h-4" />
-                                        <span>Add Your First Company</span>
+                                        <span>{t('add_your_first_company')}</span>
                                     </button>
                                 </div>
                             )}
@@ -239,21 +251,21 @@ const OwnerDashboardPage = () => {
                 {activeTab === 'tours' && (
                     <div>
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-semibold text-gray-900">Your Tours</h2>
+                            <h2 className="text-xl font-semibold text-gray-900">{t('your_tours')}</h2>
                             <div className="flex space-x-3">
                                 <button
                                     onClick={() => navigate('/owner/manage-bookings')}
                                     className="border border-emerald-600 text-emerald-600 hover:bg-emerald-50 px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"
                                 >
                                     <MapPin className="h-4 w-4" />
-                                    <span>View All Bookings</span>
+                                    <span>{t('view_all_bookings')}</span>
                                 </button>
                                 <button
                                     onClick={handleAddTourClick}
                                     className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer"
                                 >
                                     <Plus className="h-4 w-4" />
-                                    <span>Add Tour</span>
+                                    <span>{t('add_tour')}</span>
                                 </button>
                             </div>
                         </div>
@@ -267,13 +279,13 @@ const OwnerDashboardPage = () => {
                                     <div className="mx-auto mb-4 w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                                         <MapPin className="w-8 h-8 text-gray-400" />
                                     </div>
-                                    <p className="text-gray-600 mb-4">You haven’t added any tours yet.</p>
+                                    <p className="text-gray-600 mb-4">{t('no_tours_yet')}</p>
                                     <button
                                         onClick={handleAddTourClick}
                                         className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto cursor-pointer"
                                     >
                                         <Plus className="w-4 h-4" />
-                                        <span>Add Your First Tour</span>
+                                        <span>{t('add_your_first_tour')}</span>
                                     </button>
                                 </div>
                             )}
@@ -286,13 +298,13 @@ const OwnerDashboardPage = () => {
                 {activeTab === 'guides' && (
                     <div>
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-semibold text-gray-900">Your Guides</h2>
+                            <h2 className="text-xl font-semibold text-gray-900">{t('your_guides')}</h2>
                             <button
                                 onClick={handleInviteGuideClick}
                                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer transition-colors"
                             >
                                 <Plus className="w-4 h-4" />
-                                <span>Invite Guide</span>
+                                <span>{t('invite_guide')}</span>
                             </button>
                         </div>
 
@@ -329,13 +341,13 @@ const OwnerDashboardPage = () => {
                                         <div className="mx-auto mb-4 w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                                             <Users className="w-8 h-8 text-gray-400" />
                                         </div>
-                                        <p className="text-gray-600 mb-4">You don’t have any guides added to your company yet.</p>
+                                        <p className="text-gray-600 mb-4">{t('no_guides_added')}</p>
                                         <button
                                             onClick={handleInviteGuideClick}
                                             className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto cursor-pointer"
                                         >
                                             <Plus className="w-4 h-4" />
-                                            <span>Invite Your First Guide</span>
+                                            <span>{t('invite_your_first_guide')}</span>
                                         </button>
                                     </div>
                                 )}
@@ -370,7 +382,7 @@ const OwnerDashboardPage = () => {
                                                                         {invite.status.charAt(0).toUpperCase() + invite.status.slice(1)}
                                                                     </span>
                                                                     <span className="text-sm text-gray-500">
-                                                                        Sent {new Date(invite.sentAt).toLocaleDateString()}
+                                                                        {t('sent')} {new Date(invite.sentAt).toLocaleDateString()}
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -384,7 +396,7 @@ const OwnerDashboardPage = () => {
                                                                 className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center space-x-1 cursor-pointer"
                                                             >
                                                                 <RefreshCw className="w-4 h-4" />
-                                                                <span>Resend</span>
+                                                                <span>{t('resend')}</span>
                                                             </button>
                                                         )}
                                                         <button
@@ -392,7 +404,7 @@ const OwnerDashboardPage = () => {
                                                             className="text-red-600 hover:text-red-700 text-sm font-medium flex items-center space-x-1 cursor-pointer"
                                                         >
                                                             <X className="w-4 h-4" />
-                                                            <span>Cancel</span>
+                                                            <span>{t('cancel')}</span>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -409,14 +421,14 @@ const OwnerDashboardPage = () => {
                                         <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
                                             <Users className="w-8 h-8 text-gray-400" />
                                         </div>
-                                        <h3 className="text-lg font-medium text-gray-900 mb-2">No pending invitations</h3>
-                                        <p className="text-gray-500 mb-6">Invite guides to help manage your company.</p>
+                                        <h3 className="text-lg font-medium text-gray-900 mb-2">{t('no_pending_invitations')}</h3>
+                                        <p className="text-gray-500 mb-6">{t('invite_guides_help_manage')}</p>
                                         <button
                                             onClick={handleInviteGuideClick}
                                             className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto cursor-pointer transition-colors"
                                         >
                                             <Plus className="w-4 h-4" />
-                                            <span>Send an Invitation First</span>
+                                            <span>{t('send_invitation_first')}</span>
                                         </button>
                                     </div>
                                 )}

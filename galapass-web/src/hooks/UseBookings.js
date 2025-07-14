@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import axios from 'axios';
+import { BASE_URL } from '../config';
 
-const API_URL = 'http://localhost:8080/api/bookings';
+const API_URL = `${BASE_URL}/api/bookings`;
 
 const useBookings = () => {
     const [bookings, setBookings] = useState([]);

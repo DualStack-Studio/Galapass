@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-
-const API_URL = 'http://localhost:8080';
+import {BASE_URL} from "../config.js";
 
 export const useOwnerDashboard = (ownerId) => {
     const [companies, setCompanies] = useState([]);
@@ -18,7 +17,7 @@ export const useOwnerDashboard = (ownerId) => {
     const [error, setError] = useState(null);
 
     const fetchCompanies = async () => {
-        const res = await fetch(`${API_URL}/api/companies/owner/${ownerId}`, {
+        const res = await fetch(`${BASE_URL}/api/companies/owner/${ownerId}`, {
             credentials: 'include'
         });
 
@@ -37,7 +36,7 @@ export const useOwnerDashboard = (ownerId) => {
     };
 
     const fetchStats = async () => {
-        const res = await fetch(`${API_URL}/api/owner-dashboard/stats/${ownerId}`, {
+        const res = await fetch(`${BASE_URL}/api/owner-dashboard/stats/${ownerId}`, {
             credentials: 'include'
         });
 

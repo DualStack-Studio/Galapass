@@ -1,7 +1,8 @@
-const API_URL = 'http://localhost:8080';
+import {BASE_URL} from "../config.js";
+
 
 export const fetchTour = async (tourId) => {
-    const response = await fetch(`http://localhost:8080/api/tours/${tourId}`, {
+    const response = await fetch(`${BASE_URL}/api/tours/${tourId}`, {
         method: 'GET',
         credentials: 'include',
     });
@@ -14,7 +15,7 @@ export const fetchTour = async (tourId) => {
 }
 
 export const getTourById = async (tourId) => {
-    const response = await fetch(`${API_URL}/api/tours/detail/${tourId}`);
+    const response = await fetch(`${BASE_URL}/api/tours/detail/${tourId}`);
 
     if (!response.ok) {
         // Create a more informative error message

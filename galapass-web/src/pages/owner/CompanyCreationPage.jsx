@@ -10,6 +10,7 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../contexts/AuthContext.jsx";
 import StepPricing from "../../components/OwnerView/TourCreation/StepPricing.jsx";
 import StepSummary from "../../components/OwnerView/CompanyCreation/StepSummary.jsx";
+import { useTranslation } from 'react-i18next';
 
 const CompanyCreationPage = ({ onSuccess }) => {
     const navigate = useNavigate();
@@ -30,11 +31,12 @@ const CompanyCreationPage = ({ onSuccess }) => {
     const { locations } = useTourEnums();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const { t, i18n } = useTranslation();
 
     const steps = [
-        { id: 1, title: 'Basic Info', description: 'Company essentials' },
-        { id: 2, title: 'Branding', description: 'Logo and identity' },
-        { id: 3, title: 'Details', description: 'Complete your profile' }
+        { id: 1, title: t('basic_info'), description: t('company_essentials') },
+        { id: 2, title: t('branding'), description: t('logo_and_identity') },
+        { id: 3, title: t('details'), description: t('complete_profile') }
     ];
 
     const isStep1Valid = formData.name && formData.location;
@@ -125,6 +127,17 @@ const CompanyCreationPage = ({ onSuccess }) => {
 
     return (
         <div className="min-h-screen">
+            {/* Language Switcher */}
+            <div className="absolute right-8 top-6 z-10">
+                <select
+                    value={i18n.language}
+                    onChange={e => i18n.changeLanguage(e.target.value)}
+                    className="border rounded px-2 py-1 text-xs"
+                >
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
             {/* Header */}
             <div className="sticky top-0 z-10 bg-white border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4">
@@ -134,10 +147,8 @@ const CompanyCreationPage = ({ onSuccess }) => {
                             className="flex items-center text-gray-600 hover:text-gray-900 cursor-pointer"
                         >
                             <ArrowLeft className="h-5 w-5 mr-2" />
-                            Exit
+                            {t('exit')}
                         </button>
-
-
                         <div className="flex items-center space-x-8">
                             {steps.map((step, index) => (
                                 <React.Fragment key={step.id}>
@@ -158,7 +169,6 @@ const CompanyCreationPage = ({ onSuccess }) => {
                                 </React.Fragment>
                             ))}
                         </div>
-
                         <div className="w-16" />
                     </div>
                 </div>
@@ -177,42 +187,32 @@ const CompanyCreationPage = ({ onSuccess }) => {
             {/* Footer */}
             <div className="fixed bottom-0 left-0 w-full bg-white">
                 <div className="max-w-4xl mx-auto flex justify-between px-4 py-4">
-
                     {currentStep > 1 && currentStep < 4 ? (
                         <button
                             onClick={prevStep}
                             className="text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-lg cursor-pointer"
                         >
-                            Back
+                            {t('back')}
                         </button>
                     ) : <div />}
-
                     {currentStep < 3 ? (
                         <button
                             onClick={nextStep}
                             disabled={(currentStep === 1 && !isStep1Valid && !isStep2Valid)}
                             className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer"
                         >
-                            Next
+                            {t('next')}
                         </button>
                     ) : currentStep === 3 ? (
                         <button
                             onClick={handleSubmit}
                             disabled={isPublishDisabled}
-                            className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                            className="bg-emerald-600 text-white px-8 py-3 rounded-lg hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer flex items-center space-x-2"
                         >
-                            {loading ? (
-                                <span>Creating...</span>
-                            ) : (
-                                <span className="flex items-center">
-                                    <Save className="h-4 w-4 mr-2" />
-                                    Create Company
-                                </span>
-                            )}
+                            <Save className="w-5 h-5 mr-2" />
+                            {loading ? t('saving') : t('publish')}
                         </button>
-                    ) : (
-                        <div />  // On step 4 (Summary) no buttons show
-                    )}
+                    ) : null}
                 </div>
             </div>
         </div>

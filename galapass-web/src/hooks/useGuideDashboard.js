@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-
-const API_URL = 'http://localhost:8080';
+import { BASE_URL } from '../config';
 
 export const useGuideDashboard = (guideId) => {
     const [companies, setCompanies] = useState([]);
@@ -15,7 +14,7 @@ export const useGuideDashboard = (guideId) => {
     const [error, setError] = useState(null);
 
     const fetchCompanies = async () => {
-        const res = await fetch(`${API_URL}/api/guides/${guideId}/companies`, { credentials: 'include' });
+        const res = await fetch(`${BASE_URL}/api/guides/${guideId}/companies`, { credentials: 'include' });
         if (!res.ok) throw new Error('Failed to fetch companies');
         const data = await res.json();
         setCompanies(data);
@@ -24,10 +23,10 @@ export const useGuideDashboard = (guideId) => {
 
     const fetchTours = async () => {
         const [upcoming, active, completed, history] = await Promise.all([
-            fetch(`${API_URL}/api/guides/${guideId}/tours/upcoming`, { credentials: 'include' }),
-            fetch(`${API_URL}/api/guides/${guideId}/tours/active`, { credentials: 'include' }),
-            fetch(`${API_URL}/api/guides/${guideId}/tours/completed`, { credentials: 'include' }),
-            fetch(`${API_URL}/api/guides/${guideId}/tours/history`, { credentials: 'include' }),
+            fetch(`${BASE_URL}/api/guides/${guideId}/tours/upcoming`, { credentials: 'include' }),
+            fetch(`${BASE_URL}/api/guides/${guideId}/tours/active`, { credentials: 'include' }),
+            fetch(`${BASE_URL}/api/guides/${guideId}/tours/completed`, { credentials: 'include' }),
+            fetch(`${BASE_URL}/api/guides/${guideId}/tours/history`, { credentials: 'include' }),
         ]);
 
         if (!upcoming.ok || !active.ok || !completed.ok || !history.ok)
@@ -40,7 +39,7 @@ export const useGuideDashboard = (guideId) => {
     };
 
     const fetchInvitations = async () => {
-        const res = await fetch(`${API_URL}/api/guides/${guideId}/invitations`, { credentials: 'include' });
+        const res = await fetch(`${BASE_URL}/api/guides/${guideId}/invitations`, { credentials: 'include' });
         if (!res.ok) throw new Error('Failed to fetch guide invitations');
         const allInvitations = await res.json();
         console.log("Guide invitations:", allInvitations);
@@ -52,7 +51,7 @@ export const useGuideDashboard = (guideId) => {
 
 
     const fetchStats = async () => {
-        const res = await fetch(`${API_URL}/api/guides/${guideId}/dashboard-stats`, { credentials: 'include' });
+        const res = await fetch(`${BASE_URL}/api/guides/${guideId}/dashboard-stats`, { credentials: 'include' });
         if (!res.ok) throw new Error('Failed to fetch stats');
         setStats(await res.json());
     };

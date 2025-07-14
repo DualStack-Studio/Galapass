@@ -5,10 +5,12 @@ import SearchBar from "../../components/TouristView/SearchBar.jsx";
 import {useNavigate} from "react-router-dom";
 import FiltersModal from "../../components/TouristView/FiltersModal.jsx";
 import {BASE_URL} from "../../config.js";
+import { useTranslation } from 'react-i18next';
 
 
 const TouristDashboardPage = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const [tours, setTours] = useState([]);
     const [error, setError] = useState('');
@@ -93,9 +95,9 @@ const TouristDashboardPage = () => {
             <div className="max-w-4xl mx-auto">
                     <div className="text-center mb-8">
                         <h2 className="text-4xl font-bold text-gray-900 mb-2">
-                            Discover the <span className="text-emerald-600">Galápagos</span>
+                            {t('tourist_dashboard_title')} <span className="text-emerald-600">Galápagos</span>
                         </h2>
-                        <p className="text-xl text-gray-600">Find unique tours in nature's laboratory</p>
+                        <p className="text-xl text-gray-600">{t('tourist_dashboard_subtitle')}</p>
                     </div>
                     <SearchBar
                         searchData={searchData}
@@ -116,12 +118,13 @@ const TouristDashboardPage = () => {
                         currentMonth={currentMonth}
                         setCurrentMonth={setCurrentMonth}
                         setIsFilterModalOpen={setIsFilterModalOpen}
+                        searchLabel={t('search')}
                     />
                 </div>
             </section>
 
             <main className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-8">Popular tours in Santa Cruz</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-8">{t('popular_tours')}</h2>
                 {error && <div className="text-red-500 mb-4">{error}</div>}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {tours.map(tour => (

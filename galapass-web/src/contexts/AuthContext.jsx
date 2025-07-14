@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from "axios";
 import {BASE_URL} from "../config.js";
+import i18n from '../i18n';
 
 const AuthContext = createContext({});
 
@@ -20,6 +21,12 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         checkAuthStatus();
     }, []);
+
+    useEffect(() => {
+        if (user && user.language) {
+            i18n.changeLanguage(user.language);
+        }
+    }, [user]);
 
     const fetchUser = async () => {
         try {
@@ -52,6 +59,9 @@ export const AuthProvider = ({ children }) => {
 
     const login = (userData) => {
         setUser(userData);
+        if (userData.language) {
+            i18n.changeLanguage(userData.language);
+        }
     };
 
     const logout = async () => {

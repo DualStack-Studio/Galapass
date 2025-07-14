@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'; // Make sure to import useEffect
-import { X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Globe } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../contexts/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { useGoogleAuth } from "../hooks/useGoogleAuth.js";
-import {BASE_URL} from "../config.js";
+import { BASE_URL } from "../config.js";
+import { useTranslation } from 'react-i18next';
 
 const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [email, setEmail] = useState('');
@@ -12,23 +13,20 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const {login} = useAuth();
-  // 1. Add state to control visibility for animations
+  const { login } = useAuth();
   const [isVisible, setIsVisible] = useState(isOpen);
   const handleGoogleSuccess = useGoogleAuth(onClose);
+  const { t, i18n } = useTranslation();
 
-  // 2. Use an effect to handle the animation timing
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
     } else {
-      // Wait for the animation to finish before unmounting
-      const timer = setTimeout(() => setIsVisible(false), 300); // Must match animation duration
+      const timer = setTimeout(() => setIsVisible(false), 300);
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
-  // 3. Change the render condition to use the new state
   if (!isVisible) {
     return null;
   }
@@ -46,7 +44,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
         credentials: "include",
       });
 
-      if (!response.ok) throw new Error("Invalid credentials");
+      if (!response.ok) throw new Error(t('invalid_credentials'));
 
       const userResponse = await fetch(`${BASE_URL}/auth/me`, {
         credentials: "include",
@@ -68,15 +66,17 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
     }
   };
 
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
+
   return (
-      // 4. Conditionally apply animation to Modal Overlay
       <div
           className={`fixed inset-0 bg-black/30 flex justify-center items-center z-50 ${
               isOpen ? 'animate-fade-in' : 'animate-fade-out'
           }`}
           onClick={onClose}
       >
-        {/* 5. Conditionally apply animation to Modal Content */}
         <div
             className={`bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm relative ${
                 isOpen ? 'animate-slide-up' : 'animate-slide-down'
@@ -91,10 +91,23 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
             <X size={24}/>
           </button>
 
+          {/* Language Selector */}
+          <div className="absolute top-4 left-4 flex items-center space-x-1">
+            <Globe size={16} className="text-gray-400" />
+            <select
+                value={i18n.language}
+                onChange={(e) => changeLanguage(e.target.value)}
+                className="text-xs bg-transparent border-none outline-none text-gray-600 cursor-pointer"
+            >
+              <option value="es">ES</option>
+              <option value="en">EN</option>
+            </select>
+          </div>
+
           {/* Header */}
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Welcome Back</h2>
-            <p className="text-gray-500">Please enter your details to log in.</p>
+          <div className="text-center mb-6 mt-6">
+            <h2 className="text-2xl font-bold text-gray-800">{t('welcome_back')}</h2>
+            <p className="text-gray-500">{t('please_enter_details')}</p>
           </div>
 
           {/* Error Message */}
@@ -110,7 +123,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
               {/* Email Input */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address
+                  {t('email_address')}
                 </label>
                 <input
                     type="email"
@@ -125,7 +138,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
               {/* Password Input */}
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
+                  {t('password')}
                 </label>
                 <input
                     type="password"
@@ -141,7 +154,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
 
             <div className="text-right mt-2">
               <a href="#" className="text-sm text-emerald-600 hover:underline">
-                Forgot Password?
+                {t('forgot_password')}
               </a>
             </div>
 
@@ -151,7 +164,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                 disabled={isLoading}
                 className="w-full mt-6 bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer"
             >
-              {isLoading ? 'Logging in...' : 'Log In'}
+              {isLoading ? t('logging_in') : t('login')}
             </button>
           </form>
 
@@ -161,11 +174,11 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              <span className="px-2 bg-white text-gray-500">{t('or_continue_with')}</span>
             </div>
           </div>
 
-          {/* ... Your Google button and other content ... */}
+          {/* Google Login Button */}
           <div className="relative">
             <GoogleLogin
                 onSuccess={handleGoogleSuccess}
@@ -188,7 +201,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                         <path fill="#EA4335"
                               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                       </svg>
-                      <span>Continue with Google</span>
+                      <span>{t('continue_with_google')}</span>
                     </button>
                 )}
             />
@@ -206,32 +219,33 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
             </div>
           </div>
           <p className="text-center text-sm text-gray-600 mt-6">
-            Don't have an account?{' '}
+            {t('no_account')}{' '}
             <button
                 type="button"
                 onClick={onSwitchToRegister}
                 className="font-semibold text-emerald-600 hover:underline cursor-pointer"
             >
-              Sign up
+              {t('sign_up')}
             </button>
           </p>
         </div>
 
-        {/* 6. Add the CSS animations */}
+        {/* CSS animations */}
         <style>{`
-          @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-          .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
-          
-          @keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
-          .animate-fade-out { animation: fade-out 0.3s ease-out forwards; }
-          
-          @keyframes slide-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-          .animate-slide-up { animation: slide-up 0.3s ease-out forwards; }
-          
-          @keyframes slide-down { from { transform: translateY(0); opacity: 1; } to { transform: translateY(20px); opacity: 0; } }
-          .animate-slide-down { animation: slide-down 0.3s ease-out forwards; }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
+        
+        @keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+        .animate-fade-out { animation: fade-out 0.3s ease-out forwards; }
+        
+        @keyframes slide-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-slide-up { animation: slide-up 0.3s ease-out forwards; }
+        
+        @keyframes slide-down { from { transform: translateY(0); opacity: 1; } to { transform: translateY(20px); opacity: 0; } }
+        .animate-slide-down { animation: slide-down 0.3s ease-out forwards; }
       `}</style>
       </div>
   );
 }
+
 export default LoginModal;

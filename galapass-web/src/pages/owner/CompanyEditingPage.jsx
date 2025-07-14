@@ -8,6 +8,7 @@ import StepDetails from '../../components/OwnerView/CompanyCreation/StepDetails'
 import useTourEnums from "../../hooks/useTourEnums.js";
 import { useMediaUpload } from "../../hooks/useMediaUpload.js";
 import StepSummary from "../../components/OwnerView/CompanyCreation/StepSummary.jsx";
+import { useTranslation } from 'react-i18next';
 
 const CompanyEditingPage = ({ onSuccess }) => {
     const navigate = useNavigate();
@@ -33,12 +34,12 @@ const CompanyEditingPage = ({ onSuccess }) => {
     const [fetchLoading, setFetchLoading] = useState(true);
     const [error, setError] = useState('');
     const [unsavedChanges, setUnsavedChanges] = useState(false);
-
+    const { t, i18n } = useTranslation();
 
     const steps = [
-        { id: 1, title: 'Basic Info', description: 'Company essentials' },
-        { id: 2, title: 'Branding', description: 'Logo and identity' },
-        { id: 3, title: 'Details', description: 'Complete your profile' }
+        { id: 1, title: t('basic_info'), description: t('company_essentials') },
+        { id: 2, title: t('branding'), description: t('logo_and_identity') },
+        { id: 3, title: t('details'), description: t('complete_profile') }
     ];
 
 
@@ -213,7 +214,7 @@ const CompanyEditingPage = ({ onSuccess }) => {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading company data...</p>
+                    <p className="text-gray-600">{t('loading_company_data')}</p>
                 </div>
             </div>
         );
@@ -231,7 +232,7 @@ const CompanyEditingPage = ({ onSuccess }) => {
                         className="flex items-center text-gray-600 hover:text-gray-900 cursor-pointer"
                     >
                         <ArrowLeft className="h-5 w-5 mr-2" />
-                        Back to Dashboard
+                        {t('back_to_dashboard')}
                     </button>
                 </div>
             </div>
@@ -240,6 +241,17 @@ const CompanyEditingPage = ({ onSuccess }) => {
 
     return (
         <div className="min-h-screen">
+            {/* Language Switcher */}
+            <div className="absolute right-8 top-6 z-10">
+                <select
+                    value={i18n.language}
+                    onChange={e => i18n.changeLanguage(e.target.value)}
+                    className="border rounded px-2 py-1 text-xs"
+                >
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
             {/* Header */}
             <div className="sticky top-0 z-10 bg-white border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4">
@@ -249,9 +261,8 @@ const CompanyEditingPage = ({ onSuccess }) => {
                             className="flex items-center text-gray-600 hover:text-gray-900 cursor-pointer"
                         >
                             <ArrowLeft className="h-5 w-5 mr-2" />
-                            Cancel
+                            {t('cancel')}
                         </button>
-
                         <div className="flex items-center space-x-8">
                             {steps.map((step, index) => (
                                 <React.Fragment key={step.id}>
@@ -282,7 +293,7 @@ const CompanyEditingPage = ({ onSuccess }) => {
             <div className="max-w-4xl mx-auto px-4 py-8">
                 {unsavedChanges && currentStep < 4 && (
                     <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
-                        <p className="text-amber-800 text-sm">You have unsaved changes</p>
+                        <p className="text-amber-800 text-sm">{t('unsaved_changes')}</p>
                     </div>
                 )}
                 {renderStep()}
@@ -301,26 +312,24 @@ const CompanyEditingPage = ({ onSuccess }) => {
                             onClick={prevStep}
                             className="text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-lg"
                         >
-                            Back
+                            {t('back')}
                         </button>
                     ) : <div />}
-
                     {unsavedChanges && currentStep < 4 && (
                         <button
                             onClick={handleReset}
                             className="px-6 py-3 text-gray-600 hover:text-black hover:underline transition-colors cursor-pointer"
                         >
-                            Reset Changes
+                            {t('reset_changes')}
                         </button>
                     )}
-
                     {currentStep < 3 ? (
                         <button
                             onClick={nextStep}
                             disabled={(currentStep === 1 && !isStep1Valid)}
                             className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
                         >
-                            Next
+                            {t('next')}
                         </button>
                     ) : currentStep === 3 ? (
                         <button
@@ -329,12 +338,12 @@ const CompanyEditingPage = ({ onSuccess }) => {
                             className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
                         >
                             {loading ? (
-                                <span>Updating...</span>
+                                <span>{t('updating')}</span>
                             ) : (
-                                <button className="flex items-center cursor-pointer">
+                                <span className="flex items-center cursor-pointer">
                                     <Save className="h-4 w-4 mr-2" />
-                                    Update Company
-                                </button>
+                                    {t('update_company')}
+                                </span>
                             )}
                         </button>
                     ) : (

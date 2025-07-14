@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
+import {BASE_URL} from "../config.js";
 
-const API_URL = 'http://localhost:8080';
 
 export const useTourCreation = (ownerId) => {
     const [companies, setCompanies] = useState([]);
@@ -8,7 +8,7 @@ export const useTourCreation = (ownerId) => {
     const [error, setError] = useState(null);
 
     const fetchBasicCompanies = async () => {
-        const res = await fetch(`${API_URL}/api/companies/basic-owner/${ownerId}`, {
+        const res = await fetch(`${BASE_URL}/api/companies/basic-owner/${ownerId}`, {
             credentials: 'include'
         });
 
@@ -21,7 +21,7 @@ export const useTourCreation = (ownerId) => {
     };
 
     const createDraftTour = async (draftData) => {
-        const response = await fetch(`${API_URL}/api/tours/draft`, {
+        const response = await fetch(`${BASE_URL}/api/tours/draft`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -38,7 +38,7 @@ export const useTourCreation = (ownerId) => {
     };
 
     const updateTour = async (tourId, patchData) => {
-        const response = await fetch(`${API_URL}/api/tours/${tourId}`, {
+        const response = await fetch(`${BASE_URL}/api/tours/${tourId}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',

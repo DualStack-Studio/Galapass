@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Target } from 'lucide-react';
-const API_URL = 'http://localhost:8080';
+import {BASE_URL} from "../../../config.js";
 
 
 const StepBasicInfo = ({
@@ -28,7 +28,7 @@ const StepBasicInfo = ({
 
             setIsLoadingDestinations(true);
             try {
-                const response = await fetch(`${API_URL}/api/enums/destinations/${formData.location}`, {
+                const response = await fetch(`${BASE_URL}/api/enums/destinations/${formData.location}`, {
                     credentials: "include"
                 });
 

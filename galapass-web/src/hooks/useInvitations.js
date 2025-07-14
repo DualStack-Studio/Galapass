@@ -1,5 +1,7 @@
-const API_URL = 'http://localhost:8080/api/invitations';
 import { useEffect, useState } from 'react';
+import { BASE_URL } from '../config';
+
+const API_URL = `${BASE_URL}/api/invitations`;
 
 export const fetchInvitations = async (ownerId) => {
     const response = await fetch(`${API_URL}/owner/${ownerId}`, {

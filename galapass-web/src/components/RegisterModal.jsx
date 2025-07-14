@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { useGoogleAuth } from "../hooks/useGoogleAuth.js";
 import { useTranslation } from 'react-i18next';
+import { BASE_URL } from "../config.js";
 
 const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     const [formData, setFormData] = useState({

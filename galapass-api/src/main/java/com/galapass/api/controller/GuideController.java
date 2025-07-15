@@ -34,14 +34,14 @@ public class GuideController {
     private final GuideInvitationService guideInvitationService;
     private final GuideInvitationMapper guideInvitationMapper;
 
-    @PreAuthorize("hasRole('GUIDE')")
+    @PreAuthorize("hasAuthority('GUIDE')")
     @GetMapping("/{guideId}/companies")
     public ResponseEntity<List<TourCompanyResponse>> getCompaniesByGuide(@PathVariable Long guideId) {
         return ResponseEntity.ok(tourCompanyService.getCompaniesByGuideId(guideId));
     }
 
     // Active tours from bookings with CONFIRMED status
-    @PreAuthorize("hasRole('GUIDE')")
+    @PreAuthorize("hasAuthority('GUIDE')")
     @GetMapping("/{guideId}/tours/active")
     public ResponseEntity<List<TourResponseOwnerViewDTO>> getActiveToursByGuide(@PathVariable Long guideId) {
         List<Booking> bookings = bookingService.getBookingsByGuideAndStatus(guideId, BookingStatus.CONFIRMED);
@@ -54,7 +54,7 @@ public class GuideController {
         return ResponseEntity.ok(tourMapper.toTourResponseOwnerViewDTOList(tours));
 
     }
-    @PreAuthorize("hasRole('GUIDE')")
+    @PreAuthorize("hasAuthority('GUIDE')")
     @GetMapping("/{guideId}/bookings")
     public ResponseEntity<List<BookingResponseDTO>> getBookingsByGuide(@PathVariable Long guideId) {
         List<BookingResponseDTO> bookings = bookingService.getBookingsByGuide(guideId);
@@ -62,7 +62,7 @@ public class GuideController {
     }
 
     // Completed tours from bookings with COMPLETED status
-    @PreAuthorize("hasRole('GUIDE')")
+    @PreAuthorize("hasAuthority('GUIDE')")
     @GetMapping("/{guideId}/tours/completed")
     public ResponseEntity<List<TourResponseDTO>> getCompletedToursByGuide(@PathVariable Long guideId) {
         List<Booking> bookings = bookingService.getBookingsByGuideAndStatus(guideId, BookingStatus.COMPLETED);
@@ -76,7 +76,7 @@ public class GuideController {
     }
 
     // Upcoming tours by bookings with date in future and status CONFIRMED
-    @PreAuthorize("hasRole('GUIDE')")
+    @PreAuthorize("hasAuthority('GUIDE')")
     @GetMapping("/{guideId}/tours/upcoming")
     public ResponseEntity<List<TourResponseDTO>> getUpcomingToursByGuide(@PathVariable Long guideId) {
         List<Booking> bookings = bookingService.getUpcomingBookingsByGuide(guideId);
@@ -90,7 +90,7 @@ public class GuideController {
     }
 
     // Tour history by all bookings (any status) ordered by date descending
-    @PreAuthorize("hasRole('GUIDE')")
+    @PreAuthorize("hasAuthority('GUIDE')")
     @GetMapping("/{guideId}/tours/history")
     public ResponseEntity<List<TourResponseDTO>> getTourHistoryByGuide(@PathVariable Long guideId) {
         List<Booking> bookings = bookingService.getBookingHistoryByGuide(guideId);

@@ -11,8 +11,10 @@ import { useMediaUpload } from "../../hooks/useMediaUpload.js";
 import { useAuth } from "../../contexts/AuthContext.jsx";
 import { useTourCreation } from '../../hooks/UseTourCreation';
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const TourCreationPage = ({ onSuccess }) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { user } = useAuth();
     const ownerId = user?.id;
@@ -47,10 +49,10 @@ const TourCreationPage = ({ onSuccess }) => {
     }
 
     const steps = [
-        { id: 1, title: 'Basic Info', description: 'Name and location' },
-        { id: 2, title: 'Media', description: 'Showcase your tour' },
-        { id: 3, title: 'Details', description: 'Add the specifics' },
-        { id: 4, title: 'Pricing', description: 'Set your price' }
+        { id: 1, title: 'step_progress.step1_title', description: 'step_progress.step1_desc' },
+        { id: 2, title: 'step_progress.step2_title', description: 'step_progress.step2_desc' },
+        { id: 3, title: 'step_progress.step3_title', description: 'step_progress.step3_desc' },
+        { id: 4, title: 'step_progress.step4_title', description: 'step_progress.step4_desc' }
     ];
 
     // --- Event Handlers ---
@@ -141,7 +143,7 @@ const TourCreationPage = ({ onSuccess }) => {
                         <div className="flex items-center space-x-8">
                             {steps.map((step, index) => (
                                 <React.Fragment key={step.id}>
-                                    <div className={`flex items-center ${currentStep >= step.id ? 'text-black' : 'text-gray-400'}`}><div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= step.id ? 'bg-black text-white' : 'bg-gray-200'}`}>{currentStep > step.id ? <CheckCircle2 size={16}/> : step.id}</div><div className="ml-3 hidden sm:block"><div className="text-sm font-medium">{step.title}</div><div className="text-xs">{step.description}</div></div></div>
+                                    <div className={`flex items-center ${currentStep >= step.id ? 'text-black' : 'text-gray-400'}`}><div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= step.id ? 'bg-black text-white' : 'bg-gray-200'}`}>{currentStep > step.id ? <CheckCircle2 size={16}/> : step.id}</div><div className="ml-3 hidden sm:block"><div className="text-sm font-medium">{t(step.title)}</div><div className="text-xs">{t(step.description)}</div></div></div>
                                     {index < steps.length - 1 && <div className={`w-12 h-px ${currentStep > step.id ? 'bg-black' : 'bg-gray-200'}`} />}
                                 </React.Fragment>
                             ))}

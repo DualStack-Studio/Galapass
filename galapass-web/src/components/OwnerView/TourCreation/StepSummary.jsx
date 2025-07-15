@@ -1,8 +1,10 @@
 import { CheckCircle, ArrowLeft, MapPin, Users, Clock, DollarSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const TourStepSummary = ({ tour, isEdit = false }) => {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
 
     const handleBackToDashboard = () => {
         navigate('/owner/dashboard');
@@ -14,10 +16,12 @@ const TourStepSummary = ({ tour, isEdit = false }) => {
                 <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
             <h2 className="text-3xl font-bold mb-4">
-                {isEdit ? 'Tour Edited!' : 'Tour Created!'}
+                {isEdit ? t('tour_edited', 'Tour Edited!') : t('tour_created', 'Tour Created!')}
             </h2>
             <p className="text-lg text-gray-600 mb-8">
-                <strong>{tour.title}</strong> has been successfully {isEdit ? 'updated' : 'published'} and {isEdit ? 'saved' : 'added'} to your company.
+                <strong>{tour.title}</strong> {isEdit
+                    ? t('tour_updated_and_saved', 'has been successfully updated and saved to your company.')
+                    : t('tour_published_and_added', 'has been successfully published and added to your company.')}
             </p>
 
             <div className="bg-blue-50 rounded-xl p-6 max-w-md mx-auto mb-8 text-left text-blue-800">
@@ -26,9 +30,9 @@ const TourStepSummary = ({ tour, isEdit = false }) => {
                     <span className="font-medium">{tour.location}</span>
                 </div>
                 <div className="text-sm space-y-1">
-                    <p><Clock className="inline w-4 h-4 mr-1" /> <strong>Duration:</strong> {tour.duration}</p>
-                    <p><Users className="inline w-4 h-4 mr-1" /> <strong>Max Guests:</strong> {tour.maxGuests}</p>
-                    <p><DollarSign className="inline w-4 h-4 mr-1" /> <strong>Price:</strong> ${tour.price}</p>
+                    <p><Clock className="inline w-4 h-4 mr-1" /> <strong>{t('duration', 'Duration')}:</strong> {tour.duration}</p>
+                    <p><Users className="inline w-4 h-4 mr-1" /> <strong>{t('max_guests', 'Max Guests')}:</strong> {tour.maxGuests}</p>
+                    <p><DollarSign className="inline w-4 h-4 mr-1" /> <strong>{t('price', 'Price')}:</strong> ${tour.price}</p>
                 </div>
             </div>
 
@@ -37,7 +41,7 @@ const TourStepSummary = ({ tour, isEdit = false }) => {
                 className="mt-6 inline-flex items-center px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition cursor-pointer"
             >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Dashboard
+                {t('back_to_dashboard', 'Back to Dashboard')}
             </button>
         </div>
     );

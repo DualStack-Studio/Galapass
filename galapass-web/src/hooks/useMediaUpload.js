@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { BASE_URL } from '../config';
+import { useTranslation } from 'react-i18next';
 
 export const useMediaUpload = (tourId) => {
     const [media, setMedia] = useState([]);
     const [isUploading, setIsUploading] = useState({ image: false, video: false });
-    const [isDeleting, setIsDeleting] = useState(false); // Add isDeleting state
+    const [isDeleting, setIsDeleting] = useState(false);
+    const { t } = useTranslation();
 
     const handleImageUpload = async (files) => {
         if (!files || files.length === 0) return;
@@ -19,7 +21,7 @@ export const useMediaUpload = (tourId) => {
                 credentials: 'include',
                 body: formDataUpload,
             }).then(response => {
-                if (!response.ok) throw new Error(`Upload failed for ${file.name}`);
+                if (!response.ok) throw new Error(t('errors.upload_image_failed', { name: file.name }));
                 return response.json();
             });
         });
@@ -28,7 +30,7 @@ export const useMediaUpload = (tourId) => {
             const results = await Promise.all(uploadPromises);
             setMedia(prev => [...prev, ...results]);
         } catch (error) {
-            console.error('An error occurred during image upload:', error);
+            console.error(t('errors.image_upload_error'), error);
         } finally {
             setIsUploading(prev => ({ ...prev, image: false }));
         }
@@ -52,10 +54,10 @@ export const useMediaUpload = (tourId) => {
                 const newMedia = await response.json();
                 setMedia(prev => [...prev, newMedia]);
             } else {
-                throw new Error('Video upload failed');
+                throw new Error(t('errors.upload_video_failed'));
             }
         } catch (error) {
-            console.error('An error occurred during video upload:', error);
+            console.error(t('errors.video_upload_error'), error);
         } finally {
             setIsUploading(prev => ({ ...prev, video: false }));
         }
@@ -75,8 +77,8 @@ export const useMediaUpload = (tourId) => {
                 body: formData,
             }).then(async (response) => {
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ error: "Unknown upload error" }));
-                    throw new Error(errorData.error || `Upload failed for ${file.name}`);
+                    const errorData = await response.json().catch(() => ({ error: t('errors.unknown_upload_error') }));
+                    throw new Error(errorData.error || t('errors.upload_image_failed', { name: file.name }));
                 }
                 return response.json();
             }).then(result => ({
@@ -89,7 +91,7 @@ export const useMediaUpload = (tourId) => {
             const newMedia = await Promise.all(uploadPromises);
             setMedia(prev => [...prev, ...newMedia]);
         } catch (error) {
-            console.error('An error occurred during image upload:', error.message);
+            console.error(t('errors.image_upload_error'), error.message);
         } finally {
             setIsUploading(prev => ({ ...prev, image: false }));
         }
@@ -97,7 +99,7 @@ export const useMediaUpload = (tourId) => {
 
     const removeTourMedia = async (urlToRemove) => {
         if (!urlToRemove) return;
-        setIsDeleting(true); // Set deleting state to true
+        setIsDeleting(true);
         try {
             const response = await fetch(`${BASE_URL}/api/tours/${tourId}/media/delete`, {
                 method: 'DELETE',
@@ -108,19 +110,19 @@ export const useMediaUpload = (tourId) => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to delete media from server.');
+                throw new Error(errorData.error || t('errors.delete_failed'));
             }
             setMedia((prev) => prev.filter((m) => m.url !== urlToRemove));
         } catch (error) {
-            console.error('Error deleting tour media:', error);
+            console.error(t('errors.tour_media_delete_error'), error);
         } finally {
-            setIsDeleting(false); // Reset deleting state
+            setIsDeleting(false);
         }
     };
 
     const removeGeneralMedia = async (urlToRemove) => {
         if (!urlToRemove) return;
-        setIsDeleting(true); // Set deleting state to true
+        setIsDeleting(true);
         try {
             const response = await fetch(`${BASE_URL}/api/media/delete`, {
                 method: 'DELETE',
@@ -131,13 +133,13 @@ export const useMediaUpload = (tourId) => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to delete media from server.');
+                throw new Error(errorData.error || t('errors.delete_failed'));
             }
             setMedia((prev) => prev.filter((m) => m.url !== urlToRemove));
         } catch (error) {
-            console.error('Error deleting general media:', error);
+            console.error(t('errors.general_media_delete_error'), error);
         } finally {
-            setIsDeleting(false); // Reset deleting state
+            setIsDeleting(false);
         }
     };
 
@@ -145,7 +147,7 @@ export const useMediaUpload = (tourId) => {
         media,
         setMedia,
         isUploading,
-        isDeleting, // Export the new state
+        isDeleting,
         handleImageUpload,
         handleVideoUpload,
         handleGeneralImageUploads,

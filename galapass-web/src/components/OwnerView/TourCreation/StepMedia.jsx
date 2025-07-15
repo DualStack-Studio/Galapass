@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Upload, Plus, X, Video as VideoIcon, Loader } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const StepMedia = ({
                        media,
@@ -7,9 +8,10 @@ const StepMedia = ({
                        onVideoSelect,
                        onMediaRemove,
                        isUploading,
-                       isDeleting, // Add isDeleting prop
+                       isDeleting,
                        tourId
                    }) => {
+    const { t } = useTranslation();
     const imageInputRef = useRef(null);
     const videoInputRef = useRef(null);
 
@@ -20,7 +22,7 @@ const StepMedia = ({
 
     const handleImageClick = () => {
         if (isDisabled) {
-            alert("Please complete Step 1 to enable media uploads.");
+            alert(t('stepMedia.complete_step'));
             return;
         }
         imageInputRef.current?.click();
@@ -28,7 +30,7 @@ const StepMedia = ({
 
     const handleVideoClick = () => {
         if (isDisabled) {
-            alert("Please complete Step 1 to enable media uploads.");
+            alert(t('stepMedia.complete_step'));
             return;
         }
         videoInputRef.current?.click();
@@ -37,14 +39,20 @@ const StepMedia = ({
     return (
         <div className={`space-y-12 relative ${isDisabled ? 'opacity-60' : ''}`}>
             {isDisabled && (
-                <div className="absolute inset-0 z-10" title="Complete Step 1 to enable media uploads."></div>
+                <div
+                    className="absolute inset-0 z-10"
+                    title={t('stepMedia.complete_step')}
+                ></div>
             )}
+
             {/* --- Photo Upload Section --- */}
             <div>
                 <div className="text-center py-8">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-4">Add photos of your tour</h2>
+                    <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                        {t('stepMedia.add_photos')}
+                    </h2>
                     <p className="text-lg text-gray-600">
-                        Share what makes your experience special. The first photo will be the cover.
+                        {t('stepMedia.share_experience')}
                     </p>
                 </div>
                 <div className="max-w-4xl mx-auto">
@@ -54,9 +62,11 @@ const StepMedia = ({
                             className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-gray-400 cursor-pointer transition-colors"
                         >
                             <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-xl font-medium text-gray-900 mb-2">Upload photos</h3>
+                            <h3 className="text-xl font-medium text-gray-900 mb-2">
+                                {t('stepMedia.upload_photos')}
+                            </h3>
                             <button type="button" className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors cursor-pointer">
-                                Choose Files
+                                {t('stepMedia.choose_files')}
                             </button>
                         </div>
                     ) : (
@@ -84,7 +94,7 @@ const StepMedia = ({
                                     )}
                                     {index === 0 && !isDeleting && (
                                         <div className="absolute top-2 left-2 px-2 py-1 bg-black/60 text-white text-xs rounded-md backdrop-blur-sm">
-                                            Cover
+                                            {t('stepMedia.cover')}
                                         </div>
                                     )}
                                 </div>
@@ -93,7 +103,7 @@ const StepMedia = ({
                                 <div className="h-48 border-2 border-gray-200 bg-gray-50 rounded-lg flex items-center justify-center">
                                     <div className="text-center text-gray-500">
                                         <Loader className="h-8 w-8 mx-auto mb-2 animate-spin" />
-                                        <p>Uploading...</p>
+                                        <p>{t('stepMedia.uploading')}</p>
                                     </div>
                                 </div>
                             )}
@@ -104,7 +114,7 @@ const StepMedia = ({
                                 >
                                     <div className="text-center">
                                         <Plus className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                                        <p className="text-gray-600">Add more</p>
+                                        <p className="text-gray-600">{t('stepMedia.add_more')}</p>
                                     </div>
                                 </div>
                             )}
@@ -119,16 +129,20 @@ const StepMedia = ({
                     <div className="w-full border-t border-gray-200" />
                 </div>
                 <div className="relative flex justify-center">
-                    <span className="bg-gray-50 px-3 text-sm font-medium text-gray-500">Optional</span>
+                    <span className="bg-gray-50 px-3 text-sm font-medium text-gray-500">
+                        {t('stepMedia.optional')}
+                    </span>
                 </div>
             </div>
 
             {/* --- Video Upload Section --- */}
             <div>
                 <div className="text-center">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-4">Add a short video</h2>
+                    <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                        {t('stepMedia.add_video')}
+                    </h2>
                     <p className="text-lg text-gray-600">
-                        Showcase your tour in action! Videos will be trimmed to 15 seconds (100MB max).
+                        {t('stepMedia.showcase_video')}
                     </p>
                 </div>
                 <div className="max-w-2xl mx-auto mt-8">
@@ -158,7 +172,7 @@ const StepMedia = ({
                         <div className="h-48 border-2 border-gray-200 bg-gray-50 rounded-lg flex items-center justify-center">
                             <div className="text-center text-gray-500">
                                 <Loader className="h-8 w-8 mx-auto mb-2 animate-spin" />
-                                <p>Uploading video...</p>
+                                <p>{t('stepMedia.uploading_video')}</p>
                             </div>
                         </div>
                     ) : (
@@ -167,9 +181,11 @@ const StepMedia = ({
                             className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-gray-400 cursor-pointer transition-colors"
                         >
                             <VideoIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-xl font-medium text-gray-900 mb-2">Upload a video</h3>
+                            <h3 className="text-xl font-medium text-gray-900 mb-2">
+                                {t('stepMedia.upload_video')}
+                            </h3>
                             <button type="button" className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors cursor-pointer">
-                                Choose File
+                                {t('stepMedia.choose_file')}
                             </button>
                         </div>
                     )}

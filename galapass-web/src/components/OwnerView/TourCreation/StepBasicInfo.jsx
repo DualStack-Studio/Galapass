@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Target } from 'lucide-react';
-import {BASE_URL} from "../../../config.js";
-
+import { BASE_URL } from "../../../config.js";
+import { useTranslation } from 'react-i18next';
 
 const StepBasicInfo = ({
                            formData,
@@ -9,15 +9,13 @@ const StepBasicInfo = ({
                            handleInputChange,
                            categories,
                            locations,
-                           destinations: initialDestinations, // Receive initial destinations as a prop
+                           destinations: initialDestinations,
                            isEdit = false
                        }) => {
-
-    // State to hold the dynamically fetched destinations
+    const { t } = useTranslation();
     const [destinations, setDestinations] = useState(initialDestinations || []);
     const [isLoadingDestinations, setIsLoadingDestinations] = useState(false);
 
-    // This effect runs whenever the selected location changes
     useEffect(() => {
         const fetchDestinations = async () => {
             if (!formData.location) {
@@ -32,9 +30,8 @@ const StepBasicInfo = ({
                     credentials: "include"
                 });
 
-                // Better error handling to see what the server is actually sending
                 if (!response.ok) {
-                    const errorText = await response.text(); // Get the response body as text
+                    const errorText = await response.text();
                     console.error(`Failed to fetch destinations. Status: ${response.status}. Response:`, errorText);
                     throw new Error(`Server responded with status ${response.status}`);
                 }
@@ -44,7 +41,7 @@ const StepBasicInfo = ({
             } catch (error) {
                 console.error("Destination fetch error:", error);
                 setDestinations([]);
-                console.log(formData.location)
+                console.log(formData.location);
             } finally {
                 setIsLoadingDestinations(false);
             }
@@ -56,16 +53,14 @@ const StepBasicInfo = ({
     return (
         <div className="space-y-8">
             <div className="text-center py-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">What kind of tour will you host?</h2>
-                <p className="text-lg text-gray-600">Choose the category that best describes your experience</p>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('step_basic_info.title')}</h2>
+                <p className="text-lg text-gray-600">{t('step_basic_info.subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {categories.map(category => (
                     <button
                         key={category.id}
-                        type="button"
-                        // Add the title attribute here to create the hover tooltip
                         title={category.name}
                         onClick={() => setFormData(prev => ({ ...prev, category: category.id }))}
                         className={`p-6 rounded-xl border-2 transition-all hover:shadow-md cursor-pointer text-center ${
@@ -83,7 +78,7 @@ const StepBasicInfo = ({
             <div className="space-y-6 max-w-2xl mx-auto">
                 <div>
                     <label className="block text-lg font-medium text-gray-900 mb-3">
-                        What's the name of your tour?
+                        {t('step_basic_info.tour_name_label')}
                     </label>
                     <input
                         type="text"
@@ -91,13 +86,13 @@ const StepBasicInfo = ({
                         value={formData.title}
                         onChange={handleInputChange}
                         className="w-full px-4 py-4 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black"
-                        placeholder="E.g., Swimming with Sea Lions Adventure"
+                        placeholder={t('step_basic_info.tour_name_placeholder')}
                     />
                 </div>
 
                 <div>
                     <label className="block text-lg font-medium text-gray-900 mb-3">
-                        Where is your tour's main departure point?
+                        {t('step_basic_info.location_label')}
                     </label>
                     <div className="relative">
                         <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -107,11 +102,9 @@ const StepBasicInfo = ({
                             onChange={handleInputChange}
                             className="w-full pl-12 pr-4 py-4 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black cursor-pointer"
                         >
-                            <option value="">Select a location</option>
+                            <option value="">{t('step_basic_info.select_location')}</option>
                             {locations.map(loc => (
-                                <option key={loc.id} value={loc.id}>
-                                    {loc.name}
-                                </option>
+                                <option key={loc.id} value={loc.id}>{loc.name}</option>
                             ))}
                         </select>
                     </div>
@@ -120,7 +113,7 @@ const StepBasicInfo = ({
                 {formData.location && (
                     <div>
                         <label className="block text-lg font-medium text-gray-900 mb-3">
-                            Which specific destination will you visit?
+                            {t('step_basic_info.destination_label')}
                         </label>
                         <div className="relative">
                             <Target className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -132,36 +125,36 @@ const StepBasicInfo = ({
                                 className="w-full pl-12 pr-4 py-4 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed"
                             >
                                 {isLoadingDestinations ? (
-                                    <option>Loading destinations...</option>
+                                    <option>{t('step_basic_info.loading_destinations')}</option>
                                 ) : destinations.length > 0 ? (
                                     <>
-                                        <option value="">Select a destination</option>
-                                        {/* CORRECTED: Use `key` and `displayName` from your API response */}
+                                        <option value="">{t('step_basic_info.select_destination')}</option>
                                         {destinations.map(dest => (
-                                            <option key={dest.key} value={dest.key}>
-                                                {dest.displayName}
-                                            </option>
+                                            <option key={dest.key} value={dest.key}>{dest.displayName}</option>
                                         ))}
                                     </>
                                 ) : (
-                                    <option>No destinations for this location</option>
+                                    <option>{t('step_basic_info.no_destinations')}</option>
                                 )}
                             </select>
                         </div>
                     </div>
                 )}
+
                 {isEdit && (
                     <div>
-                        <label className="block text-lg font-medium text-gray-900 mb-3">Tour Status</label>
+                        <label className="block text-lg font-medium text-gray-900 mb-3">
+                            {t('step_basic_info.tour_status')}
+                        </label>
                         <select
                             name="status"
                             value={formData.status || ''}
                             onChange={handleInputChange}
                             className="w-full px-4 py-4 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black"
                         >
-                            <option value="">Select status</option>
-                            <option value="ACTIVE">Active</option>
-                            <option value="INACTIVE">Inactive</option>
+                            <option value="">{t('step_basic_info.select_status')}</option>
+                            <option value="ACTIVE">{t('step_basic_info.status_active')}</option>
+                            <option value="INACTIVE">{t('step_basic_info.status_inactive')}</option>
                         </select>
                     </div>
                 )}

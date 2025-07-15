@@ -1,9 +1,11 @@
 import { Star } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 
 const TourCard = ({ tour }) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     const handleViewBookings = () => {
@@ -46,20 +48,20 @@ const TourCard = ({ tour }) => {
                     <div className="flex items-center ml-2 flex-shrink-0">
                         <Star className="h-4 w-4 text-yellow-400 fill-current" />
                         <span className="text-sm text-gray-600 ml-1">
-                            {tour.rating != null ? tour.rating : 'N/A'}
+                            {tour.rating != null ? tour.rating : t('not_available')}
                         </span>
                     </div>
                 </div>
 
                 <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Price per person</span>
+                        <span className="text-sm text-gray-600">{t('price_per_person', 'Price per person')}</span>
                         <span className="text-lg font-semibold text-emerald-600">
                             ${tour.price != null ? tour.price : '0'}
                         </span>
                     </div>
                     <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">Total bookings</span>
+                        <span className="text-sm text-gray-600">{t('total_bookings', 'Total bookings')}</span>
                         <span className="text-sm font-medium text-gray-900">
                             {tour.totalBookings != null ? tour.totalBookings : '0'}
                         </span>
@@ -72,19 +74,19 @@ const TourCard = ({ tour }) => {
                             onClick={() => navigate(`/owner/add-tour-date/${tour.id}`)}
                             className="text-emerald-600 hover:text-emerald-700 text-sm font-medium cursor-pointer"
                         >
-                            Dates
+                            {t('dates', 'Dates')}
                         </button>
                         <button
                             onClick={handleViewBookings}
                             className="text-emerald-600 hover:text-emerald-700 text-sm font-medium cursor-pointer"
                         >
-                            Bookings
+                            {t('bookings', 'Bookings')}
                         </button>
                         <button
                             onClick={() => navigate(`/owner/edit-tour/${tour.id}`)}
                             className="text-emerald-600 hover:text-emerald-700 text-sm font-medium cursor-pointer"
                         >
-                            Edit
+                            {t('edit', 'Edit')}
                         </button>
                     </div>
                 </div>

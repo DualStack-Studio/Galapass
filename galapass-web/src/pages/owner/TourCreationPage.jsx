@@ -139,7 +139,7 @@ const TourCreationPage = ({ onSuccess }) => {
             <div className="sticky top-0 z-10 bg-white border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between py-4">
-                        <button onClick={() => navigate('/owner/dashboard?tab=tours')} className="flex items-center text-gray-600 hover:text-gray-900 cursor-pointer"><ArrowLeft className="h-5 w-5 mr-2" />Exit</button>
+                        <button onClick={() => navigate('/owner/dashboard?tab=tours')} className="flex items-center text-gray-600 hover:text-gray-900 cursor-pointer"><ArrowLeft className="h-5 w-5 mr-2" />{t('exit')}</button>
                         <div className="flex items-center space-x-8">
                             {steps.map((step, index) => (
                                 <React.Fragment key={step.id}>
@@ -160,16 +160,16 @@ const TourCreationPage = ({ onSuccess }) => {
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                     {currentStep > 1 && currentStep < 5 ? (
                         <button onClick={handlePrevStep} className="px-6 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg cursor-pointer">
-                            Back
+                            {t('back')}
                         </button>) : <div />}
                     {currentStep < 4 ? (
                         <button onClick={handleNextStep} disabled={(currentStep === 1 && !isStep1Valid) || loading || (currentStep === 2 && !isStep2Valid) || (currentStep === 3 && !isStep3Valid)} className="px-8 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center cursor-pointer">
-                            {loading && currentStep === 1 ? <><Loader className="animate-spin h-4 w-4 mr-2" /><span>Saving...</span></> : 'Next'}
+                            {loading && currentStep === 1 ? <><Loader className="animate-spin h-4 w-4 mr-2" /><span>{t('saving')}</span></> : t('next')}
                         </button>
                     ) : <div />}
                     {currentStep === 4 && (
                         <button onClick={handleFinalSubmit} disabled={isPublishDisabled} className="px-8 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center space-x-2 cursor-pointer">
-                            {loading ? <><Loader className="animate-spin h-4 w-4" /><span>Publishing...</span></> : <><Save className="h-4 w-4" /><span>Publish Tour</span></>}
+                            {loading ? <><Loader className="animate-spin h-4 w-4" /><span>{t('publishing')}</span></> : <><Save className="h-4 w-4" /><span>{t('publish_tour')}</span></>}
                         </button>
                     )}
                 </div>

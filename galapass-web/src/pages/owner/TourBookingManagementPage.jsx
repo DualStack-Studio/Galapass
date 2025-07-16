@@ -7,12 +7,14 @@ import BookingCard from "../../components/OwnerView/Bookings/BookingCard.jsx";
 import BookingFilters from "../../components/OwnerView/Bookings/BookingFilter.jsx";
 import useBookings from "../../hooks/UseBookings.js";
 import { useAuth } from "../../contexts/AuthContext.jsx";
+import { useTranslation } from 'react-i18next';
 
 const TourBookingManagementPage = () => {
     const { user } = useAuth();
     const ownerId = user?.id;
     const location = useLocation();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const tourIdFromState = location.state?.tourId;
     const tourTitleFromState = location.state?.tourTitle;
@@ -102,11 +104,11 @@ const TourBookingManagementPage = () => {
     }, [bookings, stats, isTourSpecificView]);
 
     const filterButtons = [
-        { id: 'all', label: 'All Bookings', count: bookingCounts.total },
-        { id: 'upcoming', label: 'Upcoming', count: bookingCounts.upcoming },
-        { id: 'completed', label: 'Completed', count: bookingCounts.completed },
-        { id: 'pending', label: 'Pending', count: bookingCounts.pending },
-        { id: 'canceled', label: 'Canceled', count: bookingCounts.canceled }
+        { id: 'all', label: t('booking_filters.all_bookings'), count: bookingCounts.total },
+        { id: 'upcoming', label: t('booking_filters.upcoming'), count: bookingCounts.upcoming },
+        { id: 'completed', label: t('booking_filters.completed'), count: bookingCounts.completed },
+        { id: 'pending', label: t('booking_filters.pending'), count: bookingCounts.pending },
+        { id: 'canceled', label: t('booking_filters.canceled'), count: bookingCounts.canceled }
     ];
 
     return (
@@ -118,26 +120,26 @@ const TourBookingManagementPage = () => {
                         <div className="flex items-center space-x-4">
                             <button onClick={() => navigate("/owner/dashboard?tab=tours")} className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 cursor-pointer">
                                 <ArrowLeft className="h-5 w-5" />
-                                <span>Back</span>
+                                <span>{t('booking_management.back')}</span>
                             </button>
                             <div className="h-6 w-px bg-gray-300"></div>
                             <div>
                                 <h1 className="text-2xl font-bold text-gray-900">
-                                    {isTourSpecificView ? `Bookings for "${tourTitleFromState}"` : 'Manage All Bookings'}
+                                    {isTourSpecificView ? t('booking_management.bookings_for', { tour: tourTitleFromState }) : t('booking_management.manage_all_bookings')}
                                 </h1>
                                 <p className="text-gray-600">
-                                    {isTourSpecificView ? 'Filter and view all bookings for this tour' : 'View and manage all your tour bookings'}
+                                    {isTourSpecificView ? t('booking_management.filter_and_view') : t('booking_management.view_and_manage')}
                                 </p>
                             </div>
                         </div>
                         <div className="flex items-center space-x-3">
                             <button className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer">
                                 <Download className="w-4 h-4" />
-                                <span>Export</span>
+                                <span>{t('booking_management.export')}</span>
                             </button>
                             <button onClick={handleRefresh} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer">
                                 <RefreshCw className="w-4 h-4" />
-                                <span>Refresh</span>
+                                <span>{t('booking_management.refresh')}</span>
                             </button>
                         </div>
                     </div>
@@ -150,12 +152,12 @@ const TourBookingManagementPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {stats ? (
                             <>
-                                <StatCard icon={Calendar} title="Total Bookings" value={stats.totalBookings} subtitle="All time" color="emerald" />
-                                <StatCard icon={Clock} title="Upcoming" value={stats.upcomingBookings} subtitle="Next 30 days" color="blue" />
-                                <StatCard icon={DollarSign} title="Total Revenue" value={`$${stats.totalRevenue.toLocaleString()}`} subtitle="All bookings" color="green" />
-                                <StatCard icon={TrendingUp} title="Avg. Booking" value={`$${stats.averageBookingValue.toFixed(2)}`} subtitle="Per booking" color="purple" />
+                                <StatCard icon={Calendar} title={t('booking_management.total_bookings')} value={stats.totalBookings} subtitle={t('booking_management.all_time')} color="emerald" />
+                                <StatCard icon={Clock} title={t('booking_management.upcoming')} value={stats.upcomingBookings} subtitle={t('booking_management.next_30_days')} color="blue" />
+                                <StatCard icon={DollarSign} title={t('booking_management.total_revenue')} value={`$${stats.totalRevenue.toLocaleString()}`} subtitle={t('booking_management.all_bookings')} color="green" />
+                                <StatCard icon={TrendingUp} title={t('booking_management.avg_booking')} value={`$${stats.averageBookingValue.toFixed(2)}`} subtitle={t('booking_management.per_booking')} color="purple" />
                             </>
-                        ) : (<p>Loading stats...</p>)}
+                        ) : (<p>{t('booking_management.loading_stats')}</p>)}
                     </div>
                 </div>
             )}
@@ -195,12 +197,12 @@ const TourBookingManagementPage = () => {
                             <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
                                 <Calendar className="w-8 h-8 text-gray-400" />
                             </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
-                            <p className="text-gray-500">Try adjusting your filters.</p>
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('booking_management.no_bookings_found')}</h3>
+                            <p className="text-gray-500">{t('booking_management.try_adjusting_filters')}</p>
                         </div>
                     )}
 
-                    {loading && <p className="text-center">Loading bookings...</p>}
+                    {loading && <p className="text-center">{t('booking_management.loading_bookings')}</p>}
 
                     <BookingDetailsModal
                         isOpen={!!selectedBooking}

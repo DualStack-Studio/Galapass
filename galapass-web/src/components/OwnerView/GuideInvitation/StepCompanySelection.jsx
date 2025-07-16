@@ -1,11 +1,14 @@
 import { Building2 } from 'lucide-react';
+import {useTranslation} from "react-i18next";
 
 const StepCompanySelection = ({ companies, formData, setFormData }) => {
+    const { t } = useTranslation();
+
     return (
         <div className="space-y-8">
             <div className="text-center py-8">
-                <h2 className="text-3xl font-bold">Assign to Company</h2>
-                <p className="text-lg text-gray-600">Select the company where this guide will work</p>
+                <h2 className="text-3xl font-bold">{t('guide_invitation.assignToCompany')}</h2>
+                <p className="text-lg text-gray-600">{t('guide_invitation.selectCompanyForGuide')}</p>
             </div>
 
             <div className="max-w-2xl mx-auto space-y-4">
@@ -25,7 +28,7 @@ const StepCompanySelection = ({ companies, formData, setFormData }) => {
                             </div>
                             <div>
                                 <h3 className="font-semibold">{company.name}</h3>
-                                <p className="text-sm text-gray-500">Tour Company</p>
+                                <p className="text-sm text-gray-500">{t('guide_invitation.tourCompany')}</p>
                             </div>
                         </div>
                     </button>

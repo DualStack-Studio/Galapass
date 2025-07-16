@@ -130,7 +130,7 @@ const StepBasicInfo = ({
                                     <>
                                         <option value="">{t('step_basic_info.select_destination')}</option>
                                         {destinations.map(dest => (
-                                            <option key={dest.key} value={dest.key}>{dest.displayName}</option>
+                                            <option key={dest.key} value={dest.key}>{t(`destinations.${dest.key}`)}</option>
                                         ))}
                                     </>
                                 ) : (

@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from "react";
-import { Search } from "lucide-react";
+import { Search, Calendar } from "lucide-react";
 import CustomCalendar from "../../CustomCalendar.jsx";
+import {useTranslation} from "react-i18next";
+import CompactCalendar from "../TourDates/CompactCalendar.jsx";
 
 const BookingFilters = ({
                             filterButtons,
@@ -17,6 +19,8 @@ const BookingFilters = ({
                             setCurrentMonth,
                             handleClearDate
                         }) => {
+    const {t} = useTranslation()
+
     const calendarRef = useRef(null);
 
     useEffect(() => {
@@ -69,7 +73,7 @@ const BookingFilters = ({
                     <div className="relative">
                         <input
                             type="text"
-                            placeholder="Search bookings..."
+                            placeholder={t('booking_management.search_bookings')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onKeyDown={handleKeyDown} // Trigger search on Enter key
@@ -87,11 +91,14 @@ const BookingFilters = ({
                             onClick={() => setShowCheckInCalendar(!showCheckInCalendar)}
                             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white cursor-pointer w-32 text-left"
                         >
-                            {dateFilter ? new Date(dateFilter.replace(/-/g, '/')).toLocaleDateString() : "Select Date"}
+                            {dateFilter ? new Date(dateFilter.replace(/-/g, '/')).toLocaleDateString() :  <div className="flex items-center">
+                                <Calendar size={20} />
+                                <span className="pl-1">{t('booking_management.calendar')}</span>
+                            </div>}
                         </button>
 
                         <div ref={calendarRef} className="absolute z-50 mt-2">
-                            <CustomCalendar
+                            <CompactCalendar
                                 isVisible={showCheckInCalendar}
                                 onSelectDate={handleCheckInSelect}
                                 onClose={() => setShowCheckInCalendar(false)}
@@ -100,6 +107,7 @@ const BookingFilters = ({
                                 currentMonth={currentMonth}
                                 setCurrentMonth={setCurrentMonth}
                                 onClear={handleClearDate}
+                                isClear={true}
                             />
                         </div>
                     </div>

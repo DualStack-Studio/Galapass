@@ -1,6 +1,7 @@
 import {AlertCircle, Calendar, CheckCircle, Clock, User, MapPin} from "lucide-react";
 import React from "react";
 import {convertLocationName} from "../../../api/tourApi.js";
+import { useTranslation } from 'react-i18next';
 
 // Helper functions remain the same
 const getStatusColor = (status, completed) => {
@@ -32,6 +33,7 @@ const getStatusIcon = (status, completed) => {
 };
 
 const BookingCard = ({ booking, setSelectedBooking }) => {
+    const { t } = useTranslation();
     const bookingDate = new Date(booking.tourDate.date);
     const bookedAtDate = booking.date ? new Date(booking.date) : null;
 
@@ -67,7 +69,7 @@ const BookingCard = ({ booking, setSelectedBooking }) => {
                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status, booking.completed)}`}>
                             {getStatusIcon(booking.status, booking.completed)}
                             <span className="ml-1 capitalize">
-                                {booking.completed ? 'Completed' : booking.status}
+                                {booking.completed ? t('booking_management.completed') : t(`booking_management.${booking.status}`)}
                             </span>
                         </span>
                     </div>
@@ -79,7 +81,7 @@ const BookingCard = ({ booking, setSelectedBooking }) => {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                                 <User className="w-4 h-4 text-blue-600" />
-                                <span className="text-sm font-medium text-blue-900">Assigned Guides</span>
+                                <span className="text-sm font-medium text-blue-900">{t('booking_management.assigned_guides')}</span>
                             </div>
                             <div className="flex -space-x-2">
                                 {booking.guides.slice(0, 2).map((guide, index) => (
@@ -114,7 +116,7 @@ const BookingCard = ({ booking, setSelectedBooking }) => {
                         <div className="mt-1">
                             <span className="text-xs text-blue-700">
                                 {booking.guides[0]?.name}
-                                {booking.guides.length > 1 && ` +${booking.guides.length - 1} more`}
+                                {booking.guides.length > 1 && ` ${t('booking_management.more', { count: booking.guides.length - 1 })}`}
                             </span>
                         </div>
                     </div>
@@ -123,19 +125,19 @@ const BookingCard = ({ booking, setSelectedBooking }) => {
                 {/* Booking Details Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm my-4 border-t border-b border-gray-100 py-4">
                     <div className="text-gray-600">
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Date</p>
+                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('booking_management.date')}</p>
                         <p className="font-bold text-gray-800 mt-1">{bookingDate.toLocaleDateString()}</p>
                     </div>
                     <div className="text-gray-600">
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Guests</p>
+                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('booking_management.guests')}</p>
                         <p className="font-bold text-gray-800 mt-1">{booking.numberOfPeople}</p>
                     </div>
                     <div className="text-gray-600">
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Revenue</p>
+                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('booking_management.revenue')}</p>
                         <p className="font-bold text-gray-800 mt-1">${booking.totalPaid.toFixed(2)}</p>
                     </div>
                     <div className="text-gray-600">
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Booked</p>
+                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('booking_management.booked')}</p>
                         <p className="font-bold text-gray-800 mt-1">{bookedAtDate ? bookedAtDate.toLocaleDateString() : 'N/A'}</p>
                     </div>
                 </div>
@@ -175,7 +177,7 @@ const BookingCard = ({ booking, setSelectedBooking }) => {
                         className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center space-x-1 cursor-pointer"
                     >
                         <CheckCircle className="w-4 h-4" />
-                        <span>View Details</span>
+                        <span>{t('booking_management.view_details')}</span>
                     </button>
                 </div>
             </div>

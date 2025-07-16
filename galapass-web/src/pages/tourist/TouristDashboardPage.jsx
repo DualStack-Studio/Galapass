@@ -81,6 +81,7 @@ const TouristDashboardPage = () => {
     useEffect(() => {
         const fetchTours = async () => {
             try {
+                console.log(BASE_URL)
                 const res = await axios.get(`${BASE_URL}/api/tours`);
                 setTours(res.data);
             } catch (err) {

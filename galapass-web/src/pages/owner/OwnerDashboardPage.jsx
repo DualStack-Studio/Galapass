@@ -92,11 +92,11 @@ const OwnerDashboardPage = () => {
     // 2. Modify the Add Tour handler
     const handleAddTourClick = () => {
         if (companies.length === 0) {
-            setErrorMessage("You must create a company before adding a tour.");
+            setErrorMessage("error_messages.createCompanyRequirement");
             setErrorRedirectPath('/owner/add-company');
             setShowErrorModal(true);
         } else if (guides.length === 0) {
-            setErrorMessage("You must invite at least one guide before adding a tour.");
+            setErrorMessage(t("error_messages.inviteGuideRequirement"));
             setErrorRedirectPath('/owner/add-guide');
             setShowErrorModal(true);
         } else {
@@ -106,7 +106,7 @@ const OwnerDashboardPage = () => {
 
     const handleInviteGuideClick = () => {
         if (companies.length === 0) {
-            setErrorMessage("You must create a company before inviting a guide.");
+            setErrorMessage("error_messages.createCompanyRequirement");
             setErrorRedirectPath('/owner/add-company');
             setShowErrorModal(true);
         } else {
@@ -374,13 +374,13 @@ const OwnerDashboardPage = () => {
                                                                 <p className="text-sm text-gray-500">{invite.company}</p>
                                                                 <div className="flex items-center space-x-4 mt-1">
                                                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                                        invite.status === 'pending'
+                                                                        invite.status === 'PENDING'
                                                                             ? 'bg-yellow-100 text-yellow-800'
-                                                                            : invite.status === 'declined'
+                                                                            : invite.status === 'DECLINED'
                                                                                 ? 'bg-red-100 text-red-800'
                                                                                 : 'bg-gray-100 text-gray-800'
                                                                     }`}>
-                                                                        {invite.status.charAt(0).toUpperCase() + invite.status.slice(1)}
+                                                                        {t(`guide_invitation.status.${invite.status}`)}
                                                                     </span>
                                                                     <span className="text-sm text-gray-500">
                                                                         {t('sent')} {new Date(invite.sentAt).toLocaleDateString()}
@@ -454,7 +454,9 @@ const OwnerDashboardPage = () => {
                 isOpen={showConfirmModal}
                 onClose={() => setShowConfirmModal(false)}
                 onConfirm={handleRemoveGuide}
-                message="Are you sure you want to remove this guide from the company?"
+                title={t('confirm_modal.title')}
+                confirmButtonText={t('confirm_modal.confirm_button_text')}
+                message={t('confirm_modal.message')}
             />
         </div>
     );

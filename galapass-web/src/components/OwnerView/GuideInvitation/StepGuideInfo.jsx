@@ -1,8 +1,10 @@
 import { User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { searchGuidesByName } from '../../../api/guideApi';
+import { useTranslation } from 'react-i18next';
 
 const StepGuideInfo = ({ formData, setFormData, selectedGuide, setSelectedGuide }) => {
+    const { t } = useTranslation();
     const [query, setQuery] = useState(formData.name || '');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -60,13 +62,13 @@ const StepGuideInfo = ({ formData, setFormData, selectedGuide, setSelectedGuide 
     return (
         <div className="space-y-8">
             <div className="text-center py-8">
-                <h2 className="text-3xl font-bold">Search Guide by Name</h2>
-                <p className="text-lg text-gray-600">Select a guide that already exists in the platform</p>
+                <h2 className="text-3xl font-bold">{t('guide_invitation.searchGuideByName')}</h2>
+                <p className="text-lg text-gray-600">{t('guide_invitation.selectExistingGuide')}</p>
             </div>
 
             <div className="max-w-2xl mx-auto space-y-6">
                 <div>
-                    <label className="block text-lg font-medium mb-3">Guide's Full Name</label>
+                    <label className="block text-lg font-medium mb-3">{t('guide_invitation.guidesFullName')}</label>
                     <div className="relative">
                         <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                         <input
@@ -105,7 +107,7 @@ const StepGuideInfo = ({ formData, setFormData, selectedGuide, setSelectedGuide 
 
                         {loading && (
                             <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
-                                Searching...
+                                {t('guide_invitation.searching')}
                             </div>
                         )}
                     </div>
@@ -114,7 +116,7 @@ const StepGuideInfo = ({ formData, setFormData, selectedGuide, setSelectedGuide 
 
                 {selectedGuide && (
                     <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-                        ✅ Selected: <strong>{selectedGuide.name}</strong> ({selectedGuide.email})
+                        ✅ {t('guide_invitation.selected')} <strong>{selectedGuide.name}</strong> ({selectedGuide.email})
                     </div>
                 )}
             </div>

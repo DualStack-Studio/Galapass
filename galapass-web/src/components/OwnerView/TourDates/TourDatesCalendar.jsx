@@ -1,6 +1,7 @@
 import {ArrowLeft, Calendar} from "lucide-react";
 import React, {useState} from "react";
 import CompactCalendar from "./CompactCalendar";
+import { useTranslation } from 'react-i18next';
 
 const TourDatesCalendar = ({
                                tourDates,
@@ -14,6 +15,7 @@ const TourDatesCalendar = ({
                                selectedDate,
                                setSelectedDate
                            }) => {
+    const { t } = useTranslation();
     const [animating, setAnimating] = useState(false);
     const [monthKey, setMonthKey] = useState(currentDate.getMonth() + '-' + currentDate.getFullYear());
 
@@ -124,7 +126,7 @@ const TourDatesCalendar = ({
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-gray-900 flex items-center space-x-2">
                     <Calendar className="h-5 w-5 text-emerald-600" />
-                    <span>{currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                    <span>{t('calendar.monthNames', { returnObjects: true })[currentDate.getMonth()]} {currentDate.getFullYear()}</span>
                 </h2>
                 <div className="flex items-center space-x-2">
                     <button
@@ -144,7 +146,7 @@ const TourDatesCalendar = ({
 
             {/* Calendar Grid */}
             <div className="grid grid-cols-7 gap-1 mb-4">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                {t('calendar.abreviatedDayNames', { returnObjects: true }).map(day => (
                     <div key={day} className="h-8 flex items-center justify-center text-sm font-medium text-gray-500">
                         {day}
                     </div>
@@ -162,19 +164,19 @@ const TourDatesCalendar = ({
                 <div className="flex items-center space-x-6 text-sm">
                     <div className="flex items-center space-x-2">
                         <div className="w-4 h-4 bg-emerald-100 rounded"></div>
-                        <span className="text-gray-600">Available</span>
+                        <span className="text-gray-600">{t('tour_dates.available')}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                         <div className="w-4 h-4 bg-red-100 rounded"></div>
-                        <span className="text-gray-600">Unavailable</span>
+                        <span className="text-gray-600">{t('tour_dates.unavailable_short')}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                         <div className="w-4 h-4 bg-emerald-50 border-2 border-emerald-500 rounded"></div>
-                        <span className="text-gray-600">Today</span>
+                        <span className="text-gray-600">{t('tour_dates.today')}</span>
                     </div>
                     <div className="flex items-center space-x-2">
                         <div className="w-4 h-4 bg-orange-200 rounded border border-orange-300"></div>
-                        <span className="text-gray-600">Booked</span>
+                        <span className="text-gray-600">{t('tour_dates.booked_short')}</span>
                     </div>
                 </div>
             </div>

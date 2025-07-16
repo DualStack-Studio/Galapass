@@ -9,8 +9,10 @@ import useTourDates from "../../hooks/UseTourDates.js";
 import {useNavigate, useParams} from "react-router-dom";
 import {fetchTour} from "../../api/tourApi.js";
 import ErrorModal from "../../components/ErrorModal.jsx";
+import {useTranslation} from "react-i18next";
 
 const TourDatesManager = () => {
+    const {t} = useTranslation()
     const navigate = useNavigate();
     const { tourId } = useParams()
     const [tour, setTour] = useState(null);
@@ -161,11 +163,11 @@ const TourDatesManager = () => {
                                 className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
                             >
                                 <ArrowLeft className="h-5 w-5" />
-                                <span>Back to Tours</span>
+                                <span>{t('tour_dates.backToTours')}</span>
                             </button>
                             <div className="h-6 w-px bg-gray-300"></div>
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-900">Manage Tour Dates</h1>
+                                <h1 className="text-2xl font-bold text-gray-900">{t('tour_dates.manageTourDates')}</h1>
                                 <p className="text-gray-600">{tour.title}</p>
                             </div>
                         </div>

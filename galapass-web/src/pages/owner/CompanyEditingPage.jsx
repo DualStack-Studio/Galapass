@@ -9,6 +9,7 @@ import useTourEnums from "../../hooks/useTourEnums.js";
 import { useMediaUpload } from "../../hooks/useMediaUpload.js";
 import StepSummary from "../../components/OwnerView/CompanyCreation/StepSummary.jsx";
 import { useTranslation } from 'react-i18next';
+import {BASE_URL} from "../../config.js";
 
 const CompanyEditingPage = ({ onSuccess }) => {
     const navigate = useNavigate();
@@ -310,7 +311,7 @@ const CompanyEditingPage = ({ onSuccess }) => {
                     {currentStep > 1 && currentStep < 3 ? (
                         <button
                             onClick={prevStep}
-                            className="text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-lg"
+                            className="text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-lg cursor-pointer"
                         >
                             {t('back')}
                         </button>
@@ -327,7 +328,7 @@ const CompanyEditingPage = ({ onSuccess }) => {
                         <button
                             onClick={nextStep}
                             disabled={(currentStep === 1 && !isStep1Valid)}
-                            className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                            className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer"
                         >
                             {t('next')}
                         </button>
@@ -335,7 +336,7 @@ const CompanyEditingPage = ({ onSuccess }) => {
                         <button
                             onClick={handleSubmit}
                             disabled={isUpdateDisabled}
-                            className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                            className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer"
                         >
                             {loading ? (
                                 <span>{t('updating')}</span>

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { AlertTriangle, X } from 'lucide-react';
+import {useTranslation} from "react-i18next";
 
 const ErrorModal = ({ isOpen, onClose, message }) => {
+    const { t } = useTranslation();
+
     // 1. Add state to control visibility for animations
     const [isVisible, setIsVisible] = useState(isOpen);
 
@@ -38,7 +41,7 @@ const ErrorModal = ({ isOpen, onClose, message }) => {
                     <div className="bg-red-100 p-2 rounded-full mr-4">
                         <AlertTriangle className="h-6 w-6 text-red-600" />
                     </div>
-                    <h2 className="text-lg font-semibold text-gray-900">An Error Occurred</h2>
+                    <h2 className="text-lg font-semibold text-gray-900">{t("error_messages.errorOccurred")}</h2>
                 </div>
                 <p className="text-gray-700 mb-6 ml-14">{message || "An unknown error has occurred."}</p>
                 <div className="flex justify-end">
@@ -46,7 +49,7 @@ const ErrorModal = ({ isOpen, onClose, message }) => {
                         onClick={onClose}
                         className="px-5 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 cursor-pointer"
                     >
-                        Close
+                        {t("error_messages.close")}
                     </button>
                 </div>
             </div>

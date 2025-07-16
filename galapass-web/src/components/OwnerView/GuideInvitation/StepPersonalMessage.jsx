@@ -1,4 +1,7 @@
+import { useTranslation } from 'react-i18next';
+
 const StepPersonalMessage = ({ formData, setFormData }) => {
+    const { t } = useTranslation();
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -9,25 +12,25 @@ const StepPersonalMessage = ({ formData, setFormData }) => {
     return (
         <div className="space-y-8">
             <div className="text-center py-8">
-                <h2 className="text-3xl font-bold">Add a Personal Message</h2>
+                <h2 className="text-3xl font-bold">{t('guide_invitation.addPersonalMessage')}</h2>
                 <p className="text-lg text-gray-600">
-                    Make the invitation more welcoming with a personal note (optional)
+                    {t('guide_invitation.personalNoteWelcomeHint')}
                 </p>
             </div>
 
             <div className="max-w-2xl mx-auto">
                 <label className="block text-lg font-medium mb-3">
-                    Personal message (optional)
+                    {t('guide_invitation.personalMessageOptional')}
                 </label>
                 <textarea
                     value={formData.message || ''}
                     onChange={handleChange}
                     rows={5}
                     className="w-full px-4 py-4 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                    placeholder="E.g., Hey Pablo! We'd love to have you join our company. Let me know if you have questions."
+                    placeholder={t('guide_invitation.personalMessagePlaceholder')}
                 />
                 <p className="text-sm text-gray-500 mt-2">
-                    This message will be sent along with the invitation.
+                    {t('guide_invitation.messageSentWithInvitation')}
                 </p>
             </div>
         </div>

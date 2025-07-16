@@ -1,6 +1,7 @@
 import { CheckCircle, ArrowLeft, MapPin, Users, Clock, DollarSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import {convertLocationName} from "../../../api/tourApi.js";
 
 const TourStepSummary = ({ tour, isEdit = false }) => {
     const navigate = useNavigate();
@@ -27,11 +28,11 @@ const TourStepSummary = ({ tour, isEdit = false }) => {
             <div className="bg-blue-50 rounded-xl p-6 max-w-md mx-auto mb-8 text-left text-blue-800">
                 <div className="flex items-center mb-4">
                     <MapPin className="h-5 w-5 text-blue-600 mr-2" />
-                    <span className="font-medium">{tour.location}</span>
+                    <span className="font-medium">{convertLocationName(tour.location)}</span>
                 </div>
                 <div className="text-sm space-y-1">
-                    <p><Clock className="inline w-4 h-4 mr-1" /> <strong>{t('duration', 'Duration')}:</strong> {tour.duration}</p>
-                    <p><Users className="inline w-4 h-4 mr-1" /> <strong>{t('max_guests', 'Max Guests')}:</strong> {tour.maxGuests}</p>
+                    <p><Clock className="inline w-4 h-4 mr-1" /> <strong>{t('duration', 'Duration')}:</strong> {t(`durations.${tour.duration}`)}</p>
+                    <p><Users className="inline w-4 h-4 mr-1" /> <strong>{t('stepDetails.max_guests')}:</strong> {tour.maxGuests}</p>
                     <p><DollarSign className="inline w-4 h-4 mr-1" /> <strong>{t('price', 'Price')}:</strong> ${tour.price}</p>
                 </div>
             </div>

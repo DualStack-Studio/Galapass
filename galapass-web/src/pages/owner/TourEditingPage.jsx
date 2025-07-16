@@ -11,9 +11,11 @@ import { useMediaUpload } from "../../hooks/useMediaUpload.js";
 import { useAuth } from "../../contexts/AuthContext.jsx";
 import { useTourCreation } from '../../hooks/UseTourCreation'; // This hook also has the updateTour method
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchTour } from "../../api/tourApi.js"; // Assuming this fetches a single tour
+import { fetchTour } from "../../api/tourApi.js";
+import {useTranslation} from "react-i18next"; // Assuming this fetches a single tour
 
 const TourEditPage = ({ onSuccess }) => {
+    const {t} = useTranslation()
     const navigate = useNavigate();
     const { tourId } = useParams(); // Get tourId from URL
     const { user } = useAuth();
@@ -94,6 +96,15 @@ const TourEditPage = ({ onSuccess }) => {
     const isStep4Valid = formData.price;
     const isSaveDisabled = loading || saving || !isStep1Valid || !isStep2Valid || !isStep3Valid || !isStep4Valid;
 
+    // --- Unsaved Changes Detection ---
+    const [unsavedChanges, setUnsavedChanges] = useState(false);
+    useEffect(() => {
+        if (!initialDataRef.current) return;
+        const isFormChanged = JSON.stringify(formData) !== JSON.stringify(initialDataRef.current.formData);
+        const isMediaChanged = JSON.stringify(media) !== JSON.stringify(initialDataRef.current.media);
+        setUnsavedChanges(isFormChanged || isMediaChanged);
+    }, [formData, media]);
+
     // --- Loading & Error States ---
     if (loading || companiesLoading || enumLoading) {
         return <div className="flex justify-center items-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div></div>;
@@ -103,10 +114,10 @@ const TourEditPage = ({ onSuccess }) => {
     }
 
     const steps = [
-        { id: 1, title: 'Basic Info', description: 'Name and location' },
-        { id: 2, title: 'Media', description: 'Showcase your tour' },
-        { id: 3, title: 'Details', description: 'Add the specifics' },
-        { id: 4, title: 'Pricing', description: 'Set your price' }
+        { id: 1, title: t('tourCreationSteps.basicInfo.title'), description: t('tourCreationSteps.basicInfo.description') },
+        { id: 2, title: t('tourCreationSteps.media.title'), description: t('tourCreationSteps.media.description') },
+        { id: 3, title: t('tourCreationSteps.details.title'), description: t('tourCreationSteps.details.description') },
+        { id: 4, title: t('tourCreationSteps.pricing.title'), description: t('tourCreationSteps.pricing.description') }
     ];
 
     // --- Event Handlers ---
@@ -167,7 +178,7 @@ const TourEditPage = ({ onSuccess }) => {
             <div className="sticky top-0 z-10 bg-white border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between py-4">
-                        <button onClick={() => navigate('/owner/dashboard?tab=tours')} className="flex items-center text-gray-600 hover:text-gray-900 cursor-pointer"><ArrowLeft className="h-5 w-5 mr-2" />Exit</button>
+                        <button onClick={() => navigate('/owner/dashboard?tab=tours')} className="flex items-center text-gray-600 hover:text-gray-900 cursor-pointer"><ArrowLeft className="h-5 w-5 mr-2" />{t('cancel')}</button>
                         <div className="flex items-center space-x-8">
                             {steps.map((step, index) => (
                                 <React.Fragment key={step.id}>
@@ -182,22 +193,28 @@ const TourEditPage = ({ onSuccess }) => {
             </div>
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32">
                 {error && <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4"><p className="text-red-800">{error}</p></div>}
+                {unsavedChanges && currentStep < 5 && (
+                    <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center">
+                        <AlertCircle className="text-yellow-500 mr-2" />
+                        <span className="text-yellow-800">{t('unsaved_changes')}</span>
+                    </div>
+                )}
                 <div>{renderStepContent()}</div>
             </div>
             <div className="fixed bottom-0 left-0 w-full bg-white border-t">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                     {currentStep > 1 && currentStep < 5 ? (
                         <button onClick={handlePrevStep} className="px-6 py-3 text-gray-700 font-medium hover:bg-gray-50 rounded-lg cursor-pointer">
-                            Back
+                            {t('back')}
                         </button>) : <div />}
                     {currentStep < 4 ? (
                         <button onClick={handleNextStep} className="px-8 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 cursor-pointer">
-                            Next
+                            {t('next')}
                         </button>
                     ) : <div />}
                     {currentStep === 4 && (
                         <button onClick={handleFinalSave} disabled={isSaveDisabled} className="px-8 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 disabled:bg-gray-300 flex items-center space-x-2 cursor-pointer">
-                            {saving ? <><Loader className="animate-spin h-4 w-4" /><span>Saving...</span></> : <><Save className="h-4 w-4" /><span>Save Changes</span></>}
+                            {saving ? <><Loader className="animate-spin h-4 w-4" /><span>{t('saving')}</span></> : <><Save className="h-4 w-4" /><span>{t('save_changes')}</span></>}
                         </button>
                     )}
                 </div>

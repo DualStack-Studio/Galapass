@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
+import {useTranslation} from "react-i18next";
+
 
 const ConfirmModal = ({
                           isOpen,
                           onClose,
                           onConfirm,
                           message,
-                          title = "Confirm Action",
-                          confirmButtonText = "Confirm",
+                          title,
+                          confirmButtonText,
                           confirmButtonColor = "bg-red-600 hover:bg-red-700"
                       }) => {
+    const {t} = useTranslation()
+
     // 1. Add state to control visibility
     const [isVisible, setIsVisible] = useState(isOpen);
 
@@ -47,7 +51,7 @@ const ConfirmModal = ({
                         onClick={onClose}
                         className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 cursor-pointer"
                     >
-                        Cancel
+                        {t('cancel')}
                     </button>
                     <button
                         onClick={onConfirm}

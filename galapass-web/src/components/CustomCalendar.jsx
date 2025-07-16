@@ -1,18 +1,21 @@
-// src/components/TouristView/CustomCalendar.jsx
-
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
-const CustomCalendar = ({
-                            isVisible,
-                            onSelectDate,
-                            onClose,
-                            selectedDate,
-                            position = 'left',
-                            currentMonth,
-                            setCurrentMonth,
-                            onClear
-                        }) => {
+const CompactCalendar = ({
+                             isVisible,
+                             onSelectDate,
+                             onClose,
+                             selectedDate,
+                             position = 'left',
+                             currentMonth,
+                             setCurrentMonth,
+                             renderDay, // custom day rendering
+                             isClear, // NEW: show footer with buttons
+                             onClear // NEW: handler for clear button
+                         }) => {
+    const { t } = useTranslation();
+
     if (!isVisible) return null;
 
     const today = new Date();
@@ -24,12 +27,8 @@ const CustomCalendar = ({
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
 
-    const monthNames = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-
-    const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    const monthNames = t('calendar.monthNames', { returnObjects: true, defaultValue: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] });
+    const dayNames = t('calendar.dayNames', { returnObjects: true, defaultValue: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] });
 
     const days = [];
     for (let i = 0; i < startingDayOfWeek; i++) {
@@ -41,9 +40,7 @@ const CustomCalendar = ({
 
     const handleDateClick = (day) => {
         if (day) {
-            const month_str = (month + 1).toString().padStart(2, '0');
-            const day_str = day.toString().padStart(2, '0');
-            const dateString = `${year}-${month_str}-${day_str}`;
+            const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             onSelectDate(dateString);
             onClose();
         }
@@ -65,7 +62,6 @@ const CustomCalendar = ({
 
     const isSelected = (day) => {
         if (!selectedDate || !day) return false;
-        // This is the corrected line
         const selected = new Date(selectedDate.replace(/-/g, '/'));
         return selected.getDate() === day &&
             selected.getMonth() === month &&
@@ -74,38 +70,38 @@ const CustomCalendar = ({
 
     return (
         <div
-            className={`absolute top-full mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 z-50 ${
+            className={`absolute top-full mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 p-4 z-50 animate-fade-in ${
                 position === 'right'
                     ? 'right-0'
                     : position === 'center' || position === 'down'
                         ? 'left-1/2 -translate-x-1/2'
                         : 'left-0'
             }`}
-            style={{ width: '320px' }}
+            style={{ width: '280px' }}
         >
             {/* Calendar Header */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3">
                 <button
                     onClick={() => navigateMonth(-1)}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+                    className="p-1.5 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
                 >
-                    <ChevronLeft size={20} className="text-gray-600" />
+                    <ChevronLeft size={18} className="text-gray-600" />
                 </button>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-base font-semibold text-gray-800">
                     {monthNames[month]} {year}
                 </h3>
                 <button
                     onClick={() => navigateMonth(1)}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+                    className="p-1.5 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
                 >
-                    <ChevronRight size={20} className="text-gray-600" />
+                    <ChevronRight size={18} className="text-gray-600" />
                 </button>
             </div>
 
             {/* Day Names */}
-            <div className="grid grid-cols-7 gap-1 mb-2">
+            <div className="grid grid-cols-7 gap-1 mb-1">
                 {dayNames.map(day => (
-                    <div key={day} className="text-center text-xs font-medium text-gray-500 py-2">
+                    <div key={day} className="text-center text-xs font-medium text-gray-500 py-1">
                         {day}
                     </div>
                 ))}
@@ -113,46 +109,61 @@ const CustomCalendar = ({
 
             {/* Calendar Days */}
             <div className="grid grid-cols-7 gap-1">
-                {days.map((day, index) => (
-                    <button
-                        key={index}
-                        onClick={() => handleDateClick(day)}
-                        disabled={!day}
-                        className={`
-              h-10 w-10 rounded-full text-sm transition-all duration-200 cursor-pointer
-              ${!day ? 'invisible' : ''}
-              ${isToday(day) ? 'bg-gray-100 font-semibold' : ''}
-              ${isSelected(day) ? 'bg-emerald-600 text-white font-semibold transform scale-105' : 'hover:bg-gray-100 text-gray-700'}
-              ${day && !isSelected(day) ? 'hover:bg-emerald-50 hover:text-emerald-600' : ''}
-            `}
-                    >
-                        {day}
-                    </button>
-                ))}
+                {days.map((day, index) => {
+                    let custom = renderDay ? renderDay(day) : null;
+                    let customClass = '';
+                    if (custom === 'booked') {
+                        customClass = 'bg-orange-200 text-orange-900 font-bold animate-pulse';
+                    }
+                    return (
+                        <button
+                            key={index}
+                            onClick={() => handleDateClick(day)}
+                            disabled={!day}
+                            className={`
+                                h-8 w-8 rounded-full text-xs transition-all duration-200 cursor-pointer
+                                ${!day ? 'invisible' : ''}
+                                ${isToday(day) ? 'bg-gray-100 font-semibold' : ''}
+                                ${isSelected(day) ? 'bg-emerald-600 text-white font-semibold transform scale-105' : 'hover:bg-gray-100 text-gray-700'}
+                                ${day && !isSelected(day) ? 'hover:bg-emerald-50 hover:text-emerald-600' : ''}
+                                ${customClass}
+                            `}
+                        >
+                            {day}
+                        </button>
+                    );
+                })}
             </div>
 
-            {/* Footer */}
-            <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-100">
-                <button
-                    onClick={onClear}
-                    className="text-sm text-gray-500 hover:text-gray-700 underline cursor-pointer"
-                >
-                    Clear
-                </button>
-                <button
-                    onClick={() => {
-                        const today = new Date();
-                        const todayString = today.toISOString().split('T')[0];
-                        onSelectDate(todayString);
-                        onClose();
-                    }}
-                    className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 underline cursor-pointer"
-                >
-                    Today
-                </button>
-            </div>
+            {/* NEW: Footer with Clear and Today buttons */}
+            {isClear && (
+                <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                    <button
+                        onClick={onClear}
+                        className="text-xs text-gray-500 hover:text-gray-700 underline cursor-pointer"
+                    >
+                        {t('calendar.clear', 'Clear')}
+                    </button>
+                    <button
+                        onClick={() => {
+                            const today = new Date();
+                            const todayString = today.toISOString().split('T')[0];
+                            onSelectDate(todayString);
+                            onClose();
+                        }}
+                        className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 underline cursor-pointer"
+                    >
+                        {t('calendar.today', 'Today')}
+                    </button>
+                </div>
+            )}
+
+            <style>{`
+                @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+                .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
+            `}</style>
         </div>
     );
 };
 
-export default CustomCalendar;
+export default CompactCalendar;

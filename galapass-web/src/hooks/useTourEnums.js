@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BASE_URL } from '../config';
+import {useTranslation} from "react-i18next";
 
 // Meta-information for styling and icons
 const categoryMeta = {
@@ -7,7 +8,7 @@ const categoryMeta = {
     SNORKELING: { icon: '🤿', color: 'bg-blue-100 text-blue-800' },
     HIKING: { icon: '🥾', color: 'bg-orange-100 text-orange-800' },
     BOAT_TOUR: { icon: '⛵', color: 'bg-cyan-100 text-cyan-800' },
-    DIVING: { icon: '🦈', color: 'bg-teal-100 text-teal-800' },
+    DIVING: { icon: '🦈', color: 'bg-teal-100 text-teal-800'  },
     KAYAKING: { icon: '🛶', color: 'bg-sky-100 text-sky-800' },
     PHOTOGRAPHY: { icon: '📸', color: 'bg-purple-100 text-purple-800' },
     CULTURAL: { icon: '🏛️', color: 'bg-yellow-100 text-yellow-800' },
@@ -54,6 +55,7 @@ const bringMeta = {
 
 
 const useTourEnums = () => {
+    const {t} = useTranslation()
     const [categories, setCategories] = useState([]);
     const [tags, setTags] = useState([]);
     const [locations, setLocations] = useState([]);
@@ -86,7 +88,7 @@ const useTourEnums = () => {
                 // Process and set categories
                 setCategories(categoriesRaw.map(cat => ({
                     id: cat.key,
-                    name: cat.displayName,
+                    name: t(`categories.${cat.key}`),
                     icon: categoryMeta[cat.key]?.icon || '🗺️',
                     color: categoryMeta[cat.key]?.color || 'bg-gray-100 text-gray-800'
                 })));
@@ -94,7 +96,7 @@ const useTourEnums = () => {
                 // Process and set tags
                 setTags(tagsRaw.map(tag => ({
                     id: tag.key,
-                    name: tag.displayName,
+                    name: t(`tags.${tag.key}`),
                     icon: tagMeta[tag.key]?.icon || '🏷️'
                 })));
 
@@ -107,13 +109,13 @@ const useTourEnums = () => {
                 // Process and set things to bring
                 setBrings(bringsRaw.map(bring => ({
                     id: bring.key,
-                    name: bring.displayName,
+                    name: t(`brings.${bring.key}`),
                     icon: bringMeta[bring.key]?.icon || '✅'
                 })));
 
                 setDurations(durationsRaw.map(duration => ({
                     id: duration.key,
-                    name: duration.displayName,
+                    name: t(`durations.${duration.key}`),
                 })));
 
             } catch (e) {

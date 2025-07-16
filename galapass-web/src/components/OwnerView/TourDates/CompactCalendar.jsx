@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const CompactCalendar = ({
                              isVisible,
@@ -9,8 +10,12 @@ const CompactCalendar = ({
                              position = 'left',
                              currentMonth,
                              setCurrentMonth,
-                             renderDay // new prop for custom day rendering
+                             renderDay, // custom day rendering
+                             isClear, // NEW: show footer with buttons
+                             onClear // NEW: handler for clear button
                          }) => {
+    const { t } = useTranslation();
+
     if (!isVisible) return null;
 
     const today = new Date();
@@ -22,12 +27,8 @@ const CompactCalendar = ({
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
 
-    const monthNames = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-
-    const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+    const monthNames = t('calendar.monthNames', { returnObjects: true, defaultValue: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] });
+    const dayNames = t('calendar.dayNames', { returnObjects: true, defaultValue: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] });
 
     const days = [];
     for (let i = 0; i < startingDayOfWeek; i++) {
@@ -133,6 +134,33 @@ const CompactCalendar = ({
                     );
                 })}
             </div>
+
+            {/* NEW: Footer with Clear and Today buttons */}
+            {isClear && (
+                <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                    <button
+                        onClick={() => {
+                            onClear();
+                            onClose();
+                        }}
+                        className="text-xs text-gray-500 hover:text-gray-700 underline cursor-pointer"
+                    >
+                        {t('calendar.clear', 'Clear')}
+                    </button>
+                    <button
+                        onClick={() => {
+                            const today = new Date();
+                            const todayString = today.toISOString().split('T')[0];
+                            onSelectDate(todayString);
+                            onClose();
+                        }}
+                        className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 underline cursor-pointer"
+                    >
+                        {t('calendar.today', 'Today')}
+                    </button>
+                </div>
+            )}
+
             <style>{`
                 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
                 .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }

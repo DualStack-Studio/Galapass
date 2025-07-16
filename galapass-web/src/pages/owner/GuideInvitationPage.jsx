@@ -9,8 +9,10 @@ import {useTourCreation} from "../../hooks/UseTourCreation.js";
 import StepPersonalMessage from "../../components/OwnerView/GuideInvitation/StepPersonalMessage.jsx";
 import {sendGuideInvitation} from "../../api/guideApi.js";
 import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 const AddGuidePage = () => {
+    const {t} = useTranslation()
     const { user } = useAuth();
     const ownerId = user?.id;
     const navigate = useNavigate();
@@ -30,11 +32,9 @@ const AddGuidePage = () => {
                 companyId: parseInt(formData.companyId),
                 message: formData.message || '',
             };
-            console.log('Sending invitation:', payload);
 
             const response = await sendGuideInvitation(payload);
 
-            console.log('Invitation created:', response);
             toast.success('Guide added successfully!');
             setGuideAdded(true);
             setCurrentStep(4);
@@ -53,7 +53,7 @@ const AddGuidePage = () => {
                     <div className="flex items-center justify-between py-4">
                         <button onClick={() => navigate('/owner/dashboard?tab=guides')} className="flex items-center text-gray-600 cursor-pointer">
                             <ArrowLeft className="h-5 w-5 mr-2" />
-                            Exit
+                            {t('exit')}
                         </button>
                         <div className="w-16" />
                     </div>
@@ -101,9 +101,9 @@ const AddGuidePage = () => {
                         {currentStep > 1 ? (
                             <button
                                 onClick={() => setCurrentStep(currentStep - 1)}
-                                className="px-6 py-3 text-gray-700 hover:bg-gray-50 rounded-lg"
+                                className="px-6 py-3 text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer"
                             >
-                                Back
+                                {t('back')}
                             </button>
                         ) : <div />}
 
@@ -113,9 +113,9 @@ const AddGuidePage = () => {
                                 disabled={!selectedGuide}
                                 className={`px-8 py-3 ${
                                     selectedGuide ? 'bg-black hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'
-                                } text-white rounded-lg`}
+                                } text-white rounded-lg cursor-pointer`}
                             >
-                                Next
+                                {t('next')}
                             </button>
                         )}
 
@@ -125,9 +125,9 @@ const AddGuidePage = () => {
                                 disabled={!formData.companyId}
                                 className={`px-8 py-3 ${
                                     formData.companyId ? 'bg-black hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'
-                                } text-white rounded-lg`}
+                                } text-white rounded-lg cursor-pointer`}
                             >
-                                Next
+                                {t('next')}
                             </button>
                         )}
 
@@ -137,7 +137,7 @@ const AddGuidePage = () => {
                                 className="px-8 py-3 bg-black text-white rounded-lg flex items-center space-x-2 cursor-pointer"
                             >
                                 <Send className="h-4 w-4" />
-                                <span>Invite Guide</span>
+                                <span>{t('guide_invitation.send_invite')}</span>
                             </button>
                         )}
                     </div>

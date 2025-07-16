@@ -16,15 +16,15 @@ const useBookings = () => {
      * @param {object} params - The query parameters.
      * @param {number} [params.ownerId] - The ID of the owner.
      * @param {number} [params.tourId] - The ID of the tour.
+     * @param {number} [params.tourDateId] - The ID of the tour date.
      * @param {string} [params.status] - The booking status.
      * @param {string} [params.date] - The date in YYYY-MM-DD format.
      * @param {string} [params.search] - The search term.
      */
     const fetchBookings = useCallback(async (params = {}) => {
         // A request must have at least an ownerId or a tourId to be valid.
-        // This check was missing in your new version.
-        if (!params.ownerId && !params.tourId) {
-            setBookings([]); // Clear bookings if no valid ID is provided
+        if (!params.ownerId && !params.tourId && !params.tourDateId) {
+            setBookings([]);
             return;
         }
 

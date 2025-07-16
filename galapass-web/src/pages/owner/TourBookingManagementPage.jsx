@@ -18,7 +18,10 @@ const TourBookingManagementPage = () => {
 
     const tourIdFromState = location.state?.tourId;
     const tourTitleFromState = location.state?.tourTitle;
+    const tourDateIdFromState = location.state?.tourDateId;
+    const tourDateFromState = location.state?.tourDate;
     const isTourSpecificView = !!tourIdFromState;
+    const isTourDateSpecificView = !!tourDateIdFromState;
 
     // State for filters
     const [activeFilter, setActiveFilter] = useState('all');
@@ -48,6 +51,8 @@ const TourBookingManagementPage = () => {
         if (isTourSpecificView) {
             // For a specific tour, add the tourId
             params.tourId = tourIdFromState;
+        } else if (isTourDateSpecificView) {
+            params.tourDateId = tourDateIdFromState;
         } else {
             // For the general owner view, add the ownerId and fetch stats
             params.ownerId = ownerId;
@@ -58,7 +63,7 @@ const TourBookingManagementPage = () => {
         fetchBookings(params);
 
     }, [
-        isTourSpecificView, tourIdFromState, ownerId, // View mode dependencies
+        isTourSpecificView, isTourDateSpecificView, tourIdFromState, ownerId, // View mode dependencies
         activeFilter, searchTerm, dateFilter, // Filter dependencies
         fetchBookings, fetchStats // Function dependencies from the hook
     ]);
@@ -83,7 +88,7 @@ const TourBookingManagementPage = () => {
 
     // Dynamically calculate the counts for the filter buttons
     const bookingCounts = useMemo(() => {
-        if (isTourSpecificView) {
+        if (isTourSpecificView || isTourDateSpecificView) {
             // For a specific tour, calculate counts from the currently displayed bookings
             return {
                 total: bookings.length,
@@ -101,7 +106,7 @@ const TourBookingManagementPage = () => {
             pending: stats?.pendingBookings || 0,
             canceled: stats?.cancelledBookings || 0,
         };
-    }, [bookings, stats, isTourSpecificView]);
+    }, [bookings, stats, isTourSpecificView, isTourDateSpecificView]);
 
     const filterButtons = [
         { id: 'all', label: t('booking_filters.all_bookings'), count: bookingCounts.total },
@@ -118,17 +123,27 @@ const TourBookingManagementPage = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between py-6">
                         <div className="flex items-center space-x-4">
-                            <button onClick={() => navigate("/owner/dashboard?tab=tours")} className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 cursor-pointer">
+                            <button
+                                onClick={() => {
+                                    isTourDateSpecificView
+                                    ? navigate(window.history.back())
+                                    : navigate('/owner/dashboard?tab=tours');
+                                }}
+                                className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 cursor-pointer">
                                 <ArrowLeft className="h-5 w-5" />
                                 <span>{t('booking_management.back')}</span>
                             </button>
                             <div className="h-6 w-px bg-gray-300"></div>
                             <div>
                                 <h1 className="text-2xl font-bold text-gray-900">
-                                    {isTourSpecificView ? t('booking_management.bookings_for', { tour: tourTitleFromState }) : t('booking_management.manage_all_bookings')}
+                                    {isTourSpecificView
+                                        ? t('booking_management.bookings_for', { tour: tourTitleFromState })
+                                        : isTourDateSpecificView
+                                            ? t('booking_management.bookings_for', { tour: tourTitleFromState }) + "- " + t('booking_management.date') + `: ${tourDateFromState}`
+                                            : t('booking_management.manage_all_bookings')}
                                 </h1>
                                 <p className="text-gray-600">
-                                    {isTourSpecificView ? t('booking_management.filter_and_view') : t('booking_management.view_and_manage')}
+                                    {isTourSpecificView || isTourDateSpecificView ? t('booking_management.filter_and_view') : t('booking_management.view_and_manage')}
                                 </p>
                             </div>
                         </div>
@@ -147,7 +162,7 @@ const TourBookingManagementPage = () => {
             </div>
 
             {/* Conditionally render Stats section only for the general owner view */}
-            {!isTourSpecificView && (
+            {(!isTourSpecificView && !isTourDateSpecificView) && (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {stats ? (

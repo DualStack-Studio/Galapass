@@ -13,7 +13,10 @@ const TourDateFormModal = ({
                                handleCancelEdit,
                                handleDeleteTourDate,
                                handleCancelTourDate,
-                               totalPeopleBooked
+                               totalPeopleBooked,
+                               handleCreatePromotion,
+                               handleDisableTourDate,
+                               handleViewBookings,
                            }) => {
     const { t, i18n } = useTranslation();
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -41,6 +44,8 @@ const TourDateFormModal = ({
 
 
     if (!isVisible) return null;
+
+
 
     const formatDate = (date) => {
         if (!date) return "";
@@ -78,6 +83,10 @@ const TourDateFormModal = ({
     const handleConfirmCancel = () => {
         handleCancelTourDate(editingDate.id);
     };
+
+    const handleViewBookingsTourDate = () => {
+        handleViewBookings(editingDate.id, formatDate(newTourDate.date));
+    }
 
     return (
         <>
@@ -129,7 +138,10 @@ const TourDateFormModal = ({
                                         <button onClick={handleSaveTourDate} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 cursor-pointer"><Save size={16}/><span>{t('tour_dates.create')}</span></button>
                                     )}
                                     {!isCreating && !hasBookings && (
-                                        <button onClick={handleSaveTourDate} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 cursor-pointer"><Save size={16}/><span>{t('tour_dates.save_changes')}</span></button>
+                                        <>
+                                            <button onClick={handleSaveTourDate} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 cursor-pointer"><Save size={16}/><span>{t('tour_dates.save_changes')}</span></button>
+                                            <button onClick={() => setIsPromotionModalOpen(true)} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 cursor-pointer"><span>{t('tour_dates.promotion')}</span></button>
+                                        </>
                                     )}
                                     {!isCreating && hasBookings && unbookedSpots > 0 && (
                                         <>
@@ -141,7 +153,9 @@ const TourDateFormModal = ({
 
                                 {/* Secondary Action */}
                                 {!isCreating && hasBookings && (
-                                    <button className="w-full flex items-center justify-center space-x-2  text-white bg-sky-600 hover:bg-sky-700 px-3 py-2 rounded-lg cursor-pointer" disabled>
+                                    <button className="w-full flex items-center justify-center space-x-2 text-white bg-sky-600 hover:bg-sky-700 px-3 py-2 rounded-lg cursor-pointer"
+                                    onClick={() => handleViewBookingsTourDate()}
+                                    >
                                         <span>{t('tour_dates.bookings')}</span>
                                         <span>({totalPeopleBooked})</span>
                                     </button>

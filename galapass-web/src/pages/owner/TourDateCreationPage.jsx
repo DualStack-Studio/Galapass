@@ -107,6 +107,16 @@ const TourDatesManager = () => {
         }
     };
 
+    const handleViewBookings = (tourDateId, tourDate) => {
+        navigate('/owner/manage-bookings', {
+            state: {
+                tourDateId: tourDateId,
+                tourTitle: tour.title,
+                tourDate: tourDate,
+            }
+        });
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -150,6 +160,7 @@ const TourDatesManager = () => {
                     handleDeleteTourDate={handleDeleteTourDate}
                     handleCancelTourDate={handleCancelTourDate}
                     totalPeopleBooked={totalPeopleBooked}
+                    handleViewBookings={handleViewBookings}
                 />
             )}
 

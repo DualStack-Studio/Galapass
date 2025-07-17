@@ -21,6 +21,8 @@ import BecomeGuideForm from "./pages/guide/BecomeGuidePage.jsx";
 import UserProfilePage from "./pages/tourist/ProfilePage.jsx";
 import EditProfilePage from "./pages/tourist/EditProfilePage.jsx";
 import BookingDetailPage from "./pages/tourist/BookingDetailPage.jsx";
+import LandingPage from "./pages/LandingPage.jsx";
+import GalapassLanding from "./pages/LandingPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +31,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { path: "/", element: <HomePage /> },
+      { path: "/landing", element: <GalapassLanding /> },
       { path: "/profile", element: <UserProfilePage />},
       { path: "/edit-profile", element: <EditProfilePage />},
 

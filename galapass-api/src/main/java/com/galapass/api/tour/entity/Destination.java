@@ -1,6 +1,7 @@
-package com.galapass.api.entity.tour;
+package com.galapass.api.tour.entity;
 
-import com.galapass.api.entity.Location; // Import the Location enum
+import com.galapass.api.enums.entity.Location;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

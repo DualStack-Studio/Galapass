@@ -1,6 +1,6 @@
-package com.galapass.api.DTO.user;
+package com.galapass.api.user.DTO.user;
 
-import com.galapass.api.DTO.tourCompany.TourCompanySummaryDTO;
+import com.galapass.api.tour.DTO.tourCompany.TourCompanySummaryDTO;
 import lombok.*;
 
 import java.util.Set;

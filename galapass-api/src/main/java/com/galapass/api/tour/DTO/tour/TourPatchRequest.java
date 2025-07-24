@@ -1,9 +1,9 @@
-package com.galapass.api.DTO.tour;
+package com.galapass.api.tour.DTO.tour;
 
-import com.galapass.api.DTO.media.MediaRequest;
-import com.galapass.api.DTO.tourCompany.TourCompanySummaryDTO;
-import com.galapass.api.DTO.user.GuideSummaryDTO;
-import com.galapass.api.DTO.user.UserSummaryDTO;
+import com.galapass.api.media.DTO.MediaRequest;
+import com.galapass.api.tour.DTO.tourCompany.TourCompanySummaryDTO;
+import com.galapass.api.user.DTO.user.GuideSummaryDTO;
+import com.galapass.api.user.DTO.user.UserSummaryDTO;
 import lombok.Data;
 
 import java.util.List;

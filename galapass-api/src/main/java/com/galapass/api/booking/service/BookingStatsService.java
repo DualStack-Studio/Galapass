@@ -1,9 +1,9 @@
-package com.galapass.api.service;
+package com.galapass.api.booking.service;
 
-import com.galapass.api.DTO.booking.BookingStatsDTO;
-import com.galapass.api.entity.booking.Booking;
-import com.galapass.api.entity.booking.BookingStatus; // Import the enum
-import com.galapass.api.repository.BookingRepository;
+import com.galapass.api.booking.DTO.BookingStatsDTO;
+import com.galapass.api.booking.entity.Booking;
+import com.galapass.api.booking.entity.BookingStatus;
+import com.galapass.api.booking.repository.BookingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

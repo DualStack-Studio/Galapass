@@ -1,8 +1,6 @@
-package com.galapass.api.entity.user;
+package com.galapass.api.user.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.galapass.api.entity.GuideReview;
-import com.galapass.api.entity.TourCompany;
+import com.galapass.api.tour.entity.TourCompany;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;

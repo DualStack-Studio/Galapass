@@ -1,6 +1,6 @@
-package com.galapass.api.DTO.tourDate;
+package com.galapass.api.tour.DTO.tourDate;
 
-import com.galapass.api.DTO.tour.TourResponseOwnerViewDTO;
+import com.galapass.api.tour.DTO.tour.TourResponseOwnerViewDTO;
 import lombok.Builder;
 import lombok.Data;
 

@@ -1,8 +1,8 @@
-package com.galapass.api.DTO.tourCompany;
+package com.galapass.api.tour.DTO.tourCompany;
 
-import com.galapass.api.DTO.tour.TourResponseOwnerViewDTO;
-import com.galapass.api.DTO.user.GuideSummaryDTO;
-import com.galapass.api.DTO.user.UserSummaryDTO;
+import com.galapass.api.tour.DTO.tour.TourResponseOwnerViewDTO;
+import com.galapass.api.user.DTO.user.GuideSummaryDTO;
+import com.galapass.api.user.DTO.user.UserSummaryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

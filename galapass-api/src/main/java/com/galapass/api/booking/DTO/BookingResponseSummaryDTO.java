@@ -1,6 +1,6 @@
-package com.galapass.api.DTO.booking;
+package com.galapass.api.booking.DTO;
 
-import com.galapass.api.entity.booking.BookingStatus;
+import com.galapass.api.booking.entity.BookingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.galapass.api.DTO.guideDashboard;
+package com.galapass.api.user.DTO.guideDashboard;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

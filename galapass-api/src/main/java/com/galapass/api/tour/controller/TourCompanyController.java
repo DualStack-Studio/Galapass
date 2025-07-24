@@ -1,14 +1,14 @@
-package com.galapass.api.controller;
+package com.galapass.api.tour.controller;
 
-import com.galapass.api.DTO.tour.TourResponseDTO;
-import com.galapass.api.DTO.tourCompany.*;
-import com.galapass.api.DTO.user.UserResponse;
-import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.entity.TourCompany;
 import com.galapass.api.exception.EntityNotFoundException;
-import com.galapass.api.mapper.TourMapper;
-import com.galapass.api.service.TourCompanyService;
-import com.galapass.api.service.TourService;
+import com.galapass.api.tour.DTO.tour.TourResponseDTO;
+import com.galapass.api.tour.DTO.tourCompany.*;
+import com.galapass.api.tour.entity.Tour;
+import com.galapass.api.tour.entity.TourCompany;
+import com.galapass.api.tour.mapper.TourMapper;
+import com.galapass.api.tour.service.TourCompanyService;
+import com.galapass.api.tour.service.TourService;
+import com.galapass.api.user.DTO.user.UserResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;

@@ -1,7 +1,7 @@
-package com.galapass.api.repository;
+package com.galapass.api.tour.repository;
 
-import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.entity.TourDate;
+import com.galapass.api.tour.entity.Tour;
+import com.galapass.api.tour.entity.TourDate;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

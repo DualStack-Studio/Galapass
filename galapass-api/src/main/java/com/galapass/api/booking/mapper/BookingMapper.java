@@ -1,10 +1,11 @@
-package com.galapass.api.mapper;
+package com.galapass.api.booking.mapper;
 
-import com.galapass.api.DTO.booking.BookingResponseDTO;
-import com.galapass.api.DTO.booking.BookingResponseSummaryDTO;
-import com.galapass.api.entity.booking.Booking;
+import com.galapass.api.booking.DTO.BookingResponseDTO;
+import com.galapass.api.booking.DTO.BookingResponseSummaryDTO;
+import com.galapass.api.booking.entity.Booking;
+import com.galapass.api.tour.mapper.TourDateMapper;
+import com.galapass.api.user.mapper.UserMapper;
 import org.springframework.context.annotation.Lazy;
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Component;
 

@@ -1,8 +1,8 @@
-package com.galapass.api.controller;
+package com.galapass.api.tour.controller;
 
-import com.galapass.api.DTO.media.MediaResponse;
-import com.galapass.api.entity.media.MediaType;
-import com.galapass.api.service.CloudinaryService;
+import com.galapass.api.media.DTO.MediaResponse;
+import com.galapass.api.media.entity.MediaType;
+import com.galapass.api.media.service.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

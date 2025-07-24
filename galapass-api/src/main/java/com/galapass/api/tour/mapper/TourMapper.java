@@ -1,16 +1,18 @@
-package com.galapass.api.mapper;
+package com.galapass.api.tour.mapper;
 
-import com.galapass.api.DTO.media.MediaResponse;
-import com.galapass.api.DTO.tour.*;
-import com.galapass.api.DTO.tourCompany.TourCompanySummaryDTO;
-import com.galapass.api.entity.TourReview;
-import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.repository.BookingRepository;
-import com.galapass.api.repository.TourDateRepository;
-import com.galapass.api.repository.TourRepository;
-import com.galapass.api.repository.TourReviewRepository;
+import com.galapass.api.booking.repository.BookingRepository;
+import com.galapass.api.media.DTO.MediaResponse;
+import com.galapass.api.tour.DTO.tour.TourDetailPageDTO;
+import com.galapass.api.tour.DTO.tour.TourDraftResponse;
+import com.galapass.api.tour.DTO.tour.TourResponseDTO;
+import com.galapass.api.tour.DTO.tour.TourResponseOwnerViewDTO;
+import com.galapass.api.tour.DTO.tourCompany.TourCompanySummaryDTO;
+import com.galapass.api.tour.entity.Tour;
+import com.galapass.api.tour.repository.TourDateRepository;
+import com.galapass.api.tour.repository.TourRepository;
+import com.galapass.api.tour.repository.TourReviewRepository;
+import com.galapass.api.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

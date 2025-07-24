@@ -1,6 +1,6 @@
-package com.galapass.api.repository;
+package com.galapass.api.user.repository;
 
-import com.galapass.api.entity.GuideReview;
+import com.galapass.api.user.entity.GuideReview;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

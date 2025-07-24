@@ -1,8 +1,8 @@
-package com.galapass.api.DTO.booking;
+package com.galapass.api.booking.DTO;
 
-import com.galapass.api.DTO.tourDate.TourDateSummaryDTO;
-import com.galapass.api.DTO.user.UserSummaryDTO;
-import com.galapass.api.entity.booking.BookingStatus;
+import com.galapass.api.booking.entity.BookingStatus;
+import com.galapass.api.tour.DTO.tourDate.TourDateSummaryDTO;
+import com.galapass.api.user.DTO.user.UserSummaryDTO;
 import lombok.Data;
 
 import java.math.BigDecimal;

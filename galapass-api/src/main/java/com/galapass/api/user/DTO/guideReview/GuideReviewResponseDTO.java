@@ -1,6 +1,6 @@
-package com.galapass.api.DTO.guideReview;
+package com.galapass.api.user.DTO.guideReview;
 
-import com.galapass.api.DTO.user.UserSummaryDTO;
+import com.galapass.api.user.DTO.user.UserSummaryDTO;
 import lombok.Data;
 
 @Data

@@ -1,8 +1,6 @@
-package com.galapass.api.entity.booking;
-import com.galapass.api.entity.TourDate;
-
-import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.entity.user.User;
+package com.galapass.api.booking.entity;
+import com.galapass.api.tour.entity.TourDate;
+import com.galapass.api.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,4 +1,4 @@
-package com.galapass.api.controller;
+package com.galapass.api.tip.controller;
 
 import com.galapass.api.tip.entity.Tip;
 import com.galapass.api.tip.service.TipService;

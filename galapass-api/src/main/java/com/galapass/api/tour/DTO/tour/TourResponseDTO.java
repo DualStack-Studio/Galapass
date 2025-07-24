@@ -1,15 +1,11 @@
-package com.galapass.api.DTO.tour;
+package com.galapass.api.tour.DTO.tour;
 
-import com.galapass.api.DTO.media.MediaResponse;
-import com.galapass.api.DTO.tourCompany.TourCompanySummaryDTO;
-import com.galapass.api.DTO.user.GuideSummaryDTO;
-import com.galapass.api.DTO.user.UserSummaryDTO;
-import com.galapass.api.entity.CompanyTourStatus;
-import com.galapass.api.entity.Location;
-import com.galapass.api.entity.tour.Bring;
-import com.galapass.api.entity.tour.Destination;
-import com.galapass.api.entity.tour.Duration;
-import com.galapass.api.entity.tour.TourCategory;
+import com.galapass.api.enums.entity.Location;
+import com.galapass.api.media.DTO.MediaResponse;
+import com.galapass.api.tour.DTO.tourCompany.TourCompanySummaryDTO;
+import com.galapass.api.tour.entity.*;
+import com.galapass.api.user.DTO.user.GuideSummaryDTO;
+import com.galapass.api.user.DTO.user.UserSummaryDTO;
 import lombok.Data;
 
 import java.util.List;

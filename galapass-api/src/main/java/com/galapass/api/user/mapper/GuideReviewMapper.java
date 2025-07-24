@@ -1,7 +1,7 @@
-package com.galapass.api.mapper;
+package com.galapass.api.user.mapper;
 
-import com.galapass.api.DTO.guideReview.GuideReviewResponseDTO;
-import com.galapass.api.entity.GuideReview;
+import com.galapass.api.user.DTO.guideReview.GuideReviewResponseDTO;
+import com.galapass.api.user.entity.GuideReview;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

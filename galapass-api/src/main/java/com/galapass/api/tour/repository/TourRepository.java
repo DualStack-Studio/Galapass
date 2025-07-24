@@ -1,15 +1,12 @@
-package com.galapass.api.repository;
+package com.galapass.api.tour.repository;
 
-import com.galapass.api.DTO.tour.TourResponseOwnerViewDTO;
-import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.entity.CompanyTourStatus;
+import com.galapass.api.tour.entity.CompanyTourStatus;
+import com.galapass.api.tour.entity.Tour;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 public interface TourRepository extends JpaRepository<Tour, Long> {
 

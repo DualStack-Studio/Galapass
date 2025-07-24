@@ -1,8 +1,9 @@
-package com.galapass.api.mapper;
+package com.galapass.api.tour.mapper;
 
-import com.galapass.api.DTO.tourReview.TourReviewDTO;
-import com.galapass.api.DTO.tourReview.TourReviewResponse;
-import com.galapass.api.entity.TourReview;
+import com.galapass.api.tour.DTO.tourReview.TourReviewDTO;
+import com.galapass.api.tour.DTO.tourReview.TourReviewResponse;
+import com.galapass.api.tour.entity.TourReview;
+import com.galapass.api.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

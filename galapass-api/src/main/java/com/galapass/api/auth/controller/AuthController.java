@@ -1,14 +1,12 @@
-package com.galapass.api.controller;
+package com.galapass.api.auth.controller;
 
-import com.galapass.api.DTO.user.AuthResponse;
-import com.galapass.api.DTO.user.LoginRequest;
-import com.galapass.api.DTO.user.RegisterRequest;
-import com.galapass.api.DTO.user.UserResponse;
+
+import com.galapass.api.auth.DTO.AuthResponse;
+import com.galapass.api.auth.DTO.LoginRequest;
+import com.galapass.api.auth.DTO.RegisterRequest;
+import com.galapass.api.user.DTO.user.UserResponse;
 import com.galapass.api.jwt.JwtUtils;
-import com.galapass.api.service.AuthService;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.galapass.api.auth.service.AuthService;
 import com.google.api.client.util.Value;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +17,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Map;
 
 

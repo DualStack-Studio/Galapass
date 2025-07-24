@@ -1,4 +1,4 @@
-package com.galapass.api.DTO.booking;
+package com.galapass.api.booking.DTO;
 
 import lombok.Builder;
 import lombok.Data;

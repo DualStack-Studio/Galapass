@@ -1,4 +1,4 @@
-package com.galapass.api.entity.booking;
+package com.galapass.api.booking.entity;
 
 public enum BookingStatus {
     PENDING,

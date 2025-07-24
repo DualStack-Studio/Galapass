@@ -1,18 +1,15 @@
-package com.galapass.api.controller;
+package com.galapass.api.tour.controller;
 
-import com.galapass.api.DTO.tour.*;
-
-import com.galapass.api.entity.Location;
-import com.galapass.api.entity.media.Media;
-import com.galapass.api.entity.tour.*;
-import com.galapass.api.entity.CompanyTourStatus;
-import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.user.User;
-import com.galapass.api.mapper.TourMapper;
-import com.galapass.api.repository.TourCompanyRepository;
-import com.galapass.api.repository.TourRepository;
-import com.galapass.api.repository.UserRepository;
-import com.galapass.api.service.TourService;
+import com.galapass.api.enums.entity.Location;
+import com.galapass.api.media.entity.Media;
+import com.galapass.api.tour.DTO.tour.*;
+import com.galapass.api.tour.entity.*;
+import com.galapass.api.tour.mapper.TourMapper;
+import com.galapass.api.tour.repository.TourCompanyRepository;
+import com.galapass.api.tour.repository.TourRepository;
+import com.galapass.api.tour.service.TourService;
+import com.galapass.api.user.entity.User;
+import com.galapass.api.user.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 

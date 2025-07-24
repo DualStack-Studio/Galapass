@@ -1,8 +1,6 @@
-package com.galapass.api.entity;
+package com.galapass.api.tour.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.entity.user.User;
+import com.galapass.api.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

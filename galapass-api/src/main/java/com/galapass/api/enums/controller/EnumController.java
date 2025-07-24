@@ -1,9 +1,9 @@
-package com.galapass.api.controller;
+package com.galapass.api.enums.controller;
 
-import com.galapass.api.DTO.enums.*;
-import com.galapass.api.entity.Location;
-import com.galapass.api.entity.tour.*;
-import com.galapass.api.service.EnumService;
+import com.galapass.api.enums.DTO.*;
+import com.galapass.api.enums.entity.Location;
+import com.galapass.api.enums.service.EnumService;
+import com.galapass.api.tour.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

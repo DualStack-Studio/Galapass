@@ -1,25 +1,24 @@
-package com.galapass.api.service;
+package com.galapass.api.booking.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.galapass.api.DTO.booking.BookingRequestDTO;
-import com.galapass.api.DTO.booking.BookingResponseDTO;
-import com.galapass.api.DTO.guideDashboard.GuideDashboardStatsDTO;
-import com.galapass.api.entity.TourDate;
-
-import com.galapass.api.entity.booking.Booking;
-import com.galapass.api.entity.booking.BookingStatus;
-import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.entity.user.User;
-import com.galapass.api.exception.TourNotFoundException; 
-import com.galapass.api.mapper.BookingMapper;
-import com.galapass.api.repository.BookingRepository;
-import com.galapass.api.repository.TourDateRepository;
-import com.galapass.api.repository.TourRepository;
-import com.galapass.api.repository.UserRepository;
-import com.galapass.api.specification.BookingSpecification;
-import com.galapass.api.repository.TourReviewRepository;
+import com.galapass.api.booking.DTO.BookingRequestDTO;
+import com.galapass.api.booking.DTO.BookingResponseDTO;
+import com.galapass.api.booking.entity.Booking;
+import com.galapass.api.booking.entity.BookingStatus;
+import com.galapass.api.booking.specification.BookingSpecification;
+import com.galapass.api.exception.TourNotFoundException;
+import com.galapass.api.booking.mapper.BookingMapper;
+import com.galapass.api.booking.repository.BookingRepository;
+import com.galapass.api.tour.entity.Tour;
+import com.galapass.api.tour.entity.TourDate;
+import com.galapass.api.tour.repository.TourDateRepository;
+import com.galapass.api.tour.repository.TourRepository;
+import com.galapass.api.tour.repository.TourReviewRepository;
+import com.galapass.api.user.DTO.guideDashboard.GuideDashboardStatsDTO;
+import com.galapass.api.user.entity.User;
+import com.galapass.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -114,13 +112,18 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
-    public List<BookingResponseDTO> searchBookings(Long ownerId, Long tourId, String status, String date, String search) {
+    public List<BookingResponseDTO> searchBookings(Long ownerId, Long tourId, Long tourDateId, String status, String date, String search) {
 
         Specification<Booking> spec = Specification.where(null);
 
         // Security: Always scope to the owner if an ownerId is present
         if (ownerId != null) {
             spec = spec.and(BookingSpecification.hasOwnerId(ownerId));
+        }
+
+        // Filter by the specific tourDateId if provided
+        if (tourDateId != null) {
+            spec = spec.and(BookingSpecification.hasTourDateId(tourDateId));
         }
 
         // Add the tourId filter if it's provided
@@ -172,7 +175,7 @@ public class BookingService {
     }
 
     public List<Booking> getBookingsByGuideAndStatus(Long guideId, BookingStatus status) {
-              return bookingRepository.findBookingsByGuideIdAndStatus(guideId, status);
+        return bookingRepository.findBookingsByGuideIdAndStatus(guideId, status);
     }
 
     public List<Booking> getUpcomingBookingsByGuide(Long guideId) {
@@ -181,7 +184,7 @@ public class BookingService {
     }
 
     public List<Booking> getBookingHistoryByGuide(Long guideId) {
-                return bookingRepository.findBookingHistoryByGuideId(guideId);
+        return bookingRepository.findBookingHistoryByGuideId(guideId);
     }
 
 
@@ -191,7 +194,7 @@ public class BookingService {
                 .map(bookingMapper::toBookingResponseDTO)
                 .collect(Collectors.toList());
     }
-  
+
     public GuideDashboardStatsDTO getDashboardStatsForGuide(Long guideId) {
         long activeToursCount = bookingRepository.countActiveToursByGuideId(guideId); // custom query needed
         long upcomingToursCount = bookingRepository.countUpcomingToursByGuideId(guideId); // custom query needed

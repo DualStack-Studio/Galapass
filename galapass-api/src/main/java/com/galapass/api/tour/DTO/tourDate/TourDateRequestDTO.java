@@ -1,4 +1,4 @@
-package com.galapass.api.DTO.tourDate;
+package com.galapass.api.tour.DTO.tourDate;
 
 import lombok.Data;
 

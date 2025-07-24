@@ -1,6 +1,6 @@
-package com.galapass.api.controller;
+package com.galapass.api.user.controller;
 
-import com.galapass.api.DTO.ownerDashboard.OwnerDashboardStatsResponse;
+import com.galapass.api.user.DTO.ownerDashboard.OwnerDashboardStatsResponse;
 import com.galapass.api.user.service.OwnerDashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

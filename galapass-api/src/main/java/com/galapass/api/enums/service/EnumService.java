@@ -1,7 +1,7 @@
-package com.galapass.api.service;
+package com.galapass.api.enums.service;
 
-import com.galapass.api.entity.Location;
-import com.galapass.api.entity.tour.Destination;
+import com.galapass.api.enums.entity.Location;
+import com.galapass.api.tour.entity.Destination;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

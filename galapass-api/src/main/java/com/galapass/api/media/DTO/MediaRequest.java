@@ -1,6 +1,5 @@
-package com.galapass.api.DTO.media;
-
-import com.galapass.api.entity.media.MediaType;
+package com.galapass.api.media.DTO;
+import com.galapass.api.media.entity.MediaType;
 import lombok.Data;
 
 @Data

@@ -1,13 +1,11 @@
-package com.galapass.api.entity;
+package com.galapass.api.tour.entity;
 
-import com.galapass.api.entity.booking.Booking;
-import com.galapass.api.entity.tour.Tour;
+import com.galapass.api.booking.entity.Booking;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 

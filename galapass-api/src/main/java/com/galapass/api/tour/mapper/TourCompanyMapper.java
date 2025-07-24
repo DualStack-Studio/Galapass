@@ -1,12 +1,11 @@
-package com.galapass.api.mapper;
+package com.galapass.api.tour.mapper;
 
-import com.galapass.api.DTO.tourCompany.TourCompanyBasicDTO;
-import com.galapass.api.DTO.tourCompany.TourCompanyEditing;
-import com.galapass.api.DTO.tourCompany.TourCompanyResponse;
-import com.galapass.api.DTO.tourCompany.TourCompanyTourDetailDTO;
-import com.galapass.api.entity.TourCompany;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.galapass.api.tour.DTO.tourCompany.TourCompanyBasicDTO;
+import com.galapass.api.tour.DTO.tourCompany.TourCompanyEditing;
+import com.galapass.api.tour.DTO.tourCompany.TourCompanyResponse;
+import com.galapass.api.tour.DTO.tourCompany.TourCompanyTourDetailDTO;
+import com.galapass.api.tour.entity.TourCompany;
+import com.galapass.api.user.mapper.UserMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 

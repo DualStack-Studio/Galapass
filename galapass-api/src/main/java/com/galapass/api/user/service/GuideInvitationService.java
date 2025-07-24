@@ -1,14 +1,14 @@
-package com.galapass.api.service;
+package com.galapass.api.user.service;
 
-import com.galapass.api.DTO.guideInvitation.GuideInvitationRequest;
-import com.galapass.api.controller.TourCompanyController;
-import com.galapass.api.entity.user.InvitationStatus;
-import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.user.GuideInvitation;
-import com.galapass.api.entity.user.User;
-import com.galapass.api.repository.GuideInvitationRepository;
-import com.galapass.api.repository.TourCompanyRepository;
-import com.galapass.api.repository.UserRepository;
+import com.galapass.api.tour.controller.TourCompanyController;
+import com.galapass.api.tour.entity.TourCompany;
+import com.galapass.api.tour.repository.TourCompanyRepository;
+import com.galapass.api.user.DTO.guideInvitation.GuideInvitationRequest;
+import com.galapass.api.user.entity.GuideInvitation;
+import com.galapass.api.user.entity.InvitationStatus;
+import com.galapass.api.user.entity.User;
+import com.galapass.api.user.repository.GuideInvitationRepository;
+import com.galapass.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.galapass.api.entity.tour;
+package com.galapass.api.tour.entity;
 
 public enum Duration {
     HALF_DAY("Half Day"),

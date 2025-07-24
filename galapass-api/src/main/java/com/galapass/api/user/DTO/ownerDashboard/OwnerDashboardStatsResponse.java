@@ -1,4 +1,4 @@
-package com.galapass.api.DTO.ownerDashboard;
+package com.galapass.api.user.DTO.ownerDashboard;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

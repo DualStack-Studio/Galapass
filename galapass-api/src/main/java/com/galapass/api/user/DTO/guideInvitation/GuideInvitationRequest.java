@@ -1,4 +1,4 @@
-package com.galapass.api.DTO.guideInvitation;
+package com.galapass.api.user.DTO.guideInvitation;
 
 import lombok.Data;
 

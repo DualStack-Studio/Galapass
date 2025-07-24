@@ -1,11 +1,10 @@
-package com.galapass.api.DTO.booking;
+package com.galapass.api.booking.DTO;
 
-import com.galapass.api.entity.booking.BookingStatus;
+import com.galapass.api.booking.entity.BookingStatus;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Set;
 
 @Data

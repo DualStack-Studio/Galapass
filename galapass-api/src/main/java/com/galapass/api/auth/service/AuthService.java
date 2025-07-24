@@ -1,10 +1,11 @@
-package com.galapass.api.service;
+package com.galapass.api.auth.service;
 
-import com.galapass.api.DTO.user.LoginRequest;
-import com.galapass.api.DTO.user.RegisterRequest;
-import com.galapass.api.DTO.user.UserResponse;
-import com.galapass.api.entity.user.Role;
-import com.galapass.api.entity.user.User;
+import com.galapass.api.auth.DTO.LoginRequest;
+import com.galapass.api.auth.DTO.RegisterRequest;
+import com.galapass.api.jwt.JwtService;
+import com.galapass.api.user.DTO.user.UserResponse;
+import com.galapass.api.user.entity.Role;
+import com.galapass.api.user.entity.User;
 import com.galapass.api.user.service.UserService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;

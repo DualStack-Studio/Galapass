@@ -1,13 +1,14 @@
-package com.galapass.api.controller;
+package com.galapass.api.booking.controller;
 
-import com.galapass.api.DTO.booking.BookingRequestDTO;
-import com.galapass.api.DTO.booking.BookingResponseDTO;
-import com.galapass.api.DTO.booking.BookingStatsDTO;
-import com.galapass.api.entity.booking.Booking;
-import com.galapass.api.entity.user.User;
-import com.galapass.api.entity.booking.BookingStatus;
-import com.galapass.api.service.BookingService;
-import com.galapass.api.service.BookingStatsService;
+
+import com.galapass.api.booking.DTO.BookingRequestDTO;
+import com.galapass.api.booking.DTO.BookingResponseDTO;
+import com.galapass.api.booking.DTO.BookingStatsDTO;
+import com.galapass.api.booking.entity.Booking;
+import com.galapass.api.booking.entity.BookingStatus;
+import com.galapass.api.booking.service.BookingService;
+import com.galapass.api.booking.service.BookingStatsService;
+import com.galapass.api.user.entity.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -59,12 +60,13 @@ public class BookingController {
     public ResponseEntity<List<BookingResponseDTO>> searchBookings(
             @AuthenticationPrincipal User user,
             @RequestParam(required = false) Long tourId,
+            @RequestParam(required = false) Long tourDateId,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String date,
             @RequestParam(required = false) String search
     ) {
         Long ownerId = user.getId();
-        return ResponseEntity.ok(bookingService.searchBookings(ownerId, tourId, status, date, search));
+        return ResponseEntity.ok(bookingService.searchBookings(ownerId, tourId, tourDateId, status, date, search));
     }
 
     @GetMapping("/owner/stats")

@@ -1,15 +1,11 @@
-package com.galapass.api.entity.tour;
-import com.galapass.api.entity.CompanyTourStatus;
-import com.galapass.api.entity.Location;
-import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.TourReview;
-import com.galapass.api.entity.media.Media;
-import com.galapass.api.entity.user.User;
+package com.galapass.api.tour.entity;
+
+import com.galapass.api.enums.entity.Location;
+import com.galapass.api.media.entity.Media;
+import com.galapass.api.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 @Entity

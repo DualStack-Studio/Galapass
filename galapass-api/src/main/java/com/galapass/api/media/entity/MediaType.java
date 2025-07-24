@@ -1,4 +1,4 @@
-package com.galapass.api.entity.media;
+package com.galapass.api.media.entity;
 
 public enum MediaType {
     IMAGE,

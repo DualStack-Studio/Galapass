@@ -1,9 +1,6 @@
-package com.galapass.api.DTO.tour;
+package com.galapass.api.tour.DTO.tour;
 
-import com.galapass.api.DTO.media.MediaRequest;
-import com.galapass.api.entity.media.Media;
-import com.galapass.api.entity.tour.Bring;
-import com.galapass.api.entity.tour.Destination;
+import com.galapass.api.media.DTO.MediaRequest;
 import lombok.Data;
 
 import java.util.List;

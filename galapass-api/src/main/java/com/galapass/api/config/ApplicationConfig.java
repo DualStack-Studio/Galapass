@@ -1,6 +1,6 @@
 package com.galapass.api.config;
 
-import com.galapass.api.repository.UserRepository;
+import com.galapass.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

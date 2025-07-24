@@ -1,6 +1,6 @@
-package com.galapass.api.entity.user;
+package com.galapass.api.user.entity;
 
-import com.galapass.api.entity.TourCompany;
+import com.galapass.api.tour.entity.TourCompany;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.ZonedDateTime;

@@ -1,9 +1,9 @@
-package com.galapass.api.service;
+package com.galapass.api.tip.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.galapass.api.entity.Tip;
-import com.galapass.api.repository.TipRepository;
+import com.galapass.api.tip.entity.Tip;
+import com.galapass.api.tip.repository.TipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

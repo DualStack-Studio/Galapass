@@ -1,6 +1,6 @@
-package com.galapass.api.entity.media;
+package com.galapass.api.media.entity;
 
-import com.galapass.api.entity.tour.Tour;
+import com.galapass.api.tour.entity.Tour;
 import jakarta.persistence.*;
 import lombok.*;
 

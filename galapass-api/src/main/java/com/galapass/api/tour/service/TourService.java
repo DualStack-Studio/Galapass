@@ -1,24 +1,20 @@
-package com.galapass.api.service;
+package com.galapass.api.tour.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.galapass.api.DTO.tour.TourDetailPageDTO;
-import com.galapass.api.DTO.tour.TourPatchRequest;
-import com.galapass.api.DTO.tour.TourResponseDTO;
-import com.galapass.api.entity.Location;
-import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.media.Media;
-import com.galapass.api.entity.tour.*;
-import com.galapass.api.entity.user.User;
+import com.galapass.api.enums.entity.Location;
 import com.galapass.api.exception.TourNotFoundException;
-import com.galapass.api.mapper.TourMapper;
-import com.galapass.api.repository.TourCompanyRepository;
-import com.galapass.api.entity.CompanyTourStatus;
-
-import com.galapass.api.repository.TourRepository;
-import com.galapass.api.repository.TourReviewRepository;
-import com.galapass.api.repository.UserRepository;
+import com.galapass.api.media.entity.Media;
+import com.galapass.api.tour.DTO.tour.TourDetailPageDTO;
+import com.galapass.api.tour.DTO.tour.TourPatchRequest;
+import com.galapass.api.tour.DTO.tour.TourResponseDTO;
+import com.galapass.api.tour.entity.*;
+import com.galapass.api.tour.mapper.TourMapper;
+import com.galapass.api.tour.repository.TourCompanyRepository;
+import com.galapass.api.tour.repository.TourRepository;
+import com.galapass.api.tour.repository.TourReviewRepository;
+import com.galapass.api.user.entity.User;
+import com.galapass.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -143,7 +139,7 @@ public class TourService {
 
         if (request.getStatus() != null) {
             try {
-                com.galapass.api.entity.CompanyTourStatus status = com.galapass.api.entity.CompanyTourStatus.valueOf(request.getStatus().toUpperCase());
+                CompanyTourStatus status = CompanyTourStatus.valueOf(request.getStatus().toUpperCase());
                 tour.setStatus(status);
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("Invalid status value: " + request.getStatus());

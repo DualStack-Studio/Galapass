@@ -1,8 +1,8 @@
-package com.galapass.api.repository;
+package com.galapass.api.booking.repository;
 
-import com.galapass.api.entity.booking.Booking;
-import com.galapass.api.entity.booking.BookingStatus;
 
+import com.galapass.api.booking.entity.Booking;
+import com.galapass.api.booking.entity.BookingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;

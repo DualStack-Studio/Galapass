@@ -1,4 +1,4 @@
-package com.galapass.api.entity.tour;
+package com.galapass.api.tour.entity;
 
 /**
  * Represents descriptive tags that can be applied to tours.

@@ -1,15 +1,15 @@
-package com.galapass.api.service;
+package com.galapass.api.tour.service;
 
-import com.galapass.api.DTO.tourDate.TourDateRequestDTO;
-import com.galapass.api.DTO.tourDate.TourDateResponseDTO;
-import com.galapass.api.entity.booking.Booking;
-import com.galapass.api.entity.booking.BookingStatus;
-import com.galapass.api.entity.tour.Tour;
-import com.galapass.api.entity.TourDate;
+import com.galapass.api.booking.entity.Booking;
+import com.galapass.api.booking.entity.BookingStatus;
 import com.galapass.api.exception.TourNotFoundException;
-import com.galapass.api.mapper.TourDateMapper;
-import com.galapass.api.repository.TourDateRepository;
-import com.galapass.api.repository.TourRepository;
+import com.galapass.api.tour.DTO.tourDate.TourDateRequestDTO;
+import com.galapass.api.tour.DTO.tourDate.TourDateResponseDTO;
+import com.galapass.api.tour.entity.Tour;
+import com.galapass.api.tour.entity.TourDate;
+import com.galapass.api.tour.mapper.TourDateMapper;
+import com.galapass.api.tour.repository.TourDateRepository;
+import com.galapass.api.tour.repository.TourRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;

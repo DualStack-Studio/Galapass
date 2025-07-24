@@ -1,4 +1,4 @@
-package com.galapass.api.entity.tour;
+package com.galapass.api.tour.entity;
 
 /**
  * Represents recommended items for visitors to bring on a Galapagos tour.

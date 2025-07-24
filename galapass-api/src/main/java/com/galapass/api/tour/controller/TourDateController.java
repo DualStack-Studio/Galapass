@@ -1,9 +1,9 @@
-package com.galapass.api.controller;
+package com.galapass.api.tour.controller;
 
-import com.galapass.api.DTO.tourDate.TourDateRequestDTO;
-import com.galapass.api.DTO.tourDate.TourDateResponseDTO;
-import com.galapass.api.entity.user.User;
-import com.galapass.api.service.TourDateService;
+import com.galapass.api.tour.DTO.tourDate.TourDateRequestDTO;
+import com.galapass.api.tour.DTO.tourDate.TourDateResponseDTO;
+import com.galapass.api.tour.service.TourDateService;
+import com.galapass.api.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,7 +27,7 @@ public class TourDateController {
     }
 
     @PostMapping
-    public ResponseEntity<TourDateResponseDTO> createTourDate(@RequestBody TourDateRequestDTO dto,  @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<TourDateResponseDTO> createTourDate(@RequestBody TourDateRequestDTO dto, @AuthenticationPrincipal User currentUser) {
         return ResponseEntity.ok(service.createTourDate(dto, currentUser.getId()));
     }
 

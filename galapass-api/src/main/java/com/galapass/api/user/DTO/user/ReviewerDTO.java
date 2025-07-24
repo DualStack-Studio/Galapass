@@ -1,4 +1,4 @@
-package com.galapass.api.DTO.user;
+package com.galapass.api.user.DTO.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

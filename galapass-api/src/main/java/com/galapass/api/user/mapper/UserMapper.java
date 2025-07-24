@@ -1,16 +1,16 @@
-package com.galapass.api.mapper;
+package com.galapass.api.user.mapper;
 
-import com.galapass.api.DTO.tourCompany.TourCompanySummaryDTO;
-import com.galapass.api.DTO.user.GuideSummaryDTO;
-import com.galapass.api.DTO.user.ReviewerDTO;
-import com.galapass.api.DTO.user.UserResponse;
-import com.galapass.api.DTO.user.UserSummaryDTO;
-import com.galapass.api.DTO.user.UserCompaniesDTO;
-import com.galapass.api.entity.CompanyTourStatus;
-import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.user.User;
-import com.galapass.api.repository.GuideReviewRepository;
-import com.galapass.api.repository.TourRepository;
+import com.galapass.api.tour.DTO.tourCompany.TourCompanySummaryDTO;
+import com.galapass.api.tour.entity.CompanyTourStatus;
+import com.galapass.api.tour.entity.TourCompany;
+import com.galapass.api.tour.repository.TourRepository;
+import com.galapass.api.user.DTO.user.GuideSummaryDTO;
+import com.galapass.api.user.DTO.user.ReviewerDTO;
+import com.galapass.api.user.DTO.user.UserResponse;
+import com.galapass.api.user.DTO.user.UserSummaryDTO;
+import com.galapass.api.user.DTO.user.UserCompaniesDTO;
+import com.galapass.api.user.entity.User;
+import com.galapass.api.user.repository.GuideReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,5 @@
 package com.galapass.api.jwt;
 
-import com.galapass.api.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

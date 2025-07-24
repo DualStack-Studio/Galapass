@@ -1,7 +1,7 @@
-package com.galapass.api.specification;
+package com.galapass.api.booking.specification;
 
-import com.galapass.api.entity.booking.Booking;
-import com.galapass.api.entity.booking.BookingStatus;
+import com.galapass.api.booking.entity.Booking;
+import com.galapass.api.booking.entity.BookingStatus;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
@@ -11,6 +11,10 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 public class BookingSpecification {
+
+    public static Specification<Booking> hasTourDateId(Long tourDateId) {
+        return (root, query, cb) -> cb.equal(root.get("tourDate").get("id"), tourDateId);
+    }
 
     public static Specification<Booking> hasOwnerId(Long ownerId) {
         return (root, query, cb) -> cb.equal(root.get("tourDate").get("tour").get("owner").get("id"), ownerId);

@@ -1,10 +1,10 @@
-package com.galapass.api.controller;
+package com.galapass.api.tour.controller;
 
-import com.galapass.api.DTO.tourReview.TourReviewRequest;
-import com.galapass.api.DTO.tourReview.TourReviewResponse;
-import com.galapass.api.entity.TourReview;
-import com.galapass.api.mapper.TourReviewMapper;
-import com.galapass.api.service.TourReviewService;
+import com.galapass.api.tour.DTO.tourReview.TourReviewRequest;
+import com.galapass.api.tour.DTO.tourReview.TourReviewResponse;
+import com.galapass.api.tour.entity.TourReview;
+import com.galapass.api.tour.mapper.TourReviewMapper;
+import com.galapass.api.tour.service.TourReviewService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

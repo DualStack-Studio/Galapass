@@ -1,4 +1,4 @@
-package com.galapass.api.entity;
+package com.galapass.api.tour.entity;
 
 public enum CompanyTourStatus {
     ACTIVE,

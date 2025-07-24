@@ -1,7 +1,7 @@
-package com.galapass.api.mapper;
+package com.galapass.api.user.mapper;
 
-import com.galapass.api.DTO.guideInvitation.GuideInvitationResponse;
-import com.galapass.api.entity.user.GuideInvitation;
+import com.galapass.api.user.DTO.guideInvitation.GuideInvitationResponse;
+import com.galapass.api.user.entity.GuideInvitation;
 import org.springframework.stereotype.Component;
 
 @Component

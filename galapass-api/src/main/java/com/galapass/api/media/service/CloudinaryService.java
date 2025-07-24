@@ -1,4 +1,4 @@
-package com.galapass.api.service;
+package com.galapass.api.media.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;

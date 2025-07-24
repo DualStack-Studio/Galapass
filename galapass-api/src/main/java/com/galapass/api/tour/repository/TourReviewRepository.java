@@ -1,7 +1,6 @@
-package com.galapass.api.repository;
+package com.galapass.api.tour.repository;
 
-import com.galapass.api.DTO.tourReview.TourReviewDTO;
-import com.galapass.api.entity.TourReview;
+import com.galapass.api.tour.entity.TourReview;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

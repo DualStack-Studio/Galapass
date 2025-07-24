@@ -1,30 +1,27 @@
-package com.galapass.api.service;
+package com.galapass.api.user.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.galapass.api.DTO.guideDashboard.GuideDashboardStatsDTO;
-import com.galapass.api.DTO.user.UserCompaniesDTO;
-import com.galapass.api.DTO.user.UserPatchRequest;
-import com.galapass.api.DTO.user.UserResponse;
-import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.CompanyTourStatus;
+import com.galapass.api.user.DTO.user.UserCompaniesDTO;
+import com.galapass.api.user.DTO.user.UserPatchRequest;
+import com.galapass.api.user.DTO.user.UserResponse;
+import com.galapass.api.tour.entity.TourCompany;
 
-import com.galapass.api.entity.user.GuideStatus;
-import com.galapass.api.entity.user.Role;
-import com.galapass.api.entity.user.User;
-import com.galapass.api.mapper.UserMapper;
-import com.galapass.api.repository.GuideReviewRepository;
-import com.galapass.api.repository.TourRepository;
-import com.galapass.api.repository.TourCompanyRepository;
-import com.galapass.api.repository.UserRepository;
+import com.galapass.api.user.entity.GuideStatus;
+import com.galapass.api.user.entity.Role;
+import com.galapass.api.user.entity.User;
+import com.galapass.api.user.mapper.UserMapper;
+import com.galapass.api.user.repository.GuideReviewRepository;
+import com.galapass.api.tour.repository.TourRepository;
+import com.galapass.api.tour.repository.TourCompanyRepository;
+import com.galapass.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
 import java.util.HashSet;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

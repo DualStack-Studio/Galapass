@@ -1,12 +1,10 @@
-package com.galapass.api.service;
+package com.galapass.api.user.service;
 
-import com.galapass.api.DTO.ownerDashboard.OwnerDashboardStatsResponse;
-import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.user.User;
-import com.galapass.api.repository.BookingRepository;
-import com.galapass.api.repository.TourCompanyRepository;
-import com.galapass.api.repository.TourRepository;
-import com.galapass.api.repository.UserRepository;
+import com.galapass.api.booking.repository.BookingRepository;
+import com.galapass.api.tour.entity.TourCompany;
+import com.galapass.api.tour.repository.TourCompanyRepository;
+import com.galapass.api.user.DTO.ownerDashboard.OwnerDashboardStatsResponse;
+import com.galapass.api.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

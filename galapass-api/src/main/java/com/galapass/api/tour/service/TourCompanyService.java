@@ -1,17 +1,17 @@
-package com.galapass.api.service;
+package com.galapass.api.tour.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.galapass.api.DTO.tourCompany.*;
-import com.galapass.api.DTO.user.UserResponse;
-import com.galapass.api.entity.CompanyTourStatus;
-import com.galapass.api.entity.user.Role;
-import com.galapass.api.entity.TourCompany;
-import com.galapass.api.entity.user.User;
 import com.galapass.api.exception.EntityNotFoundException;
-import com.galapass.api.mapper.TourCompanyMapper;
-import com.galapass.api.mapper.UserMapper;
-import com.galapass.api.repository.TourCompanyRepository;
+import com.galapass.api.tour.DTO.tourCompany.*;
+import com.galapass.api.tour.entity.CompanyTourStatus;
+import com.galapass.api.tour.entity.TourCompany;
+import com.galapass.api.tour.mapper.TourCompanyMapper;
+import com.galapass.api.tour.repository.TourCompanyRepository;
+import com.galapass.api.user.DTO.user.UserResponse;
+import com.galapass.api.user.entity.Role;
+import com.galapass.api.user.entity.User;
+import com.galapass.api.user.mapper.UserMapper;
 import com.galapass.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -12,12 +12,12 @@ import com.galapass.api.exception.EntityNotFoundException;
 import com.galapass.api.mapper.TourCompanyMapper;
 import com.galapass.api.mapper.UserMapper;
 import com.galapass.api.repository.TourCompanyRepository;
+import com.galapass.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

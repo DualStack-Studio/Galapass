@@ -5,7 +5,7 @@ import com.galapass.api.DTO.user.UserCompaniesDTO;
 import com.galapass.api.DTO.user.UserPatchRequest;
 import com.galapass.api.DTO.user.UserResponse;
 import com.galapass.api.entity.user.User;
-import com.galapass.api.service.UserService;
+import com.galapass.api.user.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;

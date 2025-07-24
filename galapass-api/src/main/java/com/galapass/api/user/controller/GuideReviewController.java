@@ -2,7 +2,7 @@ package com.galapass.api.controller;
 
 import com.galapass.api.DTO.guideReview.GuideReviewRequestDTO;
 import com.galapass.api.DTO.guideReview.GuideReviewResponseDTO;
-import com.galapass.api.service.GuideReviewService;
+import com.galapass.api.user.service.GuideReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

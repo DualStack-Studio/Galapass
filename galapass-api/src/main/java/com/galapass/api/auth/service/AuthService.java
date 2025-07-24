@@ -5,7 +5,7 @@ import com.galapass.api.DTO.user.RegisterRequest;
 import com.galapass.api.DTO.user.UserResponse;
 import com.galapass.api.entity.user.Role;
 import com.galapass.api.entity.user.User;
-import com.galapass.api.jwt.JwtUtils;
+import com.galapass.api.user.service.UserService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
-import java.util.Optional;
 import java.util.List;
 
 @Service

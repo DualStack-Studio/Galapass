@@ -4,7 +4,7 @@ import com.galapass.api.DTO.guideInvitation.GuideInvitationRequest;
 import com.galapass.api.DTO.guideInvitation.GuideInvitationResponse;
 import com.galapass.api.entity.user.GuideInvitation;
 import com.galapass.api.mapper.GuideInvitationMapper;
-import com.galapass.api.service.GuideInvitationService;
+import com.galapass.api.user.service.GuideInvitationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

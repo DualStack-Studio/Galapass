@@ -1,7 +1,7 @@
 package com.galapass.api.controller;
 
-import com.galapass.api.entity.Tip;
-import com.galapass.api.service.TipService;
+import com.galapass.api.tip.entity.Tip;
+import com.galapass.api.tip.service.TipService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

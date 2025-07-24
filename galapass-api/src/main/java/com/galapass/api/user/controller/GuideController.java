@@ -13,6 +13,7 @@ import com.galapass.api.entity.user.GuideInvitation;
 import com.galapass.api.mapper.GuideInvitationMapper;
 import com.galapass.api.mapper.TourMapper;
 import com.galapass.api.service.*;
+import com.galapass.api.user.service.GuideInvitationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

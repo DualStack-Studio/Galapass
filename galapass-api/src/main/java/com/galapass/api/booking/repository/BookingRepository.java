@@ -21,15 +21,15 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpec
     List<Booking> findByTourDate_Tour_Id(Long tourIds);
     List<Booking> findByTourDate_Tour_Owner_Id(Long ownerId);
 
-    List<Booking> findByTourDate_Tour_Guides_Id(Long guideId);
+    List<Booking> findByTourDate_Guides_Id(Long guideId);
 
-    @Query("SELECT b FROM Booking b JOIN b.tourDate.tour.guides g WHERE g.id = :guideId AND b.status = :status")
+    @Query("SELECT b FROM Booking b JOIN b.tourDate.guides g WHERE g.id = :guideId AND b.status = :status")
     List<Booking> findBookingsByGuideIdAndStatus(@Param("guideId") Long guideId, @Param("status") BookingStatus status);
 
-    @Query("SELECT b FROM Booking b JOIN b.tourDate.tour.guides g WHERE g.id = :guideId AND b.status IN (:statuses) AND b.date > CURRENT_DATE")
+    @Query("SELECT b FROM Booking b JOIN b.tourDate.guides g WHERE g.id = :guideId AND b.status IN (:statuses) AND b.date > CURRENT_DATE")
     List<Booking> findUpcomingBookingsByGuideId(@Param("guideId") Long guideId, @Param("statuses") List<BookingStatus> statuses);
 
-    @Query("SELECT b FROM Booking b JOIN b.tourDate.tour.guides g WHERE g.id = :guideId ORDER BY b.date DESC")
+    @Query("SELECT b FROM Booking b JOIN b.tourDate.guides g WHERE g.id = :guideId ORDER BY b.date DESC")
     List<Booking> findBookingHistoryByGuideId(@Param("guideId") Long guideId);
 
 

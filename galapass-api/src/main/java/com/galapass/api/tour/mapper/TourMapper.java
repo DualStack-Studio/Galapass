@@ -60,9 +60,6 @@ public class TourMapper {
         dto.setStatus(tour.getStatus());
         dto.setCompany(companyDTO);
         dto.setOwner(userMapper.toOwnerSummaryDTO(tour.getOwner()));
-        dto.setGuides(tour.getGuides().stream()
-                .map(userMapper::toGuideSummaryDTO)
-                .collect(Collectors.toSet()));
 
         dto.setTags(tour.getTags().stream()
                 .map(Enum::name)
@@ -143,9 +140,6 @@ public class TourMapper {
                         .map(Enum::name)
                         .collect(Collectors.toSet()))
                 .category(tour.getCategory())
-                .guides(tour.getGuides().stream()
-                        .map(userMapper::toGuideSummaryDTO)
-                        .collect(Collectors.toSet()))
                 .highlights(tour.getHighlights())
                 .company(tourCompanyMapper.toTourCompanyDetailDTO(tour.getCompany()))
                 .owner(userMapper.toOwnerSummaryDTO(tour.getOwner()))

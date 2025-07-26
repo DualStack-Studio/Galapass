@@ -42,4 +42,10 @@ public class TourDateController {
         TourDateResponseDTO updatedTourDate = service.cancelTourDate(id, user.getId());
         return ResponseEntity.ok(updatedTourDate);
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<TourDateResponseDTO> patchTourDate(@PathVariable Long id, @RequestBody TourDateRequestDTO dto, @AuthenticationPrincipal User user) {
+        TourDateResponseDTO updatedTourDate = service.patchTourDate(id, dto, user.getId());
+        return ResponseEntity.ok(updatedTourDate);
+    }
 }

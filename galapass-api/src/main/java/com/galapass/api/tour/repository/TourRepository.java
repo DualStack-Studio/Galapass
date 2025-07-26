@@ -14,16 +14,15 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
     List<Tour> findByCompanyId(Long companyId);
 
     // Tours by guide and status (ACTIVE / INACTIVE)
-    @Query("SELECT t FROM Tour t JOIN t.guides g WHERE g.id = :guideId AND t.status = :status")
+    @Query("SELECT DISTINCT t FROM Tour t JOIN t.tourDates td JOIN td.guides g WHERE g.id = :guideId AND t.status = :status")
     List<Tour> findToursByGuideIdAndStatus(@Param("guideId") Long guideId, @Param("status") CompanyTourStatus status);
 
     // Count of tours by guide and status
-    @Query("SELECT COUNT(t) FROM Tour t JOIN t.guides g WHERE g.id = :guideId AND t.status = :status")
+    @Query("SELECT COUNT(DISTINCT t) FROM Tour t JOIN t.tourDates td JOIN td.guides g WHERE g.id = :guideId AND t.status = :status")
     Long countToursByGuideIdAndStatus(@Param("guideId") Long guideId, @Param("status") CompanyTourStatus status);
 
-
     // Count active tours by guide and company
-    @Query("SELECT COUNT(t) FROM Tour t JOIN t.guides g WHERE g.id = :guideId AND t.company.id = :companyId AND t.status = :status")
+    @Query("SELECT COUNT(DISTINCT t) FROM Tour t JOIN t.tourDates td JOIN td.guides g WHERE g.id = :guideId AND t.company.id = :companyId AND t.status = :status")
     long countToursByGuideIdAndCompanyId(@Param("guideId") Long guideId,
                                          @Param("companyId") Long companyId,
                                          @Param("status") CompanyTourStatus status);

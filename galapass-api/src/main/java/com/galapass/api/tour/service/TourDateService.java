@@ -108,4 +108,19 @@ public class TourDateService {
 
         return mapper.toDTO(updatedTourDate);
     }
+
+    public TourDateResponseDTO patchTourDate(Long id, TourDateRequestDTO dto, Long ownerId) {
+        TourDate tourDate = tourDateRepository.findById(id)
+                .orElseThrow(() -> new TourNotFoundException("Tour date not found with id: " + id));
+
+        Tour tour = tourDate.getTour();
+        if (!tour.getOwner().getId().equals(ownerId)) {
+            throw new AccessDeniedException("You do not have permission to modify this tour date.");
+        }
+
+
+
+        TourDate updatedTourDate = tourDateRepository.save(tourDate);
+        return mapper.toDTO(updatedTourDate);
+    }
 }

@@ -196,19 +196,6 @@ public class TourService {
             tour.setCompany(company);
         }
 
-        // Update guides
-        if (request.getGuides() != null && !request.getGuides().isEmpty()) {
-            Set<User> guideUsers = request.getGuides().stream()
-                    .map(guideDto -> {
-                        if (guideDto.getId() == null)
-                            throw new RuntimeException("Guide ID missing");
-                        return userRepository.findById(guideDto.getId())
-                                .orElseThrow(() -> new RuntimeException("Guide not found: " + guideDto.getId()));
-                    })
-                    .collect(Collectors.toSet());
-            tour.setGuides(guideUsers);
-        }
-
         // update owner
         if (request.getOwner() != null && request.getOwner().getId() != null) {
             User owner = userRepository.findById(request.getOwner().getId())

@@ -48,14 +48,6 @@ public class Tour {
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    @ManyToMany
-    @JoinTable(
-            name = "tour_guide",
-            joinColumns = @JoinColumn(name = "tour_id"),
-            inverseJoinColumns = @JoinColumn(name = "guide_id")
-    )
-    private Set<User> guides = new HashSet<>();
-
     @ManyToOne
     @JoinColumn(name = "company_id")
     private TourCompany company;
@@ -77,4 +69,7 @@ public class Tour {
     @CollectionTable(name = "tour_highlights", joinColumns = @JoinColumn(name = "tour_id"))
     @Column(name = "highlight")
     private List<String> highlights = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TourDate> tourDates = new ArrayList<>();
 }

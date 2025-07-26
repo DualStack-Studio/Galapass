@@ -3,13 +3,16 @@ package com.galapass.api.tour.controller;
 import com.galapass.api.enums.entity.Location;
 import com.galapass.api.media.entity.Media;
 import com.galapass.api.tour.DTO.tour.*;
+import com.galapass.api.tour.DTO.tourCompany.TourCompanyEditing;
 import com.galapass.api.tour.entity.*;
 import com.galapass.api.tour.mapper.TourMapper;
 import com.galapass.api.tour.repository.TourCompanyRepository;
 import com.galapass.api.tour.repository.TourRepository;
+import com.galapass.api.tour.service.TourCompanyService;
 import com.galapass.api.tour.service.TourService;
 import com.galapass.api.user.entity.User;
 import com.galapass.api.user.repository.UserRepository;
+import com.galapass.api.user.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,11 +30,9 @@ import java.util.stream.Collectors;
 public class TourController {
 
     private final TourService tourService;
-    private final UserRepository userRepository;
-    private final TourCompanyRepository tourCompanyRepository;
-    private final TourRepository tourRepository;
+    private final UserService userService;
+    private final TourCompanyService tourCompanyService;
     private final TourMapper tourMapper;
-
     @GetMapping
     public ResponseEntity<List<TourResponseDTO>> getAllTours() {
         List<Tour> tours = tourService.getAllTours();
@@ -43,7 +44,7 @@ public class TourController {
             @RequestBody CreateTourDraft request,
             @AuthenticationPrincipal User currentUser
     ) {
-        User owner = userRepository.findById(currentUser.getId())
+        User owner = userService.getUserById(currentUser.getId())
                 .orElseThrow(() -> new RuntimeException("Owner not found with id: " + currentUser.getId()));
 
         Tour tour = Tour.builder()
@@ -55,18 +56,14 @@ public class TourController {
                 .status(CompanyTourStatus.DRAFT)
                 .build();
 
-        Tour savedTour = tourRepository.save(tour);
-
+        Tour savedTour = tourService.createTour(tour);
         return ResponseEntity.ok(tourMapper.toTourDraftResponse(savedTour));
     }
 
     @PostMapping
     public ResponseEntity<TourResponseDTO> createTour(@RequestBody CreateTourRequest request) {
-        User owner = userRepository.findById(request.getOwnerId())
+        User owner = userService.getUserById(request.getOwnerId())
                 .orElseThrow(() -> new RuntimeException("Owner not found with id: " + request.getOwnerId()));
-        TourCompany company = tourCompanyRepository.findById(request.getCompanyId())
-                .orElseThrow(() -> new RuntimeException("Company not found with id: " + request.getCompanyId()));
-        Set<User> guides = new HashSet<>(userRepository.findAllById(request.getGuideIds()));
 
         Set<TourTag> tags = Optional.ofNullable(request.getTags()).orElse(Set.of()).stream()
                 .map(tag -> {
@@ -99,8 +96,6 @@ public class TourController {
                 .duration(Duration.valueOf(request.getDuration()))
                 .destination(Destination.valueOf(request.getDestination()))
                 .owner(owner)
-                .company(company)
-                .guides(guides)
                 .tags(tags)
                 .status(CompanyTourStatus.ACTIVE)
                 .maxGuests(request.getMaxGuests())
@@ -123,7 +118,7 @@ public class TourController {
             tour.setMedia(mediaEntities);
         }
 
-        Tour savedTour = tourRepository.save(tour);
+        Tour savedTour = tourService.createTour(tour);
 
         return ResponseEntity.ok(tourMapper.toTourResponseDTO(savedTour));
     }

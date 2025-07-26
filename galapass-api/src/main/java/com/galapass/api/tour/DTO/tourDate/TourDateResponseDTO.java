@@ -1,6 +1,7 @@
 package com.galapass.api.tour.DTO.tourDate;
 
 import com.galapass.api.booking.DTO.BookingResponseSummaryDTO;
+import com.galapass.api.user.DTO.user.GuideSummaryDTO;
 import lombok.Builder;
 import lombok.Data;
 
@@ -18,4 +19,5 @@ public class TourDateResponseDTO {
     private Integer maxGuests;
     private Long tourId;
     private List<BookingResponseSummaryDTO> bookings;
+    private List<GuideSummaryDTO> guides;
 }

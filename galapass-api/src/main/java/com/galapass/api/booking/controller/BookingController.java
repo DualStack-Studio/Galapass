@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("/api/bookings")
 @RequiredArgsConstructor
 @Tag(name = "Booking API", description = "Booking API")
-public class BookingController {
+public class    BookingController {
 
     private final BookingService bookingService;
     private final BookingStatsService statsService;

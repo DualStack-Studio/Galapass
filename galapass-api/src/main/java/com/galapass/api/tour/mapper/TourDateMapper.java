@@ -12,12 +12,14 @@ import com.galapass.api.tour.DTO.tourDate.TourDateTourDetailDTO;
 import com.galapass.api.tour.entity.Tour;
 import com.galapass.api.tour.entity.TourDate;
 import com.galapass.api.tour.repository.TourReviewRepository;
+import com.galapass.api.user.DTO.user.UserResponse;
+import com.galapass.api.user.entity.User;
 import com.galapass.api.user.mapper.UserMapper;
+import com.galapass.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +35,7 @@ public class TourDateMapper {
     private final BookingMapper bookingMapper;
     private final TourReviewRepository tourReviewRepository;
     private final UserMapper userMapper;
+    private final UserService userService;
 
     /**
      * Converts a TourDateRequestDTO to a TourDate entity.
@@ -42,14 +45,21 @@ public class TourDateMapper {
      * @return A new TourDate entity, ready to be persisted.
      */
     public TourDate toEntity(TourDateRequestDTO dto, Tour tour) {
+        Set<User> guides = new HashSet<>();
+        if (dto.getGuideIds() != null && !dto.getGuideIds().isEmpty()) {
+            List<User> foundGuides = userService.getAllUsersById(dto.getGuideIds());
+            guides.addAll(foundGuides);
+        }
+
+
         return TourDate.builder()
                 .date(dto.getDate())
                 .price(dto.getPrice())
                 .available(dto.isAvailable())
                 .maxGuests(dto.getMaxGuests())
                 .tour(tour)
-                // It's good practice to initialize collections to avoid NullPointerExceptions.
                 .bookings(Collections.emptyList())
+                .guides(guides)
                 .build();
     }
 
@@ -67,9 +77,11 @@ public class TourDateMapper {
                 .price(tourDate.getPrice())
                 .available(tourDate.isAvailable())
                 .maxGuests(tourDate.getMaxGuests())
-                // Safely get the tour ID, handling cases where the tour might be null.
                 .tourId(tourDate.getTour() != null ? tourDate.getTour().getId() : null)
-                // Use Optional to safely handle potentially null collections.
+                .guides(tourDate.getGuides().stream()
+                        // Delegate the conversion of each guide to the injected UserMapper.
+                        .map(userMapper::toGuideSummaryDTO)
+                        .collect(Collectors.toList()))
                 .bookings(Optional.ofNullable(tourDate.getBookings())
                         .orElse(Collections.emptyList()) // Default to an empty list if null
                         .stream()
@@ -107,6 +119,8 @@ public class TourDateMapper {
                 .available(tourDate.isAvailable())
                 .maxGuests(tourDate.getMaxGuests())
                 .tour(tourDTO)
+                .guides(tourDate.getGuides().stream().map(userMapper::toGuideSummaryDTO)
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -118,6 +132,9 @@ public class TourDateMapper {
         dto.setPrice(tourDate.getPrice());
         dto.setAvailable(tourDate.isAvailable());
         dto.setMaxGuests(tourDate.getMaxGuests());
+        dto.setGuides(tourDate.getGuides().stream()
+                .map(userMapper::toGuideSummaryDTO)
+                .collect(Collectors.toList()));
         dto.setTotalPeopleBooked(tourDate.getBookings().stream()
                 .filter(b -> b.getStatus() == BookingStatus.CONFIRMED)
                 .mapToInt(Booking::getNumberOfPeople)

@@ -24,7 +24,6 @@ public class TourResponseDTO {
     private CompanyTourStatus status;
     private UserSummaryDTO owner;
     private TourCompanySummaryDTO company;
-    private Set<GuideSummaryDTO> guides;
     private Set<String> tags;
     private double rating;
     private Duration duration;

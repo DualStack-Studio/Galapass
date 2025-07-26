@@ -168,7 +168,7 @@ public class BookingService {
         return bookingMapper.toBookingResponseDTO(savedBooking);
     }
     public List<BookingResponseDTO> getBookingsByGuide(Long guideId) {
-        List<Booking> bookings = bookingRepository.findByTourDate_Tour_Guides_Id(guideId);
+        List<Booking> bookings = bookingRepository.findByTourDate_Guides_Id(guideId);
         return bookings.stream()
                 .map(bookingMapper::toBookingResponseDTO)
                 .collect(Collectors.toList());

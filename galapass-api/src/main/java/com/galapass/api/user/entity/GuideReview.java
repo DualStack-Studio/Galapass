@@ -30,7 +30,7 @@ public class GuideReview {
     @PrePersist
     @PreUpdate
     private void validateGuideReview() {
-        if (!booking.getTourDate().getTour().getGuides().contains(guide)) {
+        if (!booking.getTourDate().getGuides().contains(guide)) {
             throw new IllegalStateException("The guide being reviewed was not assigned to the tour in this booking.");
         }
 

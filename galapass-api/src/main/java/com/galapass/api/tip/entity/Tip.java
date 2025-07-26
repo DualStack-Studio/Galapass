@@ -30,7 +30,7 @@ public class Tip {
     @PrePersist
     @PreUpdate
     private void validateTip() {
-        if (!booking.getTourDate().getTour().getGuides().contains(guide)) {
+        if (!booking.getTourDate().getGuides().contains(guide)) {
             throw new IllegalStateException("The guide was not assigned to the tour in this booking.");
         }
 

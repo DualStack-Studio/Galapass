@@ -48,6 +48,10 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public List<User> getAllUsersById(List<Long> ids) {
+        return userRepository.findAllById(ids);
+    }
+
     public User createUser(User user) {
         if (user.getRole() == Role.GUIDE) {
             user.setStatus(GuideStatus.OPERABLE);

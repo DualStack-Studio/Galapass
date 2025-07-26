@@ -50,10 +50,12 @@ public class TourCompanyService {
     }
 
 
-    public List<TourCompanyEditing> getTourCompaniesById(Long id) {
-        return tourCompanyRepository.findById(id).stream()
-                .map(tourCompanyMapper::toEditingDTO)
-                .toList();
+    public TourCompanyEditing getTourCompanyById(Long id) {
+        TourCompany tourCompany = tourCompanyRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Tour company not found with id: " + id));
+
+        // Perform the mapping here
+        return tourCompanyMapper.toEditingDTO(tourCompany);
     }
 
     public void createTourCompany(TourCompanyCreateRequest dto) {

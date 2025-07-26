@@ -56,8 +56,8 @@ public class TourCompanyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<TourCompanyEditing>> getTourCompaniesById(@PathVariable Long id) {
-        return ResponseEntity.ok(tourCompanyService.getTourCompaniesById(id));
+    public ResponseEntity<TourCompanyEditing> getTourCompaniesById(@PathVariable Long id) {
+        return ResponseEntity.ok(tourCompanyService.getTourCompanyById(id));
     }
 
     @PutMapping

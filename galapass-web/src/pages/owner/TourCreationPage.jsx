@@ -36,7 +36,7 @@ const TourCreationPage = ({ onSuccess }) => {
     // --- Step Validation ---
     const isStep1Valid = formData.title && formData.location && formData.category && formData.destination;
     const isStep2Valid = media.filter(m => m.type === 'IMAGE').length > 0;
-    const isStep3Valid = formData.description && formData.companyId && formData.duration && formData.maxGuests && formData.selectedGuides?.length > 0 && formData.highlights?.some(h => h.trim() !== '') && formData.tags?.length > 0 && formData.brings?.length > 0;
+    const isStep3Valid = formData.description && formData.companyId && formData.duration && formData.maxGuests && formData.highlights?.some(h => h.trim() !== '') && formData.tags?.length > 0 && formData.brings?.length > 0;
     const isStep4Valid = formData.price;
     const isPublishDisabled = loading || !isStep1Valid || !isStep2Valid || !isStep3Valid || !isStep4Valid;
 
@@ -56,7 +56,6 @@ const TourCreationPage = ({ onSuccess }) => {
     ];
 
     // --- Event Handlers ---
-    const handleGuideToggle = (guideId) => setFormData(prev => ({ ...prev, selectedGuides: prev.selectedGuides.includes(guideId) ? prev.selectedGuides.filter(id => id !== guideId) : [...prev.selectedGuides, guideId] }));
     const handleTagToggle = (tag) => setFormData(prev => ({ ...prev, tags: prev.tags.includes(tag) ? prev.tags.filter(t => t !== tag) : [...prev.tags, tag] }));
     const handleBringToggle = (bringId) => setFormData(prev => ({ ...prev, brings: prev.brings.includes(bringId) ? prev.brings.filter(id => id !== bringId) : [...prev.brings, bringId] }));
 
@@ -101,7 +100,6 @@ const TourCreationPage = ({ onSuccess }) => {
             media: media,
             status: 'ACTIVE',
             company: { id: parseInt(formData.companyId) },
-            guides: formData.selectedGuides.map(id => ({ id: parseInt(id) })),
         };
 
 
@@ -124,7 +122,7 @@ const TourCreationPage = ({ onSuccess }) => {
             case 2:
                 return <StepMedia media={media} onImageSelect={(files) => handleImageUpload(files)} onVideoSelect={(file) => handleVideoUpload(file)} onMediaRemove={removeTourMedia} isUploading={isUploading} tourId={tourId} isDeleting={isDeleting} />;
             case 3:
-                return <StepDetails formData={formData} handleInputChange={handleInputChange} handleHighlightChange={handleHighlightChange} handleGuideToggle={handleGuideToggle} handleTagToggle={handleTagToggle} handleBringToggle={handleBringToggle} companies={companies} guides={guides} availableTags={availableTags} availableBrings={availableBrings} durations={durations} />;
+                return <StepDetails formData={formData} handleInputChange={handleInputChange} handleHighlightChange={handleHighlightChange} handleTagToggle={handleTagToggle} handleBringToggle={handleBringToggle} companies={companies} guides={guides} availableTags={availableTags} availableBrings={availableBrings} durations={durations} />;
             case 4:
                 return <StepPricing formData={formData} handleInputChange={handleInputChange} />;
             case 5:

@@ -25,6 +25,8 @@ const TourDateFormModal = ({
     const [isConfirmCancelOpen, setIsConfirmCancelOpen] = useState(false);
     const [isPromotionModalOpen, setIsPromotionModalOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(isOpen);
+    const [guides, setGuides] = useState([]);
+    const [formData, setFormData] = useState({ selectedGuides: [] });
 
     useEffect(() => {
         if (isOpen) {
@@ -34,6 +36,20 @@ const TourDateFormModal = ({
             return () => clearTimeout(timer);
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        // Fetch guides data here and set it to the state
+        const fetchGuides = async () => {
+            try {
+                const response = await fetch('/api/guides'); // Replace with actual API endpoint
+                const data = await response.json();
+                setGuides(data);
+            } catch (error) {
+                console.error('Failed to fetch guides:', error);
+            }
+        };
+        fetchGuides();
+    }, []);
 
     // --- DERIVED STATE FOR LOGIC ---
     const isCreating = !editingDate;
@@ -88,6 +104,16 @@ const TourDateFormModal = ({
         handleViewBookings(editingDate.id, formatDate(newTourDate.date));
     }
 
+    const handleGuideToggle = (guideId) => {
+        setFormData((prev) => {
+            const isSelected = prev.selectedGuides.includes(guideId);
+            const updatedGuides = isSelected
+                ? prev.selectedGuides.filter((id) => id !== guideId)
+                : [...prev.selectedGuides, guideId];
+            return { ...prev, selectedGuides: updatedGuides };
+        });
+    };
+
     return (
         <>
             <div
@@ -126,6 +152,31 @@ const TourDateFormModal = ({
                             <div className="flex items-center space-x-2">
                                 <input type="checkbox" id="available" checked={newTourDate.available} onChange={(e) => setNewTourDate(prev => ({ ...prev, available: e.target.checked }))} className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded cursor-pointer" />
                                 <label htmlFor="available" className="text-sm font-medium text-gray-700 cursor-pointer">{t('tour_dates.available_for_booking')}</label>
+                            </div>
+                        )}
+
+                        {/* --- ASSIGN GUIDES --- */}
+                        {guides.length > 0 && (
+                            <div>
+                                <label className="block text-lg font-medium text-gray-900 mb-3">
+                                    {t('stepDetails.assign_guides')}
+                                </label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {guides.map((guide) => (
+                                        <label
+                                            key={guide.id}
+                                            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.selectedGuides.includes(String(guide.id))}
+                                                onChange={() => handleGuideToggle(String(guide.id))}
+                                                className="rounded border-gray-300 text-black focus:ring-black h-5 w-5"
+                                            />
+                                            <span className="text-gray-900">{guide.name}</span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
                         )}
 

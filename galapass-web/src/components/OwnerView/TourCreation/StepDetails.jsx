@@ -5,11 +5,9 @@ const StepDetails = ({
                          formData,
                          handleInputChange,
                          handleHighlightChange,
-                         handleGuideToggle,
                          handleTagToggle,
                          handleBringToggle,
                          companies,
-                         guides,
                          availableTags,
                          availableBrings,
                          durations,
@@ -116,30 +114,6 @@ const StepDetails = ({
                         </select>
                     </div>
                 </div>
-
-                {guides.length > 0 && (
-                    <div>
-                        <label className="block text-lg font-medium text-gray-900 mb-3">
-                            {t('stepDetails.assign_guides')}
-                        </label>
-                        <div className="grid grid-cols-2 gap-3">
-                            {guides.map((guide) => (
-                                <label
-                                    key={guide.id}
-                                    className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        checked={formData.selectedGuides.includes(String(guide.id))}
-                                        onChange={() => handleGuideToggle(String(guide.id))}
-                                        className="rounded border-gray-300 text-black focus:ring-black h-5 w-5"
-                                    />
-                                    <span className="text-gray-900">{guide.name}</span>
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-                )}
 
                 <div>
                     <label className="block text-lg font-medium text-gray-900 mb-3">

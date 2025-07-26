@@ -59,6 +59,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, sear
 
     const handleLanguageChange = (lang) => {
         i18n.changeLanguage(lang);
+        localStorage.setItem('i18nextLng', lang);
         setShowLangDropdown(false);
     };
 
@@ -86,36 +87,37 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, sear
                     {/* Desktop nav */}
                     <nav className="hidden md:flex items-center space-x-8">
                         <div className="flex items-center space-x-3 ml-6">
-                            {/* Language Dropdown */}
-                            <div className="relative" ref={langDropdownRef}>
-                                <button
-                                    onClick={() => setShowLangDropdown(prev => !prev)}
-                                    className="px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium flex items-center"
-                                >
-                                    {languages.find(l => l.code === i18n.language)?.label || 'Idioma'}
-                                    <ChevronDown size={16} className="ml-2 text-gray-400" />
-                                </button>
-                                {showLangDropdown && (
-                                    <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                                        {languages.map(lang => (
-                                            <button
-                                                key={lang.code}
-                                                onClick={() => handleLanguageChange(lang.code)}
-                                                className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${i18n.language === lang.code ? 'font-bold text-emerald-600' : 'text-gray-700'}`}
-                                            >
-                                                {lang.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
+                            {/* Language Dropdown (only if not logged in) */}
+                            {!user && (
+                                <div className="relative" ref={langDropdownRef}>
+                                    <button
+                                        onClick={() => setShowLangDropdown(prev => !prev)}
+                                        className="px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium flex items-center cursor-pointer"
+                                    >
+                                        {languages.find(l => l.code === i18n.language)?.label || 'Idioma'}
+                                        <ChevronDown size={16} className="ml-2 text-gray-400" />
+                                    </button>
+                                    {showLangDropdown && (
+                                        <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                                            {languages.map(lang => (
+                                                <button
+                                                    key={lang.code}
+                                                    onClick={() => handleLanguageChange(lang.code)}
+                                                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${i18n.language === lang.code ? 'font-bold text-emerald-600' : 'text-gray-700'}`}
+                                                >
+                                                    {lang.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                             {/* User dropdown */}
                             {user ? (
                                 <div className="relative" ref={userDropdownRef}>
                                     <button
                                         onClick={() => setIsDropdownOpen(prev => !prev)}
-                                        className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-50 transition-colors"
+                                        className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-50 transition-colors cursor-pointer"
                                     >
                                         <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center overflow-hidden">
                                             {getProfileImage() ? (
@@ -126,12 +128,11 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, sear
                                         </div>
                                         <ChevronDown size={16} className="text-gray-400" />
                                     </button>
-
                                     {isDropdownOpen && (
                                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
                                             <div className="px-4 py-2 border-b border-gray-100">
                                                 <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                                                <p className="text-sm text-gray-500">{user.role}</p>
+                                                <p className="text-sm text-gray-500">{t(`role.${user.role}`)}</p>
                                                 <p className="text-xs text-gray-500 truncate">{user.email}</p>
                                             </div>
                                             <a href="#" className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
@@ -142,10 +143,35 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, sear
                                                 <Settings size={16} />
                                                 <span>{t('settings')}</span>
                                             </a>
+                                            {/* Language Dropdown inside user dropdown */}
+                                            <div className="border-t border-gray-100 mt-1 pt-1">
+                                                <div className="relative" ref={langDropdownRef}>
+                                                    <button
+                                                        onClick={() => setShowLangDropdown(prev => !prev)}
+                                                        className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg cursor-pointer"
+                                                    >
+                                                        {languages.find(l => l.code === i18n.language)?.label || 'Idioma'}
+                                                        <ChevronDown size={16} className="ml-2 text-gray-400" />
+                                                    </button>
+                                                    {showLangDropdown && (
+                                                        <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                                                            {languages.map(lang => (
+                                                                <button
+                                                                    key={lang.code}
+                                                                    onClick={() => handleLanguageChange(lang.code)}
+                                                                    className={`cursor-pointer block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${i18n.language === lang.code ? 'font-bold text-emerald-600' : 'text-gray-700'}`}
+                                                                >
+                                                                    {lang.label}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
                                             <hr className="my-1" />
                                             <button
                                                 onClick={handleLogout}
-                                                className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left"
+                                                className="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left cursor-pointer"
                                             >
                                                 <LogOut size={16} />
                                                 <span>{t('logout')}</span>
@@ -156,7 +182,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen, onLoginClick, onRegisterClick, sear
                             ) : (
                                 <button
                                     onClick={onLoginClick}
-                                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
+                                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium cursor-pointer"
                                 >
                                     {t('login')}
                                 </button>

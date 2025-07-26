@@ -12,7 +12,6 @@ export const useTourForm = () => {
         maxGuests: '',
         highlights: ['', '', ''],
         tags: [],
-        selectedGuides: [],
         brings: [],
     });
 

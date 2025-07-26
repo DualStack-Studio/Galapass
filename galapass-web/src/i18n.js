@@ -6,6 +6,7 @@ const resources = {
         translation: {
             "welcome": "Bienvenido a Galapass",
             "login": "Iniciar sesión",
+            "signup": "Registrarse",
             "logout": "Cerrar sesión",
             "search": "Buscar",
             "tourist_dashboard_title": "Descubre ",
@@ -175,6 +176,14 @@ const resources = {
             "not_available": "No disponible",
             "edit": "Editar",
             "confirm_action": "Confirmar acción",
+            "profile": "Perfil",
+            "settings": "Configuración",
+            "role": {
+                "OWNER": "Operador turístico",
+                "GUIDE": "Guía",
+                "ADMIN": "Administrador",
+                "USER": "Invitado"
+            },
             "errors": {
                 "upload_image_failed": "Falló la carga de {{name}}",
                 "upload_video_failed": "Falló la carga del video",
@@ -501,6 +510,7 @@ const resources = {
         translation: {
             "welcome": "Welcome to Galapass",
             "login": "Log in",
+            "signup": "Sign up",
             "logout": "Log out",
             "search": "Search",
             "tourist_dashboard_title": "Discover the ",
@@ -614,6 +624,8 @@ const resources = {
             "logo_and_identity": "Logo and identity",
             "details": "Details",
             "complete_profile": "Complete your profile",
+            "profile": "Profile",
+            "settings": "Settings",
             "exit": "Exit",
             "back": "Back",
             "next": "Next",
@@ -669,6 +681,12 @@ const resources = {
             "not_available": "N/A",
             "edit": "Edit",
             "confirm_action": "Confirm Action",
+            "role": {
+                "OWNER": "Tour Operator",
+                "GUIDE": "Guide",
+                "ADMIN": "Admin",
+                "USER": "Guest"
+            },
             "errors": {
                 "upload_image_failed": "Upload failed for {{name}}",
                 "upload_video_failed": "Video upload failed",
@@ -988,15 +1006,16 @@ const resources = {
     }
 };
 
+const savedLang = localStorage.getItem('i18nextLng');
 i18n
-    .use(initReactI18next)
-    .init({
-        resources,
-        lng: 'es', // default language
-        fallbackLng: 'es',
-        interpolation: {
-            escapeValue: false,
-        },
-    });
+  .use(initReactI18next)
+  .init({
+    resources,
+    lng: savedLang || 'es', // Use saved language or default to 'es'
+    fallbackLng: 'es',
+    interpolation: {
+      escapeValue: false,
+    },
+  });
 
 export default i18n;

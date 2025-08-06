@@ -46,7 +46,7 @@ public class AuthController {
                 .secure(true)         // Recommended for production (HTTPS only)
                 .path("/")            // Makes the cookie available to your whole site
                 .maxAge(JWT_COOKIE_MAX_AGE) // Set expiration (e.g., 1 day in seconds)
-                .sameSite("Lax")      // Good CSRF protection
+                .sameSite("None")      // Good CSRF protection
                 .build();
 
         // 4. Add the cookie to the response headers
@@ -73,7 +73,7 @@ public class AuthController {
                 .secure(true)
                 .path("/")
                 .maxAge(Duration.ofDays(30))
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         servletResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -93,7 +93,7 @@ public class AuthController {
                 .secure(true)
                 .path("/")
                 .maxAge(JWT_COOKIE_MAX_AGE)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         servletResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -125,7 +125,7 @@ public class AuthController {
                 .secure(true)
                 .path("/")
                 .maxAge(0) // This expires the cookie immediately
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());

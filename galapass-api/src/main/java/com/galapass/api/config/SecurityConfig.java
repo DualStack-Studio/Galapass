@@ -38,6 +38,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authRequest ->
                         authRequest
+                                .requestMatchers("/actuator/**").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/tours").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/tours/detail/*").permitAll()
@@ -69,6 +70,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-
 }

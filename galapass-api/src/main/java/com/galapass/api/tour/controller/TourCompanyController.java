@@ -46,7 +46,7 @@ public class TourCompanyController {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Database constraint violated. Check server logs for the real cause. Message: " + e.getRootCause().getMessage());
 
-
+    
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 

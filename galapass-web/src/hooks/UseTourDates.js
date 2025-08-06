@@ -74,6 +74,17 @@ const useTourDates = (tourId) => {
         }
     };
 
+    const fetchGuidesByCompany = async (companyId) => {
+        try {
+            const res = await axios.get(`${BASE_URL}/api/companies/${companyId}/guides`,
+                { withCredentials: true });
+            return res.data;
+        } catch (err) {
+            console.error('Failed to fetch guides:', err);
+            throw new Error('Failed to fetch guides');
+        }
+    };
+
     // This function is for optimistic updates and does not need to change.
     const updateTourDateLocal = (updated) => {
         setTourDates(prev =>
@@ -96,7 +107,8 @@ const useTourDates = (tourId) => {
         deleteTourDate,
         updateTourDateLocal,
         cancelTourDate,
-        refetchTourDates: fetchTourDates
+        refetchTourDates: fetchTourDates,
+        fetchGuidesByCompany
     };
 };
 

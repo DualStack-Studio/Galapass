@@ -145,7 +145,7 @@ const CompactCalendar = ({
                         }}
                         className="text-xs text-gray-500 hover:text-gray-700 underline cursor-pointer"
                     >
-                        {t('calendar.clear', 'Clear')}
+                        {t('calendar.clear')}
                     </button>
                     <button
                         onClick={() => {
@@ -156,7 +156,7 @@ const CompactCalendar = ({
                         }}
                         className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 underline cursor-pointer"
                     >
-                        {t('calendar.today', 'Today')}
+                        {t('calendar.today')}
                     </button>
                 </div>
             )}

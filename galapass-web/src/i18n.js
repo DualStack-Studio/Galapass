@@ -19,7 +19,6 @@ const resources = {
             "tourists": "Turistas",
             "tourist": "turista",
             "number_of_tourists": "Número de turistas",
-            "filters": "Filtros",
             "explore": "Explorar",
             "find_tours": "Buscar tours",
             "local_guides": "Guías locales",
@@ -228,20 +227,20 @@ const resources = {
             },
             "stepDetails": {
                 "tell_tour": "Cuéntanos sobre tu tour",
-                "share_details": "Comparte los detalles que ayudarán a los visitantes a entender tu experiencia.",
+                "share_details": "Comparte los detalles que ayudarán a los turistas a entender tu experiencia.",
                 "describe": "Describe tu tour",
-                "describe_placeholder": "¿Qué hace especial tu tour? ¿Qué experimentarán los visitantes?",
+                "describe_placeholder": "¿Qué hace especial tu tour? ¿Qué experimentarán los turistas?",
                 "highlights": "Aspectos destacados del tour",
                 "highlight": "Aspecto destacado",
                 "duration": "Duración",
                 "select_duration": "Selecciona duración",
-                "max_guests": "Máx. visitantes",
+                "max_guests": "Máx. turistas",
                 "guest_placeholder": "ej., 8",
                 "company": "Compañía",
                 "select_company": "Selecciona tu compañía",
                 "assign_guides": "Asigna guías",
                 "tags": "Agrega etiquetas para ayudar a encontrar tu tour",
-                "bring": "¿Qué deben llevar los visitantes?"
+                "bring": "¿Qué deben llevar los turistas?"
             },
             "set_your_price": "Establece tu precio",
             "set_price_subtitle": "Puedes cambiar esto en cualquier momento. Te ayudaremos a fijar un precio competitivo.",
@@ -407,9 +406,11 @@ const resources = {
             "tour_dates": {
                 "manage_tour_date": "Gestionar fecha del tour",
                 "create_tour_date": "Crear fecha del tour",
+                "edit_tour_date": "Editar fecha del tour",
                 "date": "Fecha",
+                "time": "Hora",
                 "price": "Precio ($)",
-                "max_guests": "Máx. huéspedes",
+                "max_guests": "Máx. turistas",
                 "available_for_booking": "Disponible para reserva",
                 "save_changes": "Guardar cambios",
                 "create": "Crear",
@@ -420,7 +421,7 @@ const resources = {
                 "delete_confirm": "¿Estás seguro de que deseas eliminar permanentemente esta fecha del tour? Esta acción no se puede deshacer.",
                 "delete": "Eliminar",
                 "confirm_cancellation": "Confirmar cancelación",
-                "cancel_confirm": "Esto cancelará el tour para los {{count}} huéspedes reservados. Ellos serán notificados y reembolsados. Esta acción no se puede deshacer.",
+                "cancel_confirm": "Esto cancelará el tour para los {{count}} turistas reservados. Ellos serán notificados y reembolsados. Esta acción no se puede deshacer.",
                 "yes_cancel_tour": "Sí, cancelar tour",
                 "create_promotion": "Crear promoción",
                 "discount": "Descuento (%)",
@@ -434,12 +435,29 @@ const resources = {
                 "unavailable_short": "No disponible",
                 "tour_information": "Información del tour",
                 "base_price": "Precio base: ${{price}}",
-                "max_guests_info": "Máx. huéspedes: {{max}}",
+                "max_guests_info": "Máx. turistas: {{max}}",
                 "today": "Hoy",
                 "booked_short": "Reservado",
                 "manageTourDates": "Gestionar fechas del tour",
                 "backToTours": "Volver a los tours",
                 "bookings": "Reservas",
+                "select_guides": "Seleccionar guías",
+                "search_guides": "Buscar guías...",
+                "no_guides_found": "No se encontraron guías",
+                "no_guides_available": "No hay guías disponibles",
+                "no_guide_yet": "Sin guía asignado",
+                "no_guide_assigned": "Ningún guía asignado aún",
+                "select_tour_date": "Seleccionar fecha del tour",
+                "create_new_tour_date": "Crear nueva fecha del tour",
+                "existing_tour_dates": "Fechas de tour existentes",
+                "no_tour_dates_for_date": "No hay fechas de tour para esta fecha",
+                "create_first_tour_date": "Crea tu primera fecha de tour",
+                "spots_left": "lugares restantes",
+                "fully_booked": "Totalmente reservado",
+                "has_bookings": "Tiene reservas",
+                "no_guide_added": "Sin guía agregado",
+                "confirm_delete_title": "Confirmar eliminación",
+                "confirm_delete_message": "¿Estás seguro de que deseas eliminar esta fecha del tour? Esta acción no se puede deshacer.",
             },
             "calendar": {
                 "monthNames": [
@@ -449,6 +467,24 @@ const resources = {
                 "dayNames": ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
                 "abreviatedDayNames": ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
                 "fullDayNames": ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+                "clear": "Limpiar",
+                "today": "Hoy"
+            },
+            "compact_search": {
+                "any_date": "Fecha",
+                "one_guest": "1 turista",
+                "guests_count": "{{count}} turistas",
+                "guests": "Tuiristas",
+                "anywhere": "Destino",
+                "search_destinations": "Buscar destinos..."
+            },
+            "filters": {
+                "more_filters": "Más Filtros",
+                "category": "Categoría",
+                "tags": "Etiquetas",
+                "duration": "Duración",
+                "clear_all": "Limpiar Todo",
+                "show_tours": "Mostrar Tours"
             },
             "booking_management": {
                 "back": "Atrás",
@@ -475,21 +511,21 @@ const resources = {
                 "PENDING": "Pendiente",
                 "CANCELED": "Cancelado",
                 "date": "Fecha",
-                "guests": "Huéspedes",
+                "guests": "Turistas",
                 "revenue": "Ingresos",
                 "booked": "Reservado",
                 "view_details": "Ver detalles",
                 "assigned_guides": "Guías asignados",
-                "more": "+{{count}} más",
+                "more": "más",
                 "booking_details": "Detalles de la Reserva",
                 "tour_information": "Información del tour",
                 "price_per_person": "Precio por persona",
                 "tour_date": "Fecha del tour",
-                "number_of_guests": "Número de huéspedes",
+                "number_of_guests": "Número de turistas",
                 "total_amount": "Monto total",
                 "status": "Estado",
-                "guest_information": "Información del huésped",
-                "unknown_guest": "Huésped desconocido",
+                "guest_information": "Información del turista",
+                "unknown_guest": "Turista desconocido",
                 "no_email": "Sin correo electrónico",
                 "confirm_booking": "Confirmar reserva",
                 "cancel_booking": "Cancelar reserva",
@@ -502,8 +538,54 @@ const resources = {
                 "upcoming": "Próximos",
                 "completed": "Completados",
                 "pending": "Pendientes",
-                "canceled": "Cancelados"
+                "canceled": "Cancelados",
+                "no_guide_assigned": "Ningún guía asignado aún",
+                "select_tour_date": "Seleccionar fecha del tour",
+                "create_new_tour_date": "Crear nueva fecha del tour",
+                "existing_tour_dates": "Fechas de tour existentes",
+                "no_tour_dates_for_date": "No hay fechas de tour para esta fecha",
+                "create_first_tour_date": "Crea tu primera fecha de tour",
+                "spots_left": "lugares restantes",
+                "fully_booked": "Totalmente reservado",
+                "has_bookings": "Tiene reservas"
             },
+            "tour_details": {
+                "max_guests_info": "Hasta {{max}} turistas",
+                "whats_included": "Qué Incluye",
+                "tour_hosted_by": "Tour organizado por {{companyName}}",
+                "your_tour_guides": "Tu(s) Guía(s) de Tour",
+                "meet_your_guide": "Conoce tu Guía",
+                "guide_assignment_pending": "Asignación de Guía Pendiente",
+                "guide_assignment_pending_desc": "Un guía será asignado a tu fecha de tour más cerca de tu fecha de reserva.",
+                "select_date_see_guide": "Selecciona una Fecha para Ver tu Guía",
+                "select_date_see_guide_desc": "Elige una fecha de tour arriba para ver qué guía liderará tu aventura.",
+                "tour_not_found": "Tour no encontrado.",
+                "select_a_date": "Selecciona una fecha",
+                "reviews": "{{rating}} ({{count}} reseñas)",
+                "show_all_reviews": "Mostrar todas las {{count}} reseñas"
+            },
+            "booking": {
+                "select_date": "Seleccionar Fecha",
+                "tour_guides": "Guía(s) de Tour",
+                "guide_not_assigned": "Guía aún no asignado",
+                "guests": "Turistas",
+                "number_of_guests": "Número de Turistas",
+                "total": "Total",
+                "includes_taxes_fees": "Incluye todos los impuestos y tarifas",
+                "request_booking": "Solicitar Reserva",
+                "select_date_first": "Selecciona una Fecha",
+                "wont_be_charged": "Aún no se te cobrará",
+                "more_dates": "Más fechas"
+            },
+            "media_gallery": {
+                "more": "+{{count}} más"
+            },
+            "tour_header": {
+                "save": "Guardar",
+                "saved": "Guardado",
+                "share": "Compartir",
+                "reviews": "reseñas"
+            }
         }
     },
     en: {
@@ -523,7 +605,6 @@ const resources = {
             "tourists": "Tourists",
             "tourist": "tourist",
             "number_of_tourists": "Number of tourists",
-            "filters": "Filters",
             "explore": "Explore",
             "find_tours": "Find Tours",
             "local_guides": "Local Guides",
@@ -685,7 +766,7 @@ const resources = {
                 "OWNER": "Tour Operator",
                 "GUIDE": "Guide",
                 "ADMIN": "Admin",
-                "USER": "Guest"
+                "USER": "Tourist"
             },
             "errors": {
                 "upload_image_failed": "Upload failed for {{name}}",
@@ -905,9 +986,11 @@ const resources = {
             "tour_dates": {
                 "manage_tour_date": "Manage Tour Date",
                 "create_tour_date": "Create Tour Date",
+                "edit_tour_date": "Edit Tour Date",
                 "date": "Date",
+                "time": "Time",
                 "price": "Price ($)",
-                "max_guests": "Max Guests",
+                "max_guests": "Max Tourists",
                 "available_for_booking": "Available for booking",
                 "save_changes": "Save Changes",
                 "create": "Create",
@@ -938,6 +1021,23 @@ const resources = {
                 "manageTourDates": "Manage Tour Dates",
                 "backToTours": "Back to Tours",
                 "bookings": "Bookings",
+                "select_guides": "Select Guides",
+                "search_guides": "Search guides...",
+                "no_guides_found": "No guides found",
+                "no_guides_available": "No guides available",
+                "no_guide_yet": "No guide assigned",
+                "no_guide_assigned": "No guide assigned yet",
+                "select_tour_date": "Select Tour Date",
+                "create_new_tour_date": "Create New Tour Date",
+                "existing_tour_dates": "Existing Tour Dates",
+                "no_tour_dates_for_date": "No tour dates for this date",
+                "create_first_tour_date": "Create your first tour date",
+                "spots_left": "spots left",
+                "fully_booked": "Fully Booked",
+                "has_bookings": "Has Bookings",
+                "no_guide_added": "No guide added",
+                "confirm_delete_title": "Confirm Delete",
+                "confirm_delete_message": "Are you sure you want to delete this tour date? This action cannot be undone."
             },
             "calendar": {
                 "monthNames": [
@@ -947,6 +1047,24 @@ const resources = {
                 "dayNames": ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
                 "abreviatedDayNames": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
                 "fullDayNames": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                "clear": "Clear",
+                "today": "Today"
+            },
+            "compact_search": {
+                "any_date": "Date",
+                "one_guest": "1 visitor",
+                "guests_count": "{{count}} guests",
+                "guests": "Turistas",
+                "anywhere": "Destination",
+                "search_destinations": "Search destinations..."
+            },
+            "filters": {
+                "more_filters": "More Filters",
+                "category": "Category",
+                "tags": "Tags",
+                "duration": "Duration",
+                "clear_all": "Clear All",
+                "show_tours": "Show Tours"
             },
             "booking_management": {
                 "back": "Back",
@@ -973,49 +1091,95 @@ const resources = {
                 "PENDING": "Pending",
                 "CANCELED": "Canceled",
                 "date": "Date",
-                "guests": "Guests",
+                "guests": "Tourists",
                 "revenue": "Revenue",
                 "booked": "Booked",
                 "view_details": "View Details",
                 "assigned_guides": "Assigned Guides",
-                "more": "+{{count}} more",
+                "more": "more",
                 "booking_details": "Booking Details",
                 "tour_information": "Tour Information",
                 "price_per_person": "Price per person",
                 "tour_date": "Tour Date",
-                "number_of_guests": "Number of Guests",
+                "number_of_guests": "Number of Tourists",
                 "total_amount": "Total Amount",
                 "status": "Status",
-                "guest_information": "Guest Information",
-                "unknown_guest": "Unknown Guest",
+                "guest_information": "Tourist Information",
+                "unknown_guest": "Unknown Tourist",
                 "no_email": "No email",
                 "confirm_booking": "Confirm Booking",
                 "cancel_booking": "Cancel Booking",
                 "search_bookings": "Search bookings...",
                 "select_date": "Select date",
-                "calendar": "Calendar",
+                "calendar": "Calendario",
             },
             "booking_filters": {
                 "all_bookings": "All Bookings",
                 "upcoming": "Upcoming",
                 "completed": "Completed",
                 "pending": "Pending",
-                "canceled": "Canceled"
+                "canceled": "Canceled",
+                "no_guide_assigned": "No guide assigned yet",
+                "select_tour_date": "Select Tour Date",
+                "create_new_tour_date": "Create New Tour Date",
+                "existing_tour_dates": "Existing Tour Dates",
+                "no_tour_dates_for_date": "No tour dates for this date",
+                "create_first_tour_date": "Create your first tour date",
+                "spots_left": "spots left",
+                "fully_booked": "Fully Booked",
+                "has_bookings": "Has Bookings"
             },
+            "tour_details": {
+                "max_guests_info": "Up to {{max}} turistas",
+                "whats_included": "What's Included",
+                "tour_hosted_by": "Tour hosted by {{companyName}}",
+                "your_tour_guides": "Your Tour Guide(s)",
+                "meet_your_guide": "Meet Your Guide",
+                "guide_assignment_pending": "Guide Assignment Pending",
+                "guide_assignment_pending_desc": "A guide will be assigned to your tour date closer to your booking date.",
+                "select_date_see_guide": "Select a Date to See Your Guide",
+                "select_date_see_guide_desc": "Choose a tour date above to see which guide will be leading your adventure.",
+                "tour_not_found": "Tour not found.",
+                "select_a_date": "Select a date",
+                "reviews": "{{rating}} ({{count}} reviews)",
+                "show_all_reviews": "Show all {{count}} reviews"
+            },
+            "booking": {
+                "select_date": "Select a Date",
+                "tour_guides": "Tour Guide(s)",
+                "guide_not_assigned": "Guide not assigned yet",
+                "guests": "Tourists",
+                "number_of_guests": "Number of Tourists",
+                "total": "Total",
+                "includes_taxes_fees": "Includes all taxes and fees",
+                "request_booking": "Request Booking",
+                "select_date_first": "Select a Date",
+                "wont_be_charged": "You won't be charged yet",
+                "more_dates": "More dates"
+            },
+            "media_gallery": {
+                "more": "+{{count}} more"
+            },
+            "tour_header": {
+                "save": "Save",
+                "saved": "Saved",
+                "share": "Share",
+                "reviews": "reviews"
+            }
         }
     }
 };
 
 const savedLang = localStorage.getItem('i18nextLng');
 i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: savedLang || 'es', // Use saved language or default to 'es'
-    fallbackLng: 'es',
-    interpolation: {
-      escapeValue: false,
-    },
-  });
+    .use(initReactI18next)
+    .init({
+        resources,
+        lng: savedLang || 'es', // Use saved language or default to 'es'
+        fallbackLng: 'es',
+        interpolation: {
+            escapeValue: false,
+        },
+    });
 
 export default i18n;

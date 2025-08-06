@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { X as XIcon, Volume2 as Volume2Icon, VolumeX as VolumeXIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // ✅ Import the new custom hook
 import { useTourDetail } from '../../hooks/useTourDetail';
@@ -16,15 +17,16 @@ import MediaGallery from "../../components/TouristView/TourDetail/MediaGallery.j
 import TourCompanyInfo from "../../components/TouristView/TourDetail/TourCompanyInfo.jsx";
 import BookingCard from "../../components/TouristView/TourDetail/BookingCard.jsx";
 import Reviews from "../../components/TouristView/TourDetail/Reviews.jsx";
+import LoadingSpinner from "../../components/LoadingSpinner.jsx";
 
 const formatDate = (dateString, options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) => {
-    if (!dateString) return "Select a date";
     return new Date(dateString).toLocaleDateString('en-US', options);
 };
 
 // --- MAIN PAGE COMPONENT ---
 const TourDetailPage = () => {
     const { tourId } = useParams();
+    const { t } = useTranslation();
 
     const { tour, loading, error } = useTourDetail(tourId);
 
@@ -79,16 +81,14 @@ const TourDetailPage = () => {
 
     // --- RENDER LOGIC ---
     if (loading) {
-        return <div className="flex justify-center items-center h-screen">Loading tour details...</div>;
+        return <LoadingSpinner />;
     }
     if (error) {
         return <div className="flex justify-center items-center h-screen text-red-500">Error: {error}</div>;
     }
     if (!tour) {
-        return <div className="flex justify-center items-center h-screen">Tour not found.</div>;
     }
 
-    // The rest of your JSX remains exactly the same...
     return (
         <div className="font-sans antialiased">
             <div className="container mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
@@ -115,7 +115,11 @@ const TourDetailPage = () => {
                 <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 lg:gap-12">
                     {/* Left Column */}
                     <div className="lg:col-span-2 space-y-10">
-                        <TourCompanyInfo tour={tour} />
+                        <TourCompanyInfo
+                            tour={tour}
+                            selectedDate={selectedDate}
+                            upcomingDates={tour.tourDates}
+                        />
                         <Reviews
                             tour={{
                                 averageRating: tour.averageRating,
@@ -223,3 +227,4 @@ const TourDetailPage = () => {
 };
 
 export default TourDetailPage;
+

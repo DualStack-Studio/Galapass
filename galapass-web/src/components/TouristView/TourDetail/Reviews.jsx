@@ -1,12 +1,15 @@
 import {Star, ArrowRight} from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 
 const Reviews = ({tour, formatDate}) => {
+  const { t } = useTranslation();
+
   return (
     <div>
         <div className="flex items-center space-x-2 mb-6">
             <Star className="w-6 h-6 text-yellow-400 fill-current" />
-            <h3 className="text-2xl font-bold text-gray-800">{tour.averageRating} ({tour.reviewCount} reviews)</h3>
+            <h3 className="text-2xl font-bold text-gray-800">{t('tour_details.reviews', {rating: tour.averageRating, count: tour.reviewCount})}</h3>
         </div>
         <div className="space-y-6">{tour.reviews.map((review) => (
             <div key={review.id}>
@@ -24,7 +27,7 @@ const Reviews = ({tour, formatDate}) => {
             </div>))}
         </div>
         <button className="mt-8 w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-3 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 font-bold transition-colors">
-            <span>Show all {tour.totalReviews} reviews</span>
+            <span>{t('tour_details.show_all_reviews', {count: tour.totalReviews})}</span>
             <ArrowRight className="w-4 h-4"/>
         </button>
     </div>

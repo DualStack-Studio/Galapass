@@ -89,7 +89,6 @@ const OwnerDashboardPage = () => {
         return <div className="p-8 text-red-600">{t('error_loading_dashboard')}: {error}</div>;
     }
 
-    // 2. Modify the Add Tour handler
     const handleAddTourClick = () => {
         if (companies.length === 0) {
             setErrorMessage("error_messages.createCompanyRequirement");

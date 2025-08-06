@@ -1,7 +1,9 @@
 import React from 'react';
 import { PlayCircle, Camera } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const MediaGallery = ({ media, title, onOpenLightbox }) => {
+    const { t } = useTranslation();
     const galleryMedia = media.slice(0, 5);
 
     return (
@@ -47,7 +49,7 @@ const MediaGallery = ({ media, title, onOpenLightbox }) => {
                                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white text-center">
                                     <div>
                                         <Camera className="w-8 h-8 mx-auto mb-1" />
-                                        <span className="text-lg font-bold">+{media.length - 5} more</span>
+                                        <span className="text-lg font-bold">{t('media_gallery.more', {count: media.length - 5})}</span>
                                     </div>
                                 </div>
                             )}

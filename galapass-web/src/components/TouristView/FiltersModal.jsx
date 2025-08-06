@@ -1,10 +1,12 @@
 import { X } from 'lucide-react';
 import useTourEnums from "../../hooks/useTourEnums.js";
 import {useEffect, useState} from "react";
+import { useTranslation } from 'react-i18next';
 
 const FiltersModal = ({ isOpen, onClose, filters, onFilterToggle, onClear }) => {
     const { categories, tags, durations } = useTourEnums();
     const [isVisible, setIsVisible] = useState(isOpen);
+    const { t } = useTranslation();
 
     // This effect handles the delay for the fade-out animation
     useEffect(() => {
@@ -59,23 +61,23 @@ const FiltersModal = ({ isOpen, onClose, filters, onFilterToggle, onClear }) => 
             >
                 <div className="flex-shrink-0 p-6 pb-4 border-b border-gray-200">
                     <div className="flex justify-between items-center">
-                        <h2 className="text-2xl font-bold text-gray-900">More Filters</h2>
+                        <h2 className="text-2xl font-bold text-gray-900">{t('filters.more_filters')}</h2>
                         <button onClick={onClose} className="p-1.5 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors cursor-pointer">
                             <X size={24}/>
                         </button>
                     </div>
                 </div>
                 <div className="flex-grow p-6 space-y-8 overflow-y-auto">
-                    <FilterButtonGroup title="Category" options={categories} filterType="categories" />
-                    <FilterButtonGroup title="Tags" options={tags} filterType="tags" />
-                    <FilterButtonGroup title="Duration" options={durations} filterType="durations" />
+                    <FilterButtonGroup title={t('filters.category')} options={categories} filterType="categories" />
+                    <FilterButtonGroup title={t('filters.tags')} options={tags} filterType="tags" />
+                    <FilterButtonGroup title={t('filters.duration')} options={durations} filterType="durations" />
                 </div>
                 <div className="flex-shrink-0 flex justify-between items-center border-t border-gray-200 p-6 pt-5">
                     <button onClick={onClear} className="font-bold text-gray-700 hover:underline cursor-pointer px-4 py-2">
-                        Clear all
+                        {t('filters.clear_all')}
                     </button>
                     <button onClick={onClose} className="bg-gray-900 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-700 transition-colors shadow-sm hover:shadow-md transform hover:-translate-y-0.5 cursor-pointer">
-                        Show tours
+                        {t('filters.show_tours')}
                     </button>
                 </div>
             </div>

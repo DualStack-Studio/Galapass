@@ -1,299 +1,384 @@
+// src/components/OwnerView/TourDates/TourDateFormModal.jsx
 import React, { useState, useEffect } from "react";
-import { Save, X, Trash2, Calendar, AlertTriangle } from "lucide-react";
-import CompactCalendar from "./CompactCalendar";
-import ConfirmModal from "../ConfirmModal";
+import { Save, X, Trash2, Calendar, Clock, ChevronDown } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import ConfirmModal from '../ConfirmModal';
 
 const TourDateFormModal = ({
                                isOpen,
+                               onClose,
                                editingDate,
-                               newTourDate,
-                               setNewTourDate,
-                               handleSaveTourDate,
-                               handleCancelEdit,
-                               handleDeleteTourDate,
-                               handleCancelTourDate,
-                               totalPeopleBooked,
-                               handleCreatePromotion,
-                               handleDisableTourDate,
-                               handleViewBookings,
+                               selectedDate,
+                               tour,
+                               guides,
+                               onSave,
+                               onUpdate,
+                               onDelete
                            }) => {
-    const { t, i18n } = useTranslation();
-    const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-    const [currentMonth, setCurrentMonth] = useState(newTourDate.date || new Date());
-    const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
-    const [isConfirmCancelOpen, setIsConfirmCancelOpen] = useState(false);
-    const [isPromotionModalOpen, setIsPromotionModalOpen] = useState(false);
+    const { t } = useTranslation();
+    const [formData, setFormData] = useState({
+        date: null,
+        time: '09:00',
+        price: '',
+        maxGuests: '',
+        available: true,
+        guideIds: []
+    });
     const [isVisible, setIsVisible] = useState(isOpen);
-    const [guides, setGuides] = useState([]);
-    const [formData, setFormData] = useState({ selectedGuides: [] });
+    const [guideSearchTerm, setGuideSearchTerm] = useState('');
+    const [isGuideDropdownOpen, setIsGuideDropdownOpen] = useState(false);
+    const [isTimeDropdownOpen, setIsTimeDropdownOpen] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
             setIsVisible(true);
+            if (editingDate) {
+                const dateTime = new Date(editingDate.date);
+                setFormData({
+                    date: selectedDate,
+                    time: dateTime.toTimeString().slice(0, 5),
+                    price: editingDate.price.toString(),
+                    maxGuests: editingDate.maxGuests.toString(),
+                    available: editingDate.available,
+                    guideIds: editingDate.guides ? editingDate.guides.map(guide => guide.id) : []
+                });
+            } else {
+                setFormData({
+                    date: selectedDate,
+                    time: '09:00',
+                    price: tour.price.toString(),
+                    maxGuests: tour.maxGuests.toString(),
+                    available: true,
+                    guideIds: []
+                });
+            }
         } else {
-            const timer = setTimeout(() => setIsVisible(false), 300); // Duration matches animation
+            const timer = setTimeout(() => setIsVisible(false), 300);
             return () => clearTimeout(timer);
         }
-    }, [isOpen]);
-
-    useEffect(() => {
-        // Fetch guides data here and set it to the state
-        const fetchGuides = async () => {
-            try {
-                const response = await fetch('/api/guides'); // Replace with actual API endpoint
-                const data = await response.json();
-                setGuides(data);
-            } catch (error) {
-                console.error('Failed to fetch guides:', error);
-            }
-        };
-        fetchGuides();
-    }, []);
-
-    // --- DERIVED STATE FOR LOGIC ---
-    const isCreating = !editingDate;
-    const hasBookings = totalPeopleBooked > 0;
-    // Fields are editable only if creating a new date or editing a date with no bookings.
-    const isEditable = isCreating || !hasBookings;
-    const unbookedSpots = newTourDate.maxGuests - totalPeopleBooked;
-
+    }, [isOpen, editingDate, selectedDate, tour]);
 
     if (!isVisible) return null;
 
+    const isCreating = !editingDate;
+    const totalPeopleBooked = editingDate ? (editingDate.bookings || []).reduce(
+        (sum, booking) => sum + (booking.numberOfPeople || 0), 0
+    ) : 0;
+    const hasBookings = totalPeopleBooked > 0;
 
+    const handleSave = async () => {
+        if (!formData.date || !formData.time || !formData.price || !formData.maxGuests) {
+            return;
+        }
+
+        const [hours, minutes] = formData.time.split(':');
+        const fullDateTime = new Date(formData.date);
+        fullDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+        const tourDateData = {
+            date: fullDateTime,
+            price: parseFloat(formData.price),
+            maxGuests: parseInt(formData.maxGuests),
+            available: formData.available,
+            guides: formData.guideIds
+        };
+
+        try {
+            if (editingDate) {
+                await onUpdate({ ...editingDate, ...tourDateData });
+            } else {
+                await onSave(tourDateData);
+            }
+            onClose();
+        } catch (error) {
+            console.error('Failed to save tour date:', error);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!editingDate) return;
+
+        try {
+            await onDelete(editingDate.id);
+            onClose();
+        } catch (error) {
+            console.error('Failed to delete tour date:', error);
+            // You might want to show an error message to the user here
+        }
+    };
+
+    const confirmDelete = () => {
+        setShowDeleteConfirm(false);
+        handleDelete();
+    };
 
     const formatDate = (date) => {
         if (!date) return "";
-        const lang = i18n.language || 'en';
-        // Add fallbacks for translation keys
-        const monthNames = t('calendar.monthNames', { returnObjects: true, lng: lang, defaultValue: [] });
-        const dayNames = t('calendar.abreviatedDayNames', { returnObjects: true, lng: lang, defaultValue: [] });
-        if (!monthNames.length || !dayNames.length) return date.toLocaleDateString(); // Fallback to native format
-        const weekday = dayNames[date.getDay()];
-        const month = monthNames[date.getMonth()];
-        const year = date.getFullYear();
-        const day = date.getDate();
-        return `${weekday}, ${month} ${day}, ${year}`;
-    };
-
-    const handleDateSelect = (dateString) => {
-        const parts = dateString.split('-');
-        const localDate = new Date(parts[0], parts[1] - 1, parts[2]);
-        setNewTourDate(prev => ({ ...prev, date: localDate }));
-        setIsCalendarOpen(false);
-    };
-
-    const getLocalDateString = (date) => {
-        if (!date) return null;
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
-
-    const handleConfirmDelete = () => {
-        handleDeleteTourDate(editingDate.id);
-    };
-
-    const handleConfirmCancel = () => {
-        handleCancelTourDate(editingDate.id);
-    };
-
-    const handleViewBookingsTourDate = () => {
-        handleViewBookings(editingDate.id, formatDate(newTourDate.date));
-    }
-
-    const handleGuideToggle = (guideId) => {
-        setFormData((prev) => {
-            const isSelected = prev.selectedGuides.includes(guideId);
-            const updatedGuides = isSelected
-                ? prev.selectedGuides.filter((id) => id !== guideId)
-                : [...prev.selectedGuides, guideId];
-            return { ...prev, selectedGuides: updatedGuides };
+        return date.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
         });
     };
 
+    // Generate time options
+    const generateTimeOptions = () => {
+        const options = [];
+        for (let hour = 0; hour < 24; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+                const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                const displayTime = new Date(`2000-01-01 ${timeString}`).toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
+                options.push({ value: timeString, display: displayTime });
+            }
+        }
+        return options;
+    };
+
+    const timeOptions = generateTimeOptions();
+    const selectedTimeOption = timeOptions.find(option => option.value === formData.time);
+
     return (
         <>
-            <div
-                className={`fixed inset-0 z-50 flex items-center justify-center bg-black/30 ${isOpen ? 'animate-fade-in' : 'animate-fade-out'}`}
-                onClick={handleCancelEdit}
-            >
-                <div
-                    className={`bg-white rounded-xl shadow-2xl p-6 w-full max-w-md mx-4 ${isOpen ? 'animate-slide-up' : 'animate-slide-down'}`}
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold">{isCreating ? t('tour_dates.create_tour_date') : t('tour_dates.manage_tour_date')}</h3>
-                        <button onClick={handleCancelEdit} className="p-1 rounded-full hover:bg-gray-200 cursor-pointer"><X size={20}/></button>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
+                <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto animate-slide-up">
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-2xl font-bold text-gray-900">
+                            {isCreating ? t('tour_dates.create_tour_date') : t('tour_dates.edit_tour_date')}
+                        </h3>
+                        <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 cursor-pointer">
+                            <X size={24} />
+                        </button>
                     </div>
 
-                    <div className="space-y-5">
-                        {/* --- FORM FIELDS --- */}
-                        <div className="relative">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">{t('tour_dates.date')}</label>
-                            <div className="flex items-center">
-                                <input type="text" value={newTourDate.date ? formatDate(newTourDate.date) : ""} disabled className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"/>
-                                <button onClick={() => setIsCalendarOpen(!isCalendarOpen)} className="ml-2 p-1.5 rounded-lg hover:bg-gray-100 cursor-pointer" disabled={!isEditable}><Calendar size={20}/></button>
+                    <div className="space-y-6">
+                        {/* Date Display */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                {t('tour_dates.date')}
+                            </label>
+                            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                                <Calendar size={20} className="text-gray-400 mr-3" />
+                                <span className="text-gray-900 font-medium">
+                                {formatDate(formData.date)}
+                            </span>
                             </div>
-                            {isCalendarOpen && <CompactCalendar isVisible={isCalendarOpen} onSelectDate={handleDateSelect} onClose={() => setIsCalendarOpen(false)} selectedDate={getLocalDateString(newTourDate.date)} position="down" currentMonth={currentMonth} setCurrentMonth={setCurrentMonth}/>}
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">{t('tour_dates.price')}</label>
-                            <input type="number" value={newTourDate.price} onChange={(e) => setNewTourDate(prev => ({ ...prev, price: e.target.value }))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" placeholder="150" disabled={!isEditable}/>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">{t('tour_dates.max_guests')}</label>
-                            <input type="number" value={newTourDate.maxGuests} onChange={(e) => setNewTourDate(prev => ({ ...prev, maxGuests: e.target.value }))} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" placeholder="12" disabled={!isEditable}/>
                         </div>
 
-                        {isEditable && (
-                            <div className="flex items-center space-x-2">
-                                <input type="checkbox" id="available" checked={newTourDate.available} onChange={(e) => setNewTourDate(prev => ({ ...prev, available: e.target.checked }))} className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded cursor-pointer" />
-                                <label htmlFor="available" className="text-sm font-medium text-gray-700 cursor-pointer">{t('tour_dates.available_for_booking')}</label>
-                            </div>
-                        )}
+                        {/* Custom Time Selector */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                {t('tour_dates.time')}
+                            </label>
+                            <div className="relative">
+                                <div
+                                    className={`flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${
+                                        hasBookings ? 'opacity-50 cursor-not-allowed' : ''
+                                    }`}
+                                    onClick={() => !hasBookings && setIsTimeDropdownOpen(!isTimeDropdownOpen)}
+                                >
+                                    <Clock size={20} className="text-gray-400 mr-3" />
+                                    <span className="text-gray-900 font-medium flex-1">
+                                        {selectedTimeOption?.display || 'Select time'}
+                                    </span>
+                                    <ChevronDown
+                                        size={20}
+                                        className={`text-gray-400 transition-transform ${
+                                            isTimeDropdownOpen ? 'rotate-180' : ''
+                                        }`}
+                                    />
+                                </div>
 
-                        {/* --- ASSIGN GUIDES --- */}
-                        {guides.length > 0 && (
-                            <div>
-                                <label className="block text-lg font-medium text-gray-900 mb-3">
-                                    {t('stepDetails.assign_guides')}
-                                </label>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {guides.map((guide) => (
-                                        <label
+                                {isTimeDropdownOpen && !hasBookings && (
+                                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                        {timeOptions.map((option) => (
+                                            <div
+                                                key={option.value}
+                                                className={`px-4 py-3 hover:bg-gray-100 cursor-pointer transition-colors ${
+                                                    formData.time === option.value ? 'bg-emerald-50 text-emerald-600' : 'text-gray-900'
+                                                }`}
+                                                onClick={() => {
+                                                    setFormData(prev => ({ ...prev, time: option.value }));
+                                                    setIsTimeDropdownOpen(false);
+                                                }}
+                                            >
+                                                <div className="font-medium">{option.display}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Price */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                {t('tour_dates.price')}
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.price}
+                                onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                placeholder="150"
+                                disabled={hasBookings}
+                            />
+                        </div>
+
+                        {/* Max Guests */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                {t('tour_dates.max_guests')}
+                            </label>
+                            <input
+                                type="number"
+                                value={formData.maxGuests}
+                                onChange={(e) => setFormData(prev => ({ ...prev, maxGuests: e.target.value }))}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                placeholder="12"
+                                disabled={hasBookings}
+                            />
+                        </div>
+
+                        {/* Guides */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                {t('tour_dates.select_guides')}
+                            </label>
+
+                            {/* Selected Guides */}
+                            <div className="mb-3 flex flex-wrap gap-2">
+                                {formData.guideIds.map(guideId => {
+                                    const guide = guides?.find(g => g.id === guideId);
+                                    if (!guide) return null;
+                                    return (
+                                        <span
                                             key={guide.id}
-                                            className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                                            className="inline-flex items-center px-3 py-1 text-sm font-medium text-emerald-800 bg-emerald-100 rounded-full"
                                         >
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.selectedGuides.includes(String(guide.id))}
-                                                onChange={() => handleGuideToggle(String(guide.id))}
-                                                className="rounded border-gray-300 text-black focus:ring-black h-5 w-5"
-                                            />
-                                            <span className="text-gray-900">{guide.name}</span>
-                                        </label>
-                                    ))}
-                                </div>
+                                            {guide.name}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        guideIds: prev.guideIds.filter(id => id !== guide.id)
+                                                    }));
+                                                }}
+                                                className="ml-2 text-emerald-600 hover:text-emerald-800 cursor-pointer"
+                                            >
+                                                ×
+                                            </button>
+                                        </span>
+                                    );
+                                })}
                             </div>
-                        )}
 
-                        {/* --- BUTTON CONTAINER --- */}
-                        <div className="pt-3">
-                            <div className="space-y-3">
-                                {/* Primary Actions */}
-                                <div className="flex space-x-2">
-                                    {isCreating && (
-                                        <button onClick={handleSaveTourDate} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 cursor-pointer"><Save size={16}/><span>{t('tour_dates.create')}</span></button>
-                                    )}
-                                    {!isCreating && !hasBookings && (
-                                        <>
-                                            <button onClick={handleSaveTourDate} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 cursor-pointer"><Save size={16}/><span>{t('tour_dates.save_changes')}</span></button>
-                                            <button onClick={() => setIsPromotionModalOpen(true)} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 cursor-pointer"><span>{t('tour_dates.promotion')}</span></button>
-                                        </>
-                                    )}
-                                    {!isCreating && hasBookings && unbookedSpots > 0 && (
-                                        <>
-                                            <button onClick={() => setIsPromotionModalOpen(true)} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 cursor-pointer"><span>{t('tour_dates.promotion')}</span></button>
-                                            <button className="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center justify-center space-x-2 cursor-pointer"><span>{t('tour_dates.unavailable')}</span></button>
-                                        </>
-                                    )}
-                                </div>
+                            {/* Guide Search */}
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={guideSearchTerm}
+                                    onChange={(e) => {
+                                        setGuideSearchTerm(e.target.value);
+                                        setIsGuideDropdownOpen(true);
+                                    }}
+                                    onFocus={() => setIsGuideDropdownOpen(true)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    placeholder={t('tour_dates.search_guides')}
+                                />
 
-                                {/* Secondary Action */}
-                                {!isCreating && hasBookings && (
-                                    <button className="w-full flex items-center justify-center space-x-2 text-white bg-sky-600 hover:bg-sky-700 px-3 py-2 rounded-lg cursor-pointer"
-                                    onClick={() => handleViewBookingsTourDate()}
-                                    >
-                                        <span>{t('tour_dates.bookings')}</span>
-                                        <span>({totalPeopleBooked})</span>
-                                    </button>
-                                )}
-
-                                {/* Destructive Actions */}
-                                {!isCreating && (
-                                    hasBookings ? (
-                                        <button
-                                            onClick={() => setIsConfirmCancelOpen(true)}
-                                            className="w-full bg-orange-50 hover:bg-orange-100 text-orange-600 px-4 py-2 rounded-lg flex items-center justify-center space-x-2 cursor-pointer"
-                                        >
-                                            <AlertTriangle size={16} />
-                                            <span>{t('tour_dates.cancel_tour_date', { count: totalPeopleBooked })}</span>
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => setIsConfirmDeleteOpen(true)}
-                                            className="w-full bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg flex items-center justify-center space-x-2 cursor-pointer"
-                                        >
-                                            <Trash2 size={16} />
-                                            <span>{t('tour_dates.delete_tour_date')}</span>
-                                        </button>
-                                    )
+                                {isGuideDropdownOpen && (
+                                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                        {guides?.filter(guide =>
+                                            !formData.guideIds.includes(guide.id) &&
+                                            guide.name.toLowerCase().includes(guideSearchTerm.toLowerCase())
+                                        ).map(guide => (
+                                            <div
+                                                key={guide.id}
+                                                className="px-4 py-3 hover:bg-gray-100 cursor-pointer"
+                                                onClick={() => {
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        guideIds: [...prev.guideIds, guide.id]
+                                                    }));
+                                                    setGuideSearchTerm('');
+                                                    setIsGuideDropdownOpen(false);
+                                                }}
+                                            >
+                                                <div className="font-medium text-gray-900">{guide.name}</div>
+                                                <div className="text-sm text-gray-500">{guide.email}</div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 )}
                             </div>
+                        </div>
+
+                        {/* Available Toggle */}
+                        <div className="flex items-center space-x-3">
+                            <input
+                                type="checkbox"
+                                id="available"
+                                checked={formData.available}
+                                onChange={(e) => setFormData(prev => ({ ...prev, available: e.target.checked }))}
+                                className="h-5 w-5 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                            />
+                            <label htmlFor="available" className="text-sm font-medium text-gray-700">
+                                {t('tour_dates.available_for_booking')}
+                            </label>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex space-x-3 pt-4">
+                            <button
+                                onClick={handleSave}
+                                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg flex items-center justify-center space-x-2 font-semibold transition-colors cursor-pointer"
+                            >
+                                <Save size={18} />
+                                <span>{isCreating ? t('tour_dates.create') : t('tour_dates.save_changes')}</span>
+                            </button>
+
+                            {!isCreating && (
+                                <button
+                                    onClick={() => setShowDeleteConfirm(true)}
+                                    className="px-6 py-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg flex items-center space-x-2 font-semibold transition-colors cursor-pointer"
+                            >
+                                <Trash2 size={18} />
+                                <span>{t('tour_dates.delete')}</span>
+                            </button>
+                            )}
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* --- MODALS --- */}
-            <style>{`
+                <style>{`
                 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
                 .animate-fade-in { animation: fade-in 0.3s ease-out forwards; }
-                @keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
-                .animate-fade-out { animation: fade-out 0.3s ease-out forwards; }
                 @keyframes slide-up { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
                 .animate-slide-up { animation: slide-up 0.3s ease-out forwards; }
-                @keyframes slide-down { from { transform: translateY(0); opacity: 1; } to { transform: translateY(20px); opacity: 0; } }
-                .animate-slide-down { animation: slide-down 0.3s ease-out forwards; }
             `}</style>
+            </div>
 
             <ConfirmModal
-                isOpen={isConfirmDeleteOpen}
-                onClose={() => setIsConfirmDeleteOpen(false)}
-                onConfirm={handleConfirmDelete}
-                title={t('confirm_action')}
-                message={t('tour_dates.delete_confirm')}
+                isOpen={showDeleteConfirm}
+                onClose={() => setShowDeleteConfirm(false)}
+                onConfirm={confirmDelete}
+                title={t('tour_dates.confirm_delete_title')}
+                message={
+                    hasBookings
+                        ? t('tour_dates.confirm_delete_with_bookings', { count: totalPeopleBooked })
+                        : t('tour_dates.confirm_delete_message')
+                }
                 confirmButtonText={t('tour_dates.delete')}
                 confirmButtonColor="bg-red-600 hover:bg-red-700"
             />
-            <ConfirmModal
-                isOpen={isConfirmCancelOpen}
-                onClose={() => setIsConfirmCancelOpen(false)}
-                onConfirm={handleConfirmCancel}
-                title={t('tour_dates.confirm_cancellation')}
-                message={t('tour_dates.cancel_confirm', { count: totalPeopleBooked })}
-                confirmButtonText={t('tour_dates.yes_cancel_tour')}
-                confirmButtonColor="bg-orange-600 hover:bg-orange-700"
-            />
-
-            {isPromotionModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 animate-fade-in">
-                    <div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4 animate-slide-up">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-semibold">{t('tour_dates.create_promotion')}</h3>
-                            <button onClick={() => setIsPromotionModalOpen(false)} className="p-1 rounded-full hover:bg-gray-200 cursor-pointer"><X size={20}/></button>
-                        </div>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">{t('tour_dates.discount')}</label>
-                                <input type="number" min="1" max="100" className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g. 20" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">{t('tour_dates.message')}</label>
-                                <textarea className="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder={t('tour_dates.special_offer_placeholder')} />
-                            </div>
-                            <div className="text-sm text-gray-500">{t('tour_dates.unbooked_spots', { count: unbookedSpots })}</div>
-                            <div className="flex space-x-2 pt-2">
-                                <button className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg cursor-pointer">{t('tour_dates.create_promotion')}</button>
-                                <button onClick={() => setIsPromotionModalOpen(false)} className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg cursor-pointer">{t('tour_dates.cancel')}</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </>
     );
 };

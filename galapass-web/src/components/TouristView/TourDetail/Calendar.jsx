@@ -1,7 +1,10 @@
 import React, { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 const Calendar = ({ availableDates = [], selectedDate, onDateSelect }) => {
+    const { t } = useTranslation();
+
     const getInitialDate = () => {
         if (availableDates.length > 0 && availableDates[0].date) {
             try {
@@ -15,7 +18,6 @@ const Calendar = ({ availableDates = [], selectedDate, onDateSelect }) => {
         }
         return new Date();
     };
-
 
     const [currentDate, setCurrentDate] = useState(getInitialDate());
 
@@ -51,6 +53,14 @@ const Calendar = ({ availableDates = [], selectedDate, onDateSelect }) => {
     const year = currentDate.getFullYear();
     const firstDayOfMonth = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Get translated arrays with fallbacks
+    const monthNames = t('calendar.monthNames', { returnObjects: true }) || [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+
+    const dayNames = t('calendar.dayNames', { returnObjects: true }) || ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
     const days = Array.from({ length: firstDayOfMonth }, (_, i) => <div key={`empty-${i}`} />);
 
@@ -91,14 +101,14 @@ const Calendar = ({ availableDates = [], selectedDate, onDateSelect }) => {
                     <ChevronLeft className="w-5 h-5" />
                 </button>
                 <h3 className="font-bold text-lg text-gray-800">
-                    {currentDate.toLocaleString('en-US', { month: 'long', year: 'numeric' })}
+                    {monthNames[month]} {year}
                 </h3>
                 <button onClick={() => changeMonth(1)} className="p-2 rounded-full hover:bg-gray-100 cursor-pointer">
                     <ChevronRight className="w-5 h-5" />
                 </button>
             </div>
             <div className="grid grid-cols-7 gap-y-2 text-center text-sm text-gray-500 mb-2">
-                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => <div key={`${day}-${index}`}>{day}</div>)}
+                {dayNames.map((day, index) => <div key={`${day}-${index}`}>{day}</div>)}
             </div>
             <div className="grid grid-cols-7 gap-y-2 place-items-center">
                 {days}

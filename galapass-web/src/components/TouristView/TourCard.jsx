@@ -69,16 +69,16 @@ const TourCard = ({ tour, onClick }) => {
                     {/* Category and Tags */}
                     <div className="flex flex-wrap gap-2 mb-3">
                         <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-1 rounded-full capitalize">
-                            {tour.category.replace(/_/g, ' ').toLowerCase()}
+                            {t(`categories.${tour.category}`) || tour.category.replace(/_/g, ' ').toLowerCase()}
                         </span>
                         {tour.tags.slice(0, 2).map(tag => (
                             <span key={tag} className="text-xs font-medium text-blue-700 bg-blue-100 px-2 py-1 rounded-full capitalize">
-                                {tag.replace(/_/g, ' ').toLowerCase()}
+                                {t(`tags.${tag}`) || tag.replace(/_/g, ' ').toLowerCase()}
                             </span>
                         ))}
                         {tour.tags.length > 2 && (
                             <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                                +{tour.tags.length - 2} more
+                                {t('media_gallery.more', {count: tour.tags.length - 2})}
                             </span>
                         )}
                     </div>

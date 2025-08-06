@@ -53,7 +53,6 @@ const Layout = () => {
                 setIsMenuOpen={setIsMenuOpen}
                 onLoginClick={() => setIsLoginOpen(true)}
                 onRegisterClick={() => setIsRegisterOpen(true)}
-                // Pass search bar props for dynamic header
                 searchBarProps={{
                     searchData,
                     handleInputChange,

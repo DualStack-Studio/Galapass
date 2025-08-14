@@ -14,6 +14,7 @@ import com.galapass.api.user.DTO.guideDashboard.GuideDashboardStatsDTO;
 import com.galapass.api.user.DTO.guideInvitation.GuideInvitationResponse;
 import com.galapass.api.user.entity.GuideInvitation;
 import com.galapass.api.user.mapper.GuideInvitationMapper;
+import com.galapass.api.user.service.GuideDashboardStatsService;
 import com.galapass.api.user.service.GuideInvitationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class GuideController {
     private final TourCompanyService tourCompanyService;
     private final GuideInvitationService guideInvitationService;
     private final GuideInvitationMapper guideInvitationMapper;
+    private final GuideDashboardStatsService guideDashboardStatsService;
 
     @PreAuthorize("hasAuthority('GUIDE')")
     @GetMapping("/{guideId}/companies")
@@ -121,6 +123,15 @@ public class GuideController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PreAuthorize("hasAuthority('GUIDE')")
+    @PatchMapping("/{guideId}/dashboard-stats")
+    public ResponseEntity<GuideDashboardStatsDTO> patchDashboardStats(
+            @PathVariable Long guideId,
+            @RequestBody GuideDashboardStatsDTO partialStats) {
+        return ResponseEntity.ok(guideDashboardStatsService.patchStats(guideId, partialStats));
+    }
+
 
 
 

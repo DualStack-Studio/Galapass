@@ -2,6 +2,7 @@ package com.galapass.api.user.entity;
 
 import com.galapass.api.tour.entity.TourCompany;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,6 +33,7 @@ public class User implements UserDetails {
     private Role role;
 
     private String profilePhoto = "/Static/uploads/blank-profile-picture.jpg";
+    @Size(max = 5000)
     private String bio;
     private String language = "es";
 
@@ -47,6 +49,8 @@ public class User implements UserDetails {
     @Column(nullable = true)
     private GuideStatus status = GuideStatus.OPERABLE;
 
+    @OneToOne(mappedBy = "guide", cascade = CascadeType.ALL)
+    private GuideDashboardStats dashboardStats;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

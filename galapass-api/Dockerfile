@@ -1,4 +1,4 @@
-FROM maven:3.9.0-jdk-21 AS build
+FROM openjdk:21-jre-slim AS build
 
 WORKDIR /app
 

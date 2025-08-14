@@ -1,4 +1,8 @@
-FROM openjdk:21-jre-slim AS build
+FROM eclipse-temurin:21-jdk AS build
+
+RUN apt-get update && \
+    apt-get install -y maven && \
+    apt-get clean
 
 WORKDIR /app
 

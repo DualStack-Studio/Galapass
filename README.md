@@ -101,7 +101,7 @@ graph TB
 - **Logging:** DEBUG con SQL visible
 
 ### 🚀 Producción (prod)
-- **Frontend:** [https://galapass.work.gd](https://galapass.netlify.app/)
+- **Frontend:** https://galapass.netlify.app/
 - **Base de datos:** PostgreSQL en Railway
 - **Logging:** INFO, sin SQL en logs
 
